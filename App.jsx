@@ -5,7 +5,7 @@ import {
   Star, Target, Sparkles, Check, ChevronRight, X, Store, Crown,
   Megaphone, UserMinus, UserPlus, Globe, Radio, LogOut, Mail, KeyRound,
   Lightbulb, AlertTriangle, TrendingUp, DollarSign, BarChart3,
-  ChevronLeft, Plus
+  ChevronLeft, Plus, Shield
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
@@ -49,6 +49,7 @@ const formatBRL = (v) => v.toLocaleString("pt-BR", { style: "currency", currency
 // --- Conexão com o Supabase (projeto CRMLOJISTA, tabelas com prefixo av_) ---
 const SUPABASE_URL = "https://ihpfexmourrvixtsxhrt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_M7vZQ1VPi_7BP3HQAp-ngA_cMB22bEG";
+const ADMIN_EMAIL = "jessicasandifdm@gmail.com";
 
 async function supaSignUp(email, password) {
   const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
@@ -100,6 +101,15 @@ async function supaDelete(table, accessToken, id) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, { method: "DELETE", headers: supaHeaders(accessToken) });
   if (!res.ok) { const data = await res.json().catch(() => ({})); throw new Error(data.message || "Erro ao excluir."); }
   return true;
+}
+
+async function supaSelectAll(table, accessToken) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&order=criado_em.desc`, {
+    headers: supaHeaders(accessToken),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Erro ao carregar dados.");
+  return data;
 }
 
 async function supaDeleteWhere(table, accessToken, filters) {
@@ -1076,6 +1086,11 @@ export default function App() {
   const [showMetaForm, setShowMetaForm] = useState(false);
   const [novaMetaAcao, setNovaMetaAcao] = useState("");
   const [novaMetaValor, setNovaMetaValor] = useState("");
+  const [adminDiagnosticos, setAdminDiagnosticos] = useState([]);
+  const [adminLoading, setAdminLoading] = useState(false);
+
+  const isAdmin = session?.email === ADMIN_EMAIL;
+  const navItems = isAdmin ? [...NAV, { id: "admin", label: "Admin", icon: Shield }] : NAV;
 
   useEffect(() => {
     if (stage !== "app" || !session) return;
@@ -1096,6 +1111,15 @@ export default function App() {
       } catch (e) { console.error("Erro ao carregar dados do Supabase:", e); }
     })();
   }, [stage, session]);
+
+  useEffect(() => {
+    if (tab !== "admin" || !isAdmin || !session) return;
+    setAdminLoading(true);
+    supaSelectAll("av_diagnosticos", session.accessToken)
+      .then((rows) => setAdminDiagnosticos(rows))
+      .catch((e) => console.error("Erro ao carregar diagnósticos:", e))
+      .finally(() => setAdminLoading(false));
+  }, [tab, isAdmin, session]);
 
   const toggleFav = (id) => {
     setFavs((prev) => {
@@ -1612,7 +1636,7 @@ export default function App() {
         <aside className="sidebar">
           <div className="sidebar-logo">Ações de venda</div>
           <nav className="sidebar-nav">
-            {NAV.map((n) => (
+            {navItems.map((n) => (
               <button key={n.id} className={`sidebar-link ${tab === n.id && !openAction ? "active" : ""}`} onClick={() => goto(n.id, true)}>
                 <n.icon size={16} /> {n.label}
               </button>
@@ -1835,7 +1859,7 @@ export default function App() {
                   )}
                 </div>
               </div>
-            ) : (
+            ) : tab === "historico" ? (
               <div className="screen">
                 <div className="topbar"><span className="topbar-title">Histórico</span><span /></div>
                 <div className="scroll" style={{ paddingTop: 14 }}>
@@ -1882,12 +1906,47 @@ export default function App() {
                   )}
                 </div>
               </div>
+            ) : (
+              <div className="screen">
+                <div className="topbar"><span className="topbar-title">Respostas do diagnóstico</span><span /></div>
+                <div className="scroll" style={{ paddingTop: 14 }}>
+                  {adminLoading ? (
+                    <p style={{ textAlign: "center", color: "#6B7268", fontSize: 13 }}>Carregando…</p>
+                  ) : adminDiagnosticos.length === 0 ? (
+                    <div className="empty-state"><Shield size={28} /><p>Nenhuma lojista respondeu o diagnóstico ainda.</p></div>
+                  ) : (
+                    <div className="list-wrap" style={{ padding: 0 }}>
+                      {adminDiagnosticos.map((d) => (
+                        <div className="hist-item" key={d.id}>
+                          <div className="hist-top">
+                            <span className="hist-nome">{d.respostas?.segmento?.l || "Segmento não informado"}</span>
+                            <span className="hist-data">{new Date(d.criado_em).toLocaleDateString("pt-BR")}</span>
+                          </div>
+                          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", margin: "6px 0" }}>
+                            <span className="canal-pill sm">Índice {d.indice} · {d.faixa_indice}</span>
+                            <span className="canal-pill sm">Forte: {d.ponto_forte}</span>
+                            <span className="canal-pill sm">Gargalo: {d.gargalo}</span>
+                          </div>
+                          <div className="hist-nota">
+                            Faturamento: {d.respostas?.faturamento?.l || "—"} · Equipe: {d.respostas?.equipe?.l || "—"} · Seguidores: {d.respostas?.seguidores?.l || "—"}
+                          </div>
+                          {d.areas?.length > 0 && (
+                            <div className="chiprow" style={{ marginTop: 8 }}>
+                              {d.areas.map((a) => <span key={a} className="chip">{a}</span>)}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
 
           {!openAction && (
             <div className="tabbar">
-              {NAV.map((n) => (
+              {navItems.map((n) => (
                 <button key={n.id} className={`tabbtn ${tab === n.id ? "active" : ""}`} onClick={() => goto(n.id, true)}>
                   <n.icon size={19} /><span>{n.label}</span>
                 </button>
