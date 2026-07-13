@@ -1,39 +1,39 @@
 import { useState, useEffect } from "react";
 import {
   Search, Heart, Clock, Home, BookOpen, ArrowLeft, RefreshCw, Gift,
-  Wallet, Truck, Package, TrendingDown, Users, CreditCard, Zap,
+  Wallet, Truck, Package, Users,
   Star, Target, Sparkles, Check, ChevronRight, X, Store, Crown,
   Megaphone, UserMinus, UserPlus, Globe, Radio, LogOut, Mail, KeyRound,
   Lightbulb, AlertTriangle, TrendingUp, DollarSign, BarChart3,
-  ChevronLeft, Plus, Shield
+  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
 const CATS = [
-  { id: "giro", label: "Giro de estoque", icon: RefreshCw },
-  { id: "brindes", label: "Brindes", icon: Gift },
-  { id: "cashback", label: "Cashback", icon: Wallet },
-  { id: "frete", label: "Frete", icon: Truck },
-  { id: "combos", label: "Combos", icon: Package },
-  { id: "progressivo", label: "Desconto progressivo", icon: TrendingDown },
-  { id: "indicacao", label: "Indicação", icon: Users },
-  { id: "pagamento", label: "Condições de pagamento", icon: CreditCard },
-  { id: "urgencia", label: "Urgência", icon: Zap },
-  { id: "relacionamento", label: "Relacionamento", icon: Heart },
-  { id: "exclusiva", label: "Campanhas exclusivas", icon: Star },
-  { id: "engajamento", label: "Engajamento", icon: Target },
-  { id: "emocional", label: "Emocional", icon: Sparkles },
+  { id: "giro", label: "Promoções e Giro de Estoque", icon: RefreshCw },
+  { id: "brindes", label: "Brindes e Incentivos", icon: Gift },
+  { id: "cashback", label: "Cashback e Fidelização", icon: Wallet },
+  { id: "frete", label: "Fretes Estratégicos", icon: Truck },
+  { id: "combos", label: "Combos e Ticket Médio", icon: Package },
+  { id: "indicacao", label: "Indicação e Aquisição de Clientes", icon: Users },
+  { id: "vip", label: "Experiências VIP", icon: Crown },
+  { id: "diferenciais", label: "Diferenciais Permanentes", icon: Star },
+  { id: "emocional", label: "Campanhas Emocionais", icon: Sparkles },
+  { id: "datas", label: "Datas Comemorativas", icon: Calendar },
+  { id: "lancamentos", label: "Lançamentos de Coleção", icon: Rocket },
+  { id: "engajamento", label: "Engajamento (Stories)", icon: Target },
 ];
 
 const CANAIS = [
   { label: "Stories", icon: Radio },
   { label: "Loja física", icon: Store },
   { label: "Grupo VIP", icon: Crown },
-  { label: "Grupo de promoção", icon: Megaphone },
-  { label: "Com clientes", icon: Users },
+  { label: "Status do WhatsApp", icon: Megaphone },
+  { label: "Lista de transmissão", icon: Send },
+  { label: "WhatsApp individual", icon: MessageCircle },
+  { label: "Site", icon: Globe },
   { label: "Clientes inativos", icon: UserMinus },
   { label: "Clientes que ainda não compraram", icon: UserPlus },
-  { label: "Site", icon: Globe },
 ];
 
 const NICHOS = [
@@ -237,383 +237,539 @@ function computeDiagnostico(respostas) {
 const catInfo = (id) => CATS.find((c) => c.id === id) || CATS[0];
 const canalInfo = (label) => CANAIS.find((c) => c.label === label) || CANAIS[0];
 
-const ROTEIRO_GRUPO = [
-  "2 dias antes: avisar dentro do Grupo VIP que a ação vai acontecer, sem entregar todos os detalhes ainda",
-  "1 hora antes de abrir: aquecer o grupo mostrando bastidor ou preparação, para criar expectativa",
-  "No horário definido: abrir a ação direto no grupo e vender por lá",
-];
-
-const ROTEIRO_ABERTO = [
-  "1 a 2 dias antes: gravar um Reels curto anunciando o dia da ação",
-  "Na véspera, à noite: lembrete nos Stories para acompanhar no dia seguinte",
-  "Na véspera: avisar a base de clientes no privado (WhatsApp) sobre o que vai acontecer",
-  "Na véspera: avisar o Grupo VIP para acompanhar os Stories, dando a eles a sensação de acesso antecipado",
-  "No dia: divulgar ao vivo nos canais definidos e vender",
-];
-
-function getRoteiros(action) {
-  const canais = action.canais || [];
-  const temGrupoExclusivo = canais.includes("Grupo VIP");
-  const temAberto = canais.some((c) => ["Stories", "Loja física", "Grupo de promoção"].includes(c));
-  const roteiros = [];
-  if (temAberto) roteiros.push({ titulo: "Se for aberta (Stories ou loja física)", passos: ROTEIRO_ABERTO });
-  if (temGrupoExclusivo) roteiros.push({ titulo: "Se for só para o Grupo VIP", passos: ROTEIRO_GRUPO });
-  return roteiros;
-}
-
 const ACTIONS = [
   {
-    id: "cabide-livre", nome: "Operação Cabide Livre", cat: "giro", nichos: ["Moda Feminina", "Moda Masculina"], tipo: "Giro de peças",
-    como: "Seleção de peças com preço especial para liberar estoque parado.", duracao: "Semana",
-    canais: ["Loja física", "Stories", "Com clientes"],
-    objetivo: "Reduzir estoque parado e abrir espaço de caixa para repor com peças novas.",
-    quandoUsar: "Quando existem peças de coleções passadas ocupando espaço há mais de 60 dias.",
-    quandoEvitar: "Perto do lançamento de uma coleção nova — mistura a comunicação.",
-    passos: [
-      "Separar as peças com giro baixo há mais de 60 dias",
-      "Definir a tabela de desconto por peça ou grupo",
-      "Criar identificação visual na loja (etiqueta ou plaquinha)",
-      "Anunciar nos Stories informando quantidade disponível",
-      "Atualizar o estoque restante todos os dias",
+    id: "cabide-livre", nome: "Operação Cabide Livre", cat: "giro",
+    nichos: ["Moda Feminina", "Moda Masculina", "Moda Fitness", "Moda Plus Size", "Infantil", "Moda Evangélica"],
+    tipo: "Campanha de giro de estoque",
+    como: "Acelera o giro de estoque, libera espaço na loja e transforma peças paradas em caixa para novas compras.",
+    duracao: "7 a 10 dias",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories", "Status do WhatsApp", "Lista de transmissão", "WhatsApp individual"],
+    objetivo: ["Giro de estoque", "Liberar caixa", "Abrir espaço para nova coleção"],
+    quandoUsar: ["Troca de coleção", "Mudança de estação", "Estoque parado há mais de 60 dias", "Necessidade de gerar caixa", "Excesso de produtos acumulados"],
+    quandoEvitar: ["Durante lançamento de coleção nova", "Quando existir outra campanha acontecendo ao mesmo tempo", "Em períodos onde a comunicação principal seja outra"],
+    checklist: ["Separar as peças participantes", "Definir percentual de desconto", "Criar tabela de preços", "Trocar etiquetas", "Identificar peças da campanha", "Organizar araras", "Preparar vitrine", "Atualizar identidade visual da campanha", "Produzir materiais gráficos", "Definir data de início e encerramento"],
+    checklistExecucao: ["Atualizar vitrine", "Colocar comunicação visual", "Organizar peças", "Equipe preparada", "Registrar movimento"],
+    planoDivulgacao: [
+      { marco: "2 dias antes", itens: [
+        "Reels: vídeo curto anunciando que algo especial começa em breve, mostrando rapidamente algumas peças sem revelar tudo",
+        "Stories: bastidores da preparação (organizando araras, trocando etiquetas, caixas chegando, equipe preparando loja)",
+        "WhatsApp para clientes: aviso em primeira mão de que a ação está chegando",
+      ]},
+      { marco: "1 dia antes", itens: [
+        "Stories em sequência: 'Bastidores' → 'Falta apenas 1 dia' → 'Ative o lembrete porque amanhã começa'",
+        "Grupo VIP: aviso de que as melhores oportunidades saem nas primeiras horas",
+        "WhatsApp individual: lembrete pessoal para acompanhar os Stories",
+      ]},
+      { marco: "Dia 1 (abertura)", itens: [
+        "Loja física: vitrine atualizada, comunicação visual, peças organizadas, equipe preparada",
+        "Stories o dia todo: clientes comprando, antes e depois das araras, provador, sacolas saindo, peças acabando",
+        "Status do WhatsApp: repostar os Stories",
+      ]},
+      { marco: "Dias seguintes", itens: ["Mostrar novidades e reposição quando existir", "Reforçar peças disponíveis e vendas acontecendo"] },
     ],
-    checklist: ["Lista de peças definida", "Preços calculados", "Etiquetas prontas", "Stories agendados"],
-    dicas: "Mostrar a quantidade restante gera escassez real — sem precisar forçar a régua.",
-    erros: "Misturar peça de coleção nova dentro da ação. Isso quebra a credibilidade da campanha.",
-    resultado: "Estoque parado reduzido e caixa liberado para reposição.",
-    relacionadas: ["limpa-arara", "estoque-zero"],
+    modelosMensagens: [
+      { canal: "WhatsApp (2 dias antes)", texto: "Estamos preparando uma ação muito especial que começa em poucos dias. Se você estava esperando uma oportunidade, fica de olho." },
+      { canal: "Grupo VIP (1 dia antes)", texto: "Amanhã começa nossa ação especial. As melhores oportunidades costumam sair logo nas primeiras horas." },
+      { canal: "WhatsApp individual (1 dia antes)", texto: "Passei para lembrar que amanhã começa nossa campanha. Se quiser garantir as melhores opções, acompanha nossos Stories amanhã cedo." },
+    ],
+    ideiasStories: ["Bastidores da preparação (araras, etiquetas, caixas chegando)", "'Falta apenas 1 dia'", "'Ative o lembrete porque amanhã começa'", "Durante a campanha: clientes comprando, antes/depois das araras, provador, sacolas saindo, peças acabando"],
+    dicas: "Não concentre toda a comunicação apenas no desconto. Mostre oportunidade, movimento, quantidade limitada, sensação de loja cheia e urgência natural.",
+    resultado: ["Giro acelerado", "Redução do estoque", "Liberação de caixa", "Espaço para nova coleção", "Aumento do fluxo na loja"],
+    relacionadas: ["pague-2-leve-3", "comprou-ganhou-stories", "dia-do-frete-especial"],
   },
   {
-    id: "limpa-arara", nome: "Limpa-Arara", cat: "giro", nichos: ["Moda Feminina", "Moda Masculina"], tipo: "Liquidação estratégica",
-    como: "Peças selecionadas com desconto direto.", duracao: "Semana",
-    canais: ["Loja física", "Stories", "Com clientes"],
-    objetivo: "Girar peças específicas sem precisar declarar liquidação geral da loja.",
-    quandoUsar: "Quando um grupo específico de produtos está parado (uma cor, um modelo, um tecido).",
-    quandoEvitar: "Quando a loja acabou de subir preço — pode gerar comparação indesejada.",
-    passos: [
-      "Escolher o recorte de produto (cor, modelo ou tecido)",
-      "Definir desconto único para o grupo",
-      "Fotografar as peças já com o preço aplicado",
-      "Divulgar como 'seleção da vez', não como liquidação geral",
+    id: "comprou-ganhou-stories", nome: "Comprou, Ganhou Express (Stories)", cat: "brindes", nichos: ["Geral"],
+    tipo: "Ação relâmpago de 1 dia",
+    como: "Gera pico de vendas imediato através da escassez, usando os Stories como canal principal.",
+    duracao: "1 dia",
+    canalPrincipal: "Stories",
+    canaisApoio: ["WhatsApp individual"],
+    objetivo: ["Gerar pico de vendas imediato através da escassez"],
+    quandoUsar: ["Dias de movimento mais fraco, para gerar picos de conversa e vendas rápidas"],
+    quandoEvitar: ["Sem definir os benefícios e produtos com antecedência"],
+    checklist: ["Escolher até 10 produtos", "Definir quantidade de brindes", "Fotografar os produtos", "Definir horário da abertura"],
+    checklistExecucao: ["Publicar a sequência de Stories no horário definido", "Responder mensagens em tempo real", "Atualizar quantos brindes já foram resgatados"],
+    planoDivulgacao: [
+      { marco: "1 dia antes", itens: ["Story avisando que amanhã tem oportunidade exclusiva pra quem acompanha", "WhatsApp lembrando de acompanhar os Stories"] },
+      { marco: "No dia", itens: ["Sequência de 6 Stories (ver Ideias de Stories abaixo)"] },
     ],
-    checklist: ["Recorte de produto definido", "Fotos feitas", "Preço aplicado no sistema"],
-    dicas: "Nomear a seleção ajuda a cliente entender que é por tempo limitado, não uma queda de preço permanente.",
-    erros: "Aplicar o desconto na loja toda sem querer — isso desvaloriza o preço cheio.",
-    resultado: "Giro do grupo parado sem impactar a percepção de valor da coleção atual.",
-    relacionadas: ["cabide-livre", "estoque-zero"],
+    modelosMensagens: [
+      { canal: "Stories (véspera)", texto: "Amanhã vou liberar uma oportunidade para quem acompanha meus Stories. As primeiras clientes vão desbloquear um presente especial." },
+      { canal: "WhatsApp (véspera)", texto: "Amanhã acompanha meus Stories porque vou liberar uma condição exclusiva." },
+    ],
+    ideiasStories: ["Story 1: Abertura", "Story 2: Explicação", "Story 3: Mostrar produtos", "Story 4: Mostrar o brinde", "Story 5: 'Restam apenas X brindes'", "Story 6: Última chamada"],
+    dicas: "Esse playbook inteiro cabe em uma tela — a força está na sequência rápida de Stories, não em explicações longas.",
+    resultado: ["Pico de conversas e vendas no mesmo dia", "Sensação de sorte e exclusividade para quem acompanhou"],
+    relacionadas: ["comprou-ganhou-vip", "desbloqueie-brindes"],
   },
   {
-    id: "estoque-zero", nome: "Missão Estoque Zero", cat: "giro", nichos: ["Moda Feminina", "Moda Masculina"], tipo: "Queima de coleção",
-    como: "Últimas unidades com condição especial.", duracao: "Curta ou semanal",
-    canais: ["Stories", "Loja física"],
-    objetivo: "Esgotar unidades finais antes da chegada de uma nova coleção.",
-    quandoUsar: "Quando restam poucas peças de um modelo ou tamanho.",
-    quandoEvitar: "Quando o estoque restante ainda é grande — perde o senso de urgência real.",
-    passos: [
-      "Levantar peças com estoque unitário ou quase esgotado",
-      "Definir condição especial (preço ou brinde)",
-      "Comunicar como 'últimas unidades' com contagem visível",
+    id: "comprou-ganhou-vip", nome: "Comprou, Ganhou Express (Grupo VIP)", cat: "brindes", nichos: ["Geral"],
+    tipo: "Ação relâmpago exclusiva para o grupo",
+    como: "Mesma mecânica do Comprou Ganhou Express, só que o canal principal passa a ser o Grupo VIP em vez dos Stories.",
+    duracao: "1 dia",
+    canalPrincipal: "Grupo VIP",
+    canaisApoio: ["Stories"],
+    objetivo: ["Gerar pico de vendas imediato através da escassez, de forma exclusiva para o grupo"],
+    quandoUsar: ["Quando a loja quer fortalecer o Grupo VIP como canal de vendas"],
+    quandoEvitar: ["Quando o grupo ainda é muito pequeno ou pouco engajado"],
+    checklist: ["Escolher até 10 produtos", "Definir quantidade de brindes", "Fotografar os produtos", "Definir horário da abertura"],
+    checklistExecucao: ["Publicar mensagem de abertura no grupo", "Postar produtos e atualizações durante o dia", "Fazer a última chamada e encerrar oficialmente"],
+    planoDivulgacao: [
+      { marco: "2 dias antes", itens: ["Stories convidando para entrar no grupo, com spoiler da condição exclusiva"] },
+      { marco: "Dia da ação", itens: ["Mensagem de abertura ('Começou!')", "Publicar produtos e atualizar vendas durante o dia", "Mostrar peças encerrando e fazer a última chamada", "Encerrar oficialmente"] },
     ],
-    checklist: ["Peças levantadas", "Condição definida", "Contagem visível no post"],
-    dicas: "Contagem regressiva de peças funciona melhor que contagem de dias nessa ação.",
-    erros: "Anunciar 'últimas peças' quando na verdade o estoque é grande — perde credibilidade nas próximas ações.",
-    resultado: "Estoque zerado do modelo e espaço físico liberado na loja.",
-    relacionadas: ["cabide-livre", "limpa-arara"],
+    modelosMensagens: [{ canal: "Grupo VIP (abertura)", texto: "Começou! Hoje é dia de condição exclusiva só pra quem está aqui no grupo." }],
+    ideiasStories: ["Convite pro grupo com spoiler da condição exclusiva"],
+    dicas: "Só muda o canal principal — o resto da estrutura continua igual ao Comprou Ganhou Express de Stories.",
+    resultado: ["Crescimento do Grupo VIP", "Pico de vendas exclusivo", "Geração de senso de pertencimento"],
+    relacionadas: ["comprou-ganhou-stories", "clube-secreto"],
   },
   {
-    id: "comprou-ganhou", nome: "Comprou, Ganhou", cat: "brindes", nichos: ["Geral"], tipo: "Brinde direto",
-    como: "Qualquer compra no período recebe um presente.", duracao: "Dia ou semana",
-    canais: ["Loja física", "Stories", "Com clientes"],
-    objetivo: "Aumentar o volume de compras em um período específico.",
-    quandoUsar: "Em dias de movimento historicamente mais fraco.",
-    quandoEvitar: "Quando o brinde tem custo alto e a margem da peça já é apertada.",
-    passos: [
-      "Escolher o brinde e calcular o custo por unidade",
-      "Definir o período de validade da ação",
-      "Comunicar de forma simples: qualquer compra já garante o brinde",
-      "Entregar o brinde já embalado, sem precisar perguntar",
-    ],
-    checklist: ["Brinde separado", "Custo calculado", "Equipe orientada"],
-    dicas: "Brinde embalado e entregue sem a cliente pedir aumenta a percepção de cuidado.",
-    erros: "Ficar sem brinde no meio da ação — quebra a expectativa criada.",
-    resultado: "Aumento do número de compras no período da ação.",
-    relacionadas: ["escalada-mimos", "combo-presenteado"],
+    id: "desbloqueie-brindes", nome: "Desbloqueie Brindes", cat: "brindes", nichos: ["Geral"],
+    tipo: "Campanha de incentivo (não é urgência)",
+    como: "Aumenta o ticket médio através de faixas de valor que desbloqueiam brindes cada vez melhores — a lógica é de incentivo, não de urgência.",
+    duracao: "Semana",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories", "WhatsApp individual"],
+    objetivo: ["Aumentar ticket médio"],
+    quandoUsar: ["Quando o objetivo é ticket médio, não volume de clientes novas"],
+    quandoEvitar: ["Comunicar como se fosse urgência — a lógica aqui é incentivo, não corrida contra o tempo"],
+    checklist: ["Definir as faixas de valor e os brindes de cada uma (ex: R$199 → Brinde 1, R$299 → Brinde 2, R$399 → Brinde 3, R$499 → Kit completo)", "Separar os brindes por faixa", "Treinar a equipe para oferecer a próxima faixa no fechamento"],
+    checklistExecucao: ["Equipe comunica a régua de faixas no caixa", "Registrar quais brindes foram desbloqueados por cliente"],
+    planoDivulgacao: [{ marco: "Durante a campanha", itens: ["Comunicar sempre como 'quanto mais você compra, mais vantagens desbloqueia' — nunca como corrida contra o tempo"] }],
+    modelosMensagens: [],
+    ideiasStories: ["Mostrar a régua de faixas de forma visual (tabela ou carrossel)"],
+    dicas: "A comunicação muda completamente aqui: não fale 'corre que acaba', fale 'quanto mais você compra, mais vantagens desbloqueia'.",
+    resultado: ["Ticket médio mais alto", "Clientes levando mais itens por atendimento"],
+    relacionadas: ["comprou-ganhou-stories", "leve-mais-pague-menos"],
   },
   {
-    id: "escalada-mimos", nome: "Escalada de Mimos", cat: "brindes", nichos: ["Geral"], tipo: "Brinde progressivo",
-    como: "Quanto maior a compra, maior o brinde.", duracao: "Semana",
-    canais: ["Loja física", "Stories"],
-    objetivo: "Aumentar o ticket médio incentivando a cliente a levar mais uma peça.",
-    quandoUsar: "Quando o objetivo principal é ticket médio, não volume de clientes.",
-    quandoEvitar: "Em dias de muito movimento — a régua de brindes pode confundir o caixa.",
-    passos: [
-      "Definir 2 ou 3 faixas de valor",
-      "Definir o brinde de cada faixa",
-      "Treinar a equipe para oferecer a próxima faixa na hora do fechamento",
+    id: "cashback-inteligente", nome: "Cashback Inteligente", cat: "cashback", nichos: ["Geral"],
+    tipo: "Campanha de recorrência programada",
+    como: "Em vez de dar desconto imediato, a loja entrega um crédito que pode ser usado numa próxima compra, aumentando a recorrência e reduzindo a dependência de promoções frequentes. Pode ser feita em loja física ou site.",
+    duracao: "3 a 7 dias",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories", "Status do WhatsApp", "Lista de transmissão", "WhatsApp individual"],
+    objetivo: ["Aumentar a recorrência de clientes", "Estimular uma segunda compra", "Fidelizar clientes", "Manter fluxo constante de vendas"],
+    quandoUsar: ["Datas comemorativas", "Lançamento de coleção", "Aniversário da loja", "Campanhas sazonais", "Quando deseja aumentar o retorno dos clientes"],
+    quandoEvitar: ["Liquidações muito agressivas", "Campanhas com descontos elevados", "Quando a margem não comporta oferecer crédito futuro"],
+    checklist: ["Definir percentual ou valor fixo do cashback (ex: 5%, 10%, R$20, R$50)", "Definir prazo de utilização (recomendado 60 a 90 dias)", "Definir valor mínimo para utilização (ex: acima de R$200)", "Definir se é acumulativo ou não", "Definir se pode ser usado junto com outras promoções", "Criar regulamento", "Treinar equipe", "Criar identidade visual", "Preparar comunicação"],
+    checklistExecucao: ["Registrar todos os créditos gerados por cliente", "Mostrar nos Stories o valor de cashback sendo gerado e a quantidade de clientes participando"],
+    planoDivulgacao: [
+      { marco: "2 dias antes", itens: ["Reels sobre a condição especial chegando", "Stories: bastidores, gerar curiosidade", "WhatsApp avisando a condição especial da semana"] },
+      { marco: "1 dia antes", itens: ["Stories: contagem regressiva mostrando que será válido somente naquele período"] },
+      { marco: "Durante a campanha", itens: ["Mostrar clientes comprando, o valor do cashback sendo gerado e a quantidade de clientes participando"] },
+      { marco: "Pós-campanha (perto do vencimento)", itens: ["Enviar lembrete individual pra quem ainda não usou o crédito"] },
     ],
-    checklist: ["Faixas definidas", "Brindes separados por faixa", "Equipe treinada"],
-    dicas: "A equipe oferecer a próxima faixa no caixa é o que realmente move o ticket médio.",
-    erros: "Não avisar a equipe da loja sobre as faixas — a ação vira só um post bonito, sem efeito na venda.",
-    resultado: "Ticket médio mais alto no período da campanha.",
-    relacionadas: ["comprou-ganhou", "combo-presenteado"],
+    modelosMensagens: [
+      { canal: "WhatsApp (2 dias antes)", texto: "Essa semana teremos uma condição especial para quem comprar na loja. Depois te conto todos os detalhes." },
+      { canal: "WhatsApp (lembrete de vencimento)", texto: "Oi! Passei para lembrar que você possui um cashback disponível para utilizar. Seu crédito é válido até ____. Se quiser, posso separar algumas opções para você." },
+    ],
+    ideiasStories: ["Bastidores gerando curiosidade", "Contagem regressiva na véspera", "Mostrar o valor do cashback sendo gerado em tempo real"],
+    dicas: "O verdadeiro objetivo dessa campanha não é vender mais hoje — é criar um motivo para o cliente voltar.",
+    resultado: ["Aumento da recorrência", "Redução do CAC", "Maior fidelização", "Mais clientes retornando"],
+    relacionadas: ["cashback-relampago-vip", "cashback-permanente"],
   },
   {
-    id: "cashback-volta", nome: "Compre Agora, Ganhe Depois", cat: "cashback", nichos: ["Geral"], tipo: "Cashback",
-    como: "Parte do valor pago volta como crédito para a próxima compra.", duracao: "Semana",
-    canais: ["Stories", "Com clientes", "Clientes inativos"],
-    objetivo: "Gerar retorno da cliente para uma segunda compra em prazo curto.",
-    quandoUsar: "Quando o objetivo é reativar a base de clientes nas semanas seguintes.",
-    quandoEvitar: "Sem um prazo de validade claro — o crédito se perde no esquecimento.",
-    passos: [
-      "Definir o percentual de cashback",
-      "Definir prazo de validade do crédito (curto, de preferência)",
-      "Registrar o crédito no sistema ou em caderno de controle",
-      "Avisar a cliente por WhatsApp perto do prazo vencer",
+    id: "cashback-relampago-vip", nome: "Cashback Relâmpago (Grupo VIP)", cat: "cashback", nichos: ["Geral"],
+    tipo: "Ação relâmpago de exclusividade",
+    como: "Gera vendas rápidas dentro do Grupo VIP oferecendo cashback por tempo limitado.",
+    duracao: "1 dia",
+    canalPrincipal: "Grupo VIP",
+    canaisApoio: ["Stories"],
+    objetivo: ["Gerar vendas rápidas utilizando exclusividade"],
+    quandoUsar: ["Quando quer ativar o Grupo VIP com algo exclusivo e de curta duração"],
+    quandoEvitar: ["Sem ter definido percentual, validade e horário com antecedência"],
+    checklist: ["Definir percentual", "Definir validade", "Definir horário"],
+    checklistExecucao: ["Publicar mensagem de abertura explicando percentual, validade e regras", "Atualizar vendas durante o dia", "Fazer a última chamada antes do encerramento"],
+    planoDivulgacao: [
+      { marco: "2 dias antes", itens: ["Stories anunciando a condição exclusiva do grupo"] },
+      { marco: "1 dia antes", itens: ["Grupo: aviso de que amanhã quem comprar recebe cashback"] },
+      { marco: "No dia", itens: ["Mensagem de abertura explicando percentual, validade e regras", "Atualizar vendas durante o dia", "Última chamada antes do encerramento"] },
     ],
-    checklist: ["Percentual definido", "Prazo definido", "Forma de controle definida"],
-    dicas: "O lembrete perto do vencimento é o que garante o retorno — sem ele, o crédito não é resgatado.",
-    erros: "Não ter controle de quem tem crédito a resgatar, perdendo a segunda venda.",
-    resultado: "Retorno de compra programado dentro do prazo definido.",
-    relacionadas: ["cashback-emocional"],
+    modelosMensagens: [{ canal: "Grupo VIP (véspera)", texto: "Amanhã quem comprar receberá cashback para utilizar na próxima compra." }],
+    ideiasStories: ["Anúncio da condição exclusiva do grupo"],
+    dicas: "Funciona melhor quando o grupo já tem um mínimo de engajamento — é uma ferramenta de ativação, não de captação.",
+    resultado: ["Pico de vendas", "Crescimento do Grupo VIP", "Geração de recompra futura"],
+    relacionadas: ["cashback-inteligente", "clube-secreto"],
   },
   {
-    id: "frete-conta", nome: "Frete por Nossa Conta", cat: "frete", nichos: ["Geral"], tipo: "Frete grátis",
-    como: "Envio gratuito para todo o site ou acima de valor mínimo.", duracao: "Dia ou semana",
-    canais: ["Site", "Stories"],
-    objetivo: "Reduzir a objeção do frete e aumentar a conversão online.",
-    quandoUsar: "Quando o carrinho abandonado tem o frete como motivo frequente.",
-    quandoEvitar: "Sem calcular o impacto do frete na margem — pode reduzir o lucro sem controle.",
-    passos: [
-      "Definir valor mínimo de compra, se houver",
-      "Calcular o impacto do frete gratuito na margem",
-      "Comunicar o prazo da condição de forma clara",
-    ],
-    checklist: ["Valor mínimo definido", "Margem calculada", "Prazo comunicado"],
-    dicas: "Testar primeiro por poucos dias antes de tornar a condição permanente.",
-    erros: "Deixar a condição no ar por tempo indefinido, sem previsão de quando encerra.",
-    resultado: "Aumento de conversão no site durante o período.",
-    relacionadas: ["frete-r1", "frete-fixo"],
+    id: "cashback-permanente", nome: "Cashback Permanente (Programa de Fidelidade)", cat: "cashback", nichos: ["Geral"],
+    tipo: "Programa permanente, não é campanha",
+    como: "Um benefício contínuo da loja: toda compra gera um crédito para ser usado nas próximas compras. Não é campanha, é diferencial permanente da marca.",
+    duracao: "Contínua",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Site", "Stories", "Status do WhatsApp", "WhatsApp individual"],
+    objetivo: ["Transformar clientes ocasionais em clientes recorrentes"],
+    quandoUsar: ["Como diferencial permanente da marca, não como campanha pontual"],
+    quandoEvitar: ["Sem sistema de controle dos créditos — vira bagunça e gera atrito com a cliente"],
+    checklist: ["Definir percentual", "Definir validade (60 a 90 dias)", "Definir valor mínimo", "Definir acúmulo ou não", "Definir utilização parcial ou total", "Criar regulamento", "Montar sistema de controle", "Treinar equipe", "Preparar comunicação na loja e no site"],
+    checklistExecucao: ["Inserir o benefício em todos os pontos de contato: vitrine, balcão, sacolas, Stories, destaques, site, bio, WhatsApp", "Toda semana, consultar créditos próximos do vencimento e enviar mensagem personalizada"],
+    planoDivulgacao: [{ marco: "Contínuo", itens: ["Comunicar o benefício em todos os pontos de contato da marca, o tempo todo"] }],
+    modelosMensagens: [{ canal: "WhatsApp (crédito perto de vencer)", texto: "Você ainda possui um crédito disponível na loja e ele vence em breve. Se quiser aproveitar, posso te mostrar algumas novidades que chegaram." }],
+    ideiasStories: [],
+    dicas: "O cashback só gera resultado quando a cliente é lembrada de utilizá-lo. Não basta conceder o benefício — é essencial acompanhar e estimular o retorno antes do vencimento.",
+    resultado: ["Aumento da frequência de compra", "Maior retenção de clientes", "Crescimento do ticket ao longo do tempo", "Fortalecimento da fidelização"],
+    relacionadas: ["cashback-inteligente", "cliente-indica-ganha"],
   },
   {
-    id: "frete-r1", nome: "O Dia em que o Frete Enlouqueceu", cat: "urgencia", nichos: ["Geral"], tipo: "Frete ultra reduzido",
-    como: "Frete por valor simbólico, como R$1.", duracao: "24h a 3 dias",
-    canais: ["Site", "Stories", "Grupo de promoção"],
-    objetivo: "Gerar alto volume de pedidos em uma janela curta de tempo.",
-    quandoUsar: "Em datas de baixo movimento, como forma de criar um pico pontual de vendas.",
-    quandoEvitar: "Sem estrutura de expedição preparada para o pico — gera atraso e reclamação.",
-    passos: [
-      "Confirmar capacidade de expedição para o volume esperado",
-      "Definir a janela exata de horário",
-      "Criar contagem regressiva nos Stories",
-      "Reforçar a comunicação horas antes de abrir",
+    id: "frete-gratis-relampago", nome: "Frete Grátis Relâmpago", cat: "frete", nichos: ["Geral"],
+    tipo: "Ação relâmpago de 1 dia",
+    como: "Gera um pico de vendas oferecendo frete gratuito durante um período curto. O canal principal pode ser Stories ou Grupo VIP — escolha só um, pra não diluir a comunicação.",
+    duracao: "1 dia",
+    canalPrincipal: "Stories",
+    canaisApoio: ["WhatsApp individual", "Status do WhatsApp"],
+    objetivo: ["Gerar vendas rápidas", "Criar urgência", "Aumentar conversão", "Movimentar produtos específicos"],
+    quandoUsar: ["Dias de menor movimento", "Estoque parado", "Meta de vendas do dia", "Ações relâmpago"],
+    quandoEvitar: ["Sem definir horário de início e fim com clareza"],
+    checklist: ["Definir regiões participantes", "Definir valor mínimo (opcional)", "Definir horário de início", "Definir horário de encerramento"],
+    checklistExecucao: ["Publicar a sequência de Stories no horário combinado", "Lembrar durante o dia que o frete é gratuito"],
+    planoDivulgacao: [
+      { marco: "1 dia antes", itens: ["Stories anunciando a condição especial de amanhã"] },
+      { marco: "No dia", itens: ["Sequência de 5 Stories (ver Ideias de Stories)"] },
     ],
-    checklist: ["Expedição confirmada", "Janela definida", "Contagem criada"],
-    dicas: "Contagem regressiva nas horas antes da abertura aumenta a expectativa e o volume no horário certo.",
-    erros: "Abrir a condição sem avisar antes — perde o efeito de expectativa que gera o pico.",
-    resultado: "Pico concentrado de pedidos na janela definida.",
-    relacionadas: ["frete-conta", "frete-fixo"],
+    modelosMensagens: [],
+    ideiasStories: ["Story 1: Anunciar", "Story 2: Explicar regras", "Story 3: Mostrar produtos", "Story 4: Lembrar que o frete é gratuito", "Story 5: Última chamada"],
+    dicas: "Escolha só um canal principal — Stories ou Grupo VIP — pra não diluir a força da comunicação.",
+    resultado: ["Pico de vendas", "Mais pedidos em um único dia"],
+    relacionadas: ["frete-valor-minimo", "dia-do-frete-especial"],
   },
   {
-    id: "leve-mais", nome: "Leve Mais, Pague Menos", cat: "combos", nichos: ["Moda Feminina", "Moda Masculina"], tipo: "Combo com desconto",
-    como: "Vantagem progressiva para quem leva mais de um item.", duracao: "Semana",
-    canais: ["Loja física", "Stories"],
-    objetivo: "Aumentar a quantidade de peças por venda.",
-    quandoUsar: "Quando a loja tem peças complementares fáceis de combinar (blusa + calça, por exemplo).",
-    quandoEvitar: "Quando o mix de produtos não tem peças complementares claras.",
-    passos: [
-      "Definir as combinações de produto sugeridas",
-      "Definir a vantagem por quantidade",
-      "Montar looks de vitrine e provador já combinados",
-    ],
-    checklist: ["Combinações definidas", "Vantagem calculada", "Vitrine montada"],
-    dicas: "Montar o look pronto no provador facilita a decisão da cliente na hora.",
-    erros: "Deixar a régua de desconto complexa demais para a equipe explicar no caixa.",
-    resultado: "Aumento do número de peças por venda.",
-    relacionadas: ["dupla-perfeita", "combo-premiado"],
+    id: "frete-valor-minimo", nome: "Frete Grátis por Valor Mínimo", cat: "frete", nichos: ["Geral"],
+    tipo: "Estratégia permanente ou campanha de ticket médio",
+    como: "Oferece frete grátis apenas para compras acima de um valor definido, incentivando o cliente a completar a compra.",
+    duracao: "Campanha de uma semana, mensal ou benefício permanente",
+    canalPrincipal: "Site",
+    canaisApoio: ["WhatsApp individual", "Stories"],
+    objetivo: ["Aumentar o valor médio das compras"],
+    quandoUsar: ["Quando o objetivo é subir o ticket médio no site ou nas vendas por WhatsApp"],
+    quandoEvitar: ["Com o valor mínimo desalinhado do ticket médio real da loja"],
+    checklist: ["Definir valor mínimo (ex: R$199, R$249, R$299)", "Definir regiões", "Calcular margem"],
+    checklistExecucao: ["Comunicar o valor mínimo em todos os pontos de contato do checkout"],
+    planoDivulgacao: [{ marco: "Contínuo", itens: ["Comunicar sempre com o valor específico: 'Compras acima de R$199 recebem frete gratuito' — nunca genérico"] }],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Sempre deixe o valor mínimo próximo do ticket médio desejado — isso é o que realmente empurra o cliente a completar a compra.",
+    resultado: ["Ticket médio maior", "Mais produtos por pedido"],
+    relacionadas: ["frete-fixo-inteligente", "leve-mais-pague-menos"],
   },
   {
-    id: "carrinho-inteligente", nome: "Carrinho Inteligente", cat: "progressivo", nichos: ["Geral"], tipo: "Progressivo por quantidade",
-    como: "Quanto mais itens no carrinho, maior o desconto.", duracao: "Semana",
-    canais: ["Site", "Stories"],
-    objetivo: "Incentivar a cliente a adicionar mais um item antes de fechar a compra.",
-    quandoUsar: "Quando o objetivo é ticket médio no site, sem depender de brinde físico.",
-    quandoEvitar: "Sem deixar a régua visível no carrinho — a cliente precisa ver o quanto falta para o próximo desconto.",
-    passos: [
-      "Definir as faixas de quantidade e desconto",
-      "Deixar a régua visível no site ou no story fixado",
-      "Reforçar a comunicação perto do fechamento do carrinho",
-    ],
-    checklist: ["Faixas definidas", "Régua visível", "Comunicação de reforço pronta"],
-    dicas: "Mostrar 'faltam X para o próximo desconto' converte mais do que só anunciar a régua uma vez.",
-    erros: "Anunciar a régua só no post e não deixar visível na hora da decisão de compra.",
-    resultado: "Ticket médio maior no site durante o período.",
-    relacionadas: ["desconto-cresce"],
+    id: "frete-fixo-inteligente", nome: "Frete Fixo Inteligente", cat: "frete", nichos: ["Geral"],
+    tipo: "Diferencial permanente",
+    como: "O cliente sempre sabe quanto vai pagar de frete, eliminando a objeção do frete caro.",
+    duracao: "Permanente",
+    canalPrincipal: "Site",
+    canaisApoio: ["Stories", "WhatsApp individual"],
+    objetivo: ["Eliminar a objeção do frete caro"],
+    quandoUsar: ["Como diferencial fixo da loja"],
+    quandoEvitar: ["Sem calcular se o valor fixo cobre a média de frete real"],
+    checklist: ["Definir valor (ex: R$9,90, R$12,90, R$15,00)", "Definir regiões", "Informar as regras"],
+    checklistExecucao: ["Comunicar em todos os pontos de contato: bio, destaques, site, catálogo, WhatsApp, Stories"],
+    planoDivulgacao: [{ marco: "Contínuo", itens: ["Transformar em diferencial da marca: 'Frete fixo para toda a região. Sem surpresas no valor da entrega.'"] }],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Comunique como diferencial de confiança, não só como condição de frete.",
+    resultado: ["Mais confiança", "Maior conversão"],
+    relacionadas: ["frete-valor-minimo", "dia-do-frete-especial"],
   },
   {
-    id: "amiga-indica", nome: "Amiga Indica, Amiga Ganha", cat: "indicacao", nichos: ["Geral"], tipo: "Indicação",
-    como: "Quem indica e quem compra recebem benefício.", duracao: "Semana",
-    canais: ["Com clientes", "Clientes que ainda não compraram"],
-    objetivo: "Captar clientes novas a partir da base atual.",
-    quandoUsar: "Quando a base de clientes fiéis já é sólida, mas a captação de novas está parada.",
-    quandoEvitar: "Sem uma forma simples de rastrear quem indicou — a ação perde controle.",
-    passos: [
-      "Definir o benefício para quem indica e para quem compra",
-      "Criar uma forma simples de identificar a indicação (código ou nome)",
-      "Comunicar para a base mais fiel primeiro, antes do público geral",
+    id: "dia-do-frete-especial", nome: "Dia do Frete Especial", cat: "frete", nichos: ["Geral"],
+    tipo: "Campanha recorrente semanal",
+    como: "Uma campanha recorrente em um dia fixo da semana, criando hábito de compra e concentrando vendas nos dias de menor movimento.",
+    duracao: "Recorrente (ex: toda quarta-feira)",
+    canalPrincipal: "Stories",
+    canaisApoio: ["Loja física", "WhatsApp individual", "Status do WhatsApp"],
+    objetivo: ["Concentrar vendas em dias de menor movimento"],
+    quandoUsar: ["Pra criar um hábito de compra recorrente na semana"],
+    quandoEvitar: ["Sem manter a recorrência — se pular semanas, o hábito não se forma"],
+    checklist: ["Escolher o dia fixo da semana", "Definir a condição daquele dia (ex: Quarta do Frete Grátis, Sexta do Frete Fixo, Terça do Frete Popular)"],
+    checklistExecucao: ["Segunda: anunciar que a campanha acontece na semana", "Terça: lembrete", "Quarta: abrir oficialmente e mostrar pedidos, embalagens e entregas"],
+    planoDivulgacao: [
+      { marco: "Segunda", itens: ["Anunciar que a campanha acontece na semana"] },
+      { marco: "Terça", itens: ["Lembrete"] },
+      { marco: "Quarta (dia da ação)", itens: ["Abrir oficialmente, mostrar pedidos, embalagens, entregas e fazer a última chamada"] },
     ],
-    checklist: ["Benefício definido", "Forma de rastreio definida", "Base fiel avisada primeiro"],
-    dicas: "Avisar as clientes mais fiéis antes do post geral aumenta a adesão inicial.",
-    erros: "Não ter controle de quem indicou — a promessa de benefício vira motivo de atrito.",
-    resultado: "Novas clientes captadas com custo baixo de aquisição.",
-    relacionadas: ["clube-bem-indicadas"],
+    modelosMensagens: [],
+    ideiasStories: ["Mostrar pedidos sendo embalados e saindo pra entrega"],
+    dicas: "A força dessa estratégia está na repetição — o hábito só se forma se o dia for sempre o mesmo.",
+    resultado: ["Criação de hábito de compra", "Aumento da recorrência", "Melhor distribuição das vendas durante a semana"],
+    relacionadas: ["frete-gratis-relampago", "frete-fixo-inteligente"],
   },
   {
-    id: "parcelamento-vip", nome: "Parcelamento Estendido VIP", cat: "pagamento", nichos: ["Moda Feminina", "Moda Masculina"], tipo: "Parcelamento maior",
-    como: "Mais parcelas sem juros ou condição especial de pagamento.", duracao: "Semana",
-    canais: ["Loja física", "Site", "Stories"],
-    objetivo: "Facilitar a decisão de compra em peças de ticket mais alto.",
-    quandoUsar: "Para peças de maior valor, como casacos ou peças de coleção especial.",
-    quandoEvitar: "Sem calcular o custo da taxa de parcelamento na operação.",
-    passos: [
-      "Calcular o custo do parcelamento estendido",
-      "Definir para quais peças a condição vale",
-      "Comunicar a condição junto com a peça, não separado",
-    ],
-    checklist: ["Custo calculado", "Peças elegíveis definidas", "Comunicação alinhada com a equipe"],
-    dicas: "Comunicar a condição junto da peça específica converte mais do que um anúncio genérico de parcelamento.",
-    erros: "Aplicar em toda a loja sem medir o impacto da taxa na margem.",
-    resultado: "Aumento de conversão em peças de ticket mais alto.",
-    relacionadas: ["sem-peso-bolso"],
+    id: "combo-inteligente", nome: "Combo Inteligente", cat: "combos", nichos: ["Geral"],
+    tipo: "Estratégia permanente de ticket médio",
+    como: "Reúne produtos complementares em uma única oferta fixa da loja, facilitando a decisão de compra e aumentando o ticket médio.",
+    duracao: "Permanente",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Site", "Stories", "WhatsApp individual", "Status do WhatsApp"],
+    objetivo: ["Aumentar ticket médio", "Vender mais peças por atendimento", "Facilitar a escolha do cliente", "Aumentar o giro de produtos complementares"],
+    quandoUsar: ["Produtos que se complementam", "Peças básicas", "Itens com alta saída", "Kits para presentes"],
+    quandoEvitar: ["Quando o mix de produtos não tem peças complementares claras"],
+    checklist: ["Definir os produtos do combo", "Definir a economia oferecida", "Fotografar o combo", "Criar identidade visual", "Treinar a equipe pra oferecer o combo em todo atendimento"],
+    checklistExecucao: ["Equipe oferece o combo ativamente em cada atendimento"],
+    planoDivulgacao: [{ marco: "Contínuo", itens: ["Sempre mostrar quanto o cliente economiza ou o benefício de levar o kit completo"] }],
+    modelosMensagens: [],
+    ideiasStories: ["Mostrar o combo montado com o valor de economia em destaque"],
+    dicas: "O cliente precisa enxergar a vantagem do conjunto — sempre mostre quanto ele economiza ou o benefício de levar o kit completo.",
+    resultado: ["Ticket médio maior", "Mais peças por venda", "Atendimento mais consultivo"],
+    relacionadas: ["leve-mais-pague-menos", "pague-2-leve-3"],
   },
   {
-    id: "oferta-relampago", nome: "Oferta Relâmpago da Semana", cat: "urgencia", nichos: ["Geral"], tipo: "Promoção curta",
-    como: "Condição especial válida por poucos dias.", duracao: "1 a 3 dias",
-    canais: ["Stories", "Grupo de promoção"],
-    objetivo: "Criar um pico de vendas pontual sem precisar de motivo sazonal.",
-    quandoUsar: "Em semanas sem data comercial relevante, para manter o movimento.",
-    quandoEvitar: "Com frequência alta demais — a urgência perde efeito se virar rotina.",
-    passos: [
-      "Escolher o recorte de produto ou benefício da semana",
-      "Definir o prazo exato de início e fim",
-      "Anunciar com contagem regressiva visível",
-    ],
-    checklist: ["Recorte definido", "Prazo definido", "Contagem criada"],
-    dicas: "Usar essa ação no máximo a cada 3 ou 4 semanas mantém o senso real de urgência.",
-    erros: "Repetir 'oferta relâmpago' toda semana — a cliente para de acreditar no prazo.",
-    resultado: "Pico de vendas concentrado no prazo definido.",
-    relacionadas: ["frete-r1", "sete-dias"],
+    id: "leve-mais-pague-menos", nome: "Leve Mais, Pague Menos", cat: "combos", nichos: ["Moda Feminina", "Moda Masculina"],
+    tipo: "Campanha de ticket médio",
+    como: "Incentiva o cliente a adicionar mais produtos ao carrinho em troca de um benefício progressivo (ex: leve 2 e ganhe 10%, leve 3 e ganhe 15%).",
+    duracao: "3 a 7 dias",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Site", "Stories"],
+    objetivo: ["Aumentar o volume de peças vendidas por compra"],
+    quandoUsar: ["Produtos básicos e categorias onde o cliente costuma comprar mais de uma unidade"],
+    quandoEvitar: ["Com uma régua de desconto complexa demais pra equipe explicar no caixa"],
+    checklist: ["Definir as faixas de quantidade e desconto (ex: leve 2 → 10%, leve 3 → 15%, leve 4 → 20%)", "Treinar a equipe para explicar a régua no caixa"],
+    checklistExecucao: ["Equipe reforça a régua no momento do fechamento"],
+    planoDivulgacao: [{ marco: "Durante a campanha", itens: ["Reforçar a régua de quantidade em todos os canais de apoio"] }],
+    modelosMensagens: [],
+    ideiasStories: ["Mostrar a régua de forma visual (ex: 2 peças = 10%, 3 peças = 15%)"],
+    dicas: "Funciona muito bem para produtos básicos e categorias onde o cliente costuma comprar mais de uma unidade.",
+    resultado: ["Mais itens por pedido", "Giro de estoque", "Ticket médio maior"],
+    relacionadas: ["combo-inteligente", "pague-2-leve-3"],
   },
   {
-    id: "cliente-especial", nome: "Semana da Cliente Especial", cat: "relacionamento", nichos: ["Geral"], tipo: "Benefícios gerais",
-    como: "Vantagens e mimos exclusivos durante a semana.", duracao: "Semana",
-    canais: ["Loja física", "Stories", "Grupo VIP"],
-    objetivo: "Fortalecer o relacionamento com a base de clientes recorrentes.",
-    quandoUsar: "Após um período de vendas mais operacional, para reforçar vínculo com a base.",
-    quandoEvitar: "Sem uma lista clara de quem é a 'cliente especial' — a ação fica genérica demais.",
-    passos: [
-      "Definir critério de quem é a cliente especial (recorrência, ticket, tempo de casa)",
-      "Definir os mimos e vantagens da semana",
-      "Comunicar de forma pessoal, se possível por WhatsApp",
-    ],
-    checklist: ["Critério definido", "Mimos definidos", "Mensagens pessoais preparadas"],
-    dicas: "Mensagem pessoal no WhatsApp para a base recorrente tem efeito maior que post público.",
-    erros: "Tratar a ação como genérica para qualquer cliente, perdendo o efeito de exclusividade.",
-    resultado: "Base recorrente mais engajada e propensa a voltar.",
-    relacionadas: ["clube-secreto", "meta-batida"],
+    id: "pague-2-leve-3", nome: "Pague 2, Leve 3", cat: "combos", nichos: ["Geral"],
+    tipo: "Mecânica promocional clássica",
+    como: "Na compra de 2 peças participantes, a terceira é por conta da loja — elimina estoque específico e aumenta o volume vendido.",
+    duracao: "1 a 7 dias",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories", "Grupo VIP"],
+    objetivo: ["Eliminar estoque específico e aumentar o volume vendido"],
+    quandoUsar: ["Produtos com boa margem ou peças que precisam girar rapidamente"],
+    quandoEvitar: ["Em produtos de margem apertada"],
+    checklist: ["Definir quais produtos participam", "Definir as regras", "Organizar a exposição dos produtos participantes"],
+    checklistExecucao: ["Comunicar no caixa e na vitrine: 'Na compra de 2 peças participantes, a terceira é por nossa conta.'"],
+    planoDivulgacao: [{ marco: "Durante a campanha", itens: ["Reforçar a mecânica em todos os pontos de contato"] }],
+    modelosMensagens: [],
+    ideiasStories: ["Mostrar as peças participantes com a mecânica explicada"],
+    dicas: "Utilize principalmente em produtos com boa margem ou peças que precisam girar rapidamente.",
+    resultado: ["Redução de estoque", "Aumento do volume vendido", "Mais clientes levando três peças em vez de duas"],
+    relacionadas: ["combo-inteligente", "cabide-livre"],
   },
   {
-    id: "clube-secreto", nome: "Clube Secreto — Portas Abertas", cat: "exclusiva", nichos: ["Geral"], tipo: "Campanha para grupo de WhatsApp",
-    como: "Acesso a ofertas exclusivas dentro de um grupo fechado.", duracao: "Semana",
-    canais: ["Grupo VIP"],
-    objetivo: "Construir uma base de relacionamento direto e recorrente fora do Instagram.",
-    quandoUsar: "Quando a loja quer reduzir a dependência do alcance do Instagram para vender.",
-    quandoEvitar: "Sem rotina definida de conteúdo para o grupo — ele esvazia rápido.",
-    passos: [
-      "Criar o grupo e definir a proposta de exclusividade",
-      "Convidar as clientes mais engajadas primeiro",
-      "Definir a rotina mínima de conteúdo (ofertas, prévias, novidades)",
-    ],
-    checklist: ["Grupo criado", "Convites feitos", "Rotina de conteúdo definida"],
-    dicas: "Prévias de peças antes do lançamento oficial são o que mais engaja um grupo fechado.",
-    erros: "Abrir o grupo e deixar sem conteúdo por semanas — a cliente silencia e depois sai.",
-    resultado: "Canal direto de vendas com menos dependência do algoritmo.",
-    relacionadas: ["cliente-especial"],
+    id: "cliente-indica-ganha", nome: "Cliente Indica, Cliente Ganha", cat: "indicacao", nichos: ["Geral"],
+    tipo: "Programa permanente de indicação",
+    como: "Após a compra, a cliente recebe um benefício para indicar uma amiga; quando a nova cliente compra pela primeira vez, ambas recebem uma recompensa.",
+    duracao: "Permanente",
+    canalPrincipal: "WhatsApp individual",
+    canaisApoio: ["Loja física", "Status do WhatsApp"],
+    objetivo: ["Captar novos clientes", "Reduzir custo de aquisição", "Incentivar recompra", "Fortalecer o relacionamento"],
+    quandoUsar: ["Como programa contínuo de pós-venda"],
+    quandoEvitar: ["Sem uma forma simples de rastrear quem indicou"],
+    checklist: ["Definir a recompensa (cashback, crédito, brinde, cupom ou desconto na próxima compra)", "Criar cartão ou QR code para a indicação", "Definir o momento do pós-venda pra oferecer"],
+    checklistExecucao: ["Oferecer no pós-venda de cada atendimento", "Registrar quem indicou e validar a recompensa quando a nova cliente comprar"],
+    planoDivulgacao: [{ marco: "Pós-venda", itens: ["Apresentar o programa logo após a compra, com o cartão ou QR code dentro da sacola"] }],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "O momento do pós-venda é o gatilho mais forte pra apresentar o programa — a cliente está satisfeita e mais propensa a indicar.",
+    resultado: ["Aquisição constante de novos clientes através da própria base"],
+    relacionadas: ["convide-uma-amiga", "cashback-permanente"],
   },
   {
-    id: "meta-batida", nome: "Meta Batida — Você Ganha", cat: "engajamento", nichos: ["Geral"], tipo: "Benefício desbloqueado",
-    como: "Ao atingir uma meta de vendas do dia ou da semana, as clientes recebem um bônus.", duracao: "Curta ou semanal",
-    canais: ["Stories", "Grupo de promoção"],
-    objetivo: "Engajar a base em torno de uma meta coletiva, gerando movimento e compartilhamento.",
-    quandoUsar: "Quando a loja quer criar um efeito de comunidade em torno das vendas.",
-    quandoEvitar: "Com meta pouco realista — a falta de conquista gera frustração em vez de engajamento.",
-    passos: [
-      "Definir a meta de forma realista com base no histórico da loja",
-      "Definir o bônus para quando a meta for batida",
-      "Mostrar o progresso da meta nos Stories em tempo real",
-    ],
-    checklist: ["Meta definida", "Bônus definido", "Atualização de progresso planejada"],
-    dicas: "Mostrar o progresso ao vivo nos Stories é o que gera o efeito de torcida coletiva.",
-    erros: "Não atualizar o progresso — a cliente perde o interesse em acompanhar.",
-    resultado: "Pico de movimento e senso de comunidade em torno da loja.",
-    relacionadas: ["cliente-especial"],
+    id: "convide-uma-amiga", nome: "Convide uma Amiga", cat: "indicacao", nichos: ["Geral"],
+    tipo: "Campanha de data específica",
+    como: "Diferente do programa permanente, essa acontece em datas específicas (Dia do Amigo, Dia das Mães, aniversário da loja, Black Friday VIP).",
+    duracao: "1 a 7 dias",
+    canalPrincipal: "Stories",
+    canaisApoio: ["Loja física"],
+    objetivo: ["Gerar fluxo em um período específico"],
+    quandoUsar: ["Datas específicas: Dia do Amigo, Dia das Mães, aniversário da loja, Black Friday VIP"],
+    quandoEvitar: ["Fora de uma data ou motivo que justifique a campanha"],
+    checklist: ["Escolher a data-motivo", "Definir o presente exclusivo pra quem trouxer uma amiga"],
+    checklistExecucao: ["Divulgar na loja e nos Stories durante o período da campanha"],
+    planoDivulgacao: [{ marco: "Durante a campanha", itens: ["Convidar a base a trazer uma amiga que ainda não conhece a loja, com presente exclusivo pras duas"] }],
+    modelosMensagens: [{ canal: "Stories", texto: "Traga uma amiga que ainda não conhece nossa loja. Se as duas comprarem, ambas ganham um presente exclusivo." }],
+    ideiasStories: [],
+    dicas: "Amarre sempre a uma data ou motivo real — isso dá contexto e aumenta a adesão.",
+    resultado: ["Aumento do fluxo", "Novas clientes"],
+    relacionadas: ["cliente-indica-ganha"],
   },
   {
-    id: "merecimento", nome: "Semana do Merecimento", cat: "emocional", nichos: ["Geral"], tipo: "Campanha emocional",
-    como: "Condições especiais para a cliente se presentear.", duracao: "Semana",
-    canais: ["Stories", "Com clientes"],
-    objetivo: "Ativar a compra por motivação pessoal, sem depender de data comercial ou desconto agressivo.",
-    quandoUsar: "Em semanas sem apelo comercial natural, quando a comunicação emocional pode carregar a campanha.",
-    quandoEvitar: "Sem conteúdo de conexão antes da oferta — a mensagem soa vazia sem contexto.",
-    passos: [
-      "Construir conteúdo de conexão antes de anunciar a condição",
-      "Definir a condição especial da semana",
-      "Comunicar com linguagem de autocuidado e merecimento, não de desconto",
-    ],
-    checklist: ["Conteúdo de conexão publicado", "Condição definida", "Linguagem revisada"],
-    dicas: "Essa ação funciona melhor quando vem depois de conteúdo que já construiu conexão com a audiência.",
-    erros: "Anunciar a condição sem preparar o terreno emocional antes — vira só mais uma promoção.",
-    resultado: "Ativação de compra por motivação pessoal, com percepção de marca mais forte.",
-    relacionadas: ["cliente-especial"],
-  },
-  {
-    id: "clube-presente", nome: "Clube Presente — Aniversário Infantil", cat: "indicacao", nichos: ["Infantil"],
-    tipo: "Lista de presentes com benefício", como: "A mãe monta uma lista de aniversário do filho na loja e compartilha com a família; a loja controla o que já foi comprado e dá benefício pelo volume vendido.",
+    id: "clube-presente", nome: "Clube Presente", cat: "indicacao", nichos: ["Infantil", "Geral"],
+    tipo: "Programa de lista de presentes",
+    como: "A loja cria uma lista de presentes para o aniversariante; os convidados compram diretamente dessa lista. Excelente para lojas infantis, mas pode ser adaptado.",
     duracao: "Contínua, mês a mês por aniversariante",
-    canais: ["Com clientes", "Stories", "Clientes que ainda não compraram"],
-    objetivo: "Transformar o aniversário do filho em canal de vendas para toda a rede de familiares e amigos da cliente.",
-    quandoUsar: "Para clientes com filhos pequenos que já compram na loja e têm aniversário se aproximando.",
-    quandoEvitar: "Sem um controle claro de quem já comprou cada item — gera presente repetido e reclamação.",
-    passos: [
-      "Perguntar no caixa ou WhatsApp o mês de aniversário dos filhos das clientes",
-      "Convidar a cliente para montar a lista com produtos, fotos, código e valores (Canva ou PDF simples)",
-      "Enviar o link do catálogo para a mãe compartilhar com família e amigos",
-      "Controlar as reservas para não repetir presente",
-      "Aplicar o benefício (cashback ou presente surpresa) conforme o valor total vendido",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories", "WhatsApp individual"],
+    objetivo: ["Aumentar o ticket", "Captar novos clientes através da rede de convidados", "Fortalecer a marca"],
+    quandoUsar: ["Para clientes com aniversário se aproximando (do filho ou dela mesma)"],
+    quandoEvitar: ["Sem controle de quem já comprou cada item — gera presente repetido"],
+    checklist: ["Montar a lista de presentes", "Fotografar os produtos", "Criar catálogo digital", "Gerar o link pra compartilhar"],
+    checklistExecucao: ["Controlar as reservas pra não repetir presente", "Aplicar o incentivo pra mãe/aniversariante quando atingir um número de presentes vendidos (cashback, crédito, presente ou vale-compra)"],
+    planoDivulgacao: [{ marco: "Um mês antes do aniversário", itens: ["Convidar a cliente a montar a lista", "Compartilhar o catálogo com a rede de convidados"] }],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Avisar a cliente com antecedência do aniversário aumenta a adesão à lista.",
+    resultado: ["Aumento do ticket", "Novos clientes", "Fortalecimento da marca"],
+    relacionadas: ["cliente-indica-ganha"],
+  },
+  {
+    id: "closet-exclusivo", nome: "Closet Exclusivo", cat: "vip", nichos: ["Geral"],
+    tipo: "Experiência VIP presencial",
+    como: "A loja fecha um horário exclusivo para poucas clientes conhecerem uma coleção antes do público, com experiência completa (espumante, café, doces, consultoria de looks, fotos, atendimento exclusivo).",
+    duracao: "Evento de 2 a 3 horas",
+    canalPrincipal: "WhatsApp individual",
+    canaisApoio: ["Stories"],
+    objetivo: ["Transformar clientes especiais em uma experiência exclusiva"],
+    quandoUsar: ["Antes de um lançamento de coleção importante, pra recompensar as clientes de maior ticket"],
+    quandoEvitar: ["Divulgando toda a experiência antes — isso tira a sensação de exclusividade"],
+    checklist: ["Selecionar as clientes convidadas", "Organizar a experiência (espumante, café, doces)", "Preparar consultoria de looks", "Organizar o espaço pra fotos"],
+    checklistExecucao: ["Receber as convidadas no horário exclusivo", "Registrar fotos do evento", "Fazer o atendimento consultivo personalizado"],
+    planoDivulgacao: [{ marco: "Antes do evento", itens: ["Convite individual, sem divulgação pública", "Stories mostrando só bastidores, nunca a experiência completa"] }],
+    modelosMensagens: [],
+    ideiasStories: ["Bastidores da preparação do evento, sem revelar tudo"],
+    dicas: "Nunca divulgue toda a experiência antes — a exclusividade é o que sustenta o valor percebido.",
+    resultado: ["Maior ticket", "Maior fidelização", "Sensação de exclusividade"],
+    relacionadas: ["preview-nova-colecao", "clube-secreto"],
+  },
+  {
+    id: "preview-nova-colecao", nome: "Preview da Nova Coleção", cat: "lancamentos", nichos: ["Geral"],
+    tipo: "Acesso antecipado VIP",
+    como: "Clientes selecionadas compram antes da coleção chegar oficialmente ao público.",
+    duracao: "Antes do lançamento oficial",
+    canalPrincipal: "Grupo VIP",
+    canaisApoio: ["WhatsApp individual"],
+    objetivo: ["Dar acesso antecipado para clientes VIP"],
+    quandoUsar: ["Antes de todo lançamento de coleção nova"],
+    quandoEvitar: ["Sem ter um grupo ou lista VIP já organizada"],
+    checklist: ["Selecionar as clientes VIP", "Separar as peças do preview"],
+    checklistExecucao: ["Liberar o preview só pro grupo selecionado antes do lançamento público"],
+    planoDivulgacao: [{ marco: "Antes do lançamento oficial", itens: ["Liberar o preview exclusivo pro Grupo VIP"] }],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Gera sensação de pertencimento real quando é praticado com consistência a cada lançamento.",
+    resultado: ["Sensação de pertencimento", "Vendas antecipadas", "Geração de desejo"],
+    relacionadas: ["closet-exclusivo", "clube-secreto"],
+  },
+  {
+    id: "merecimento", nome: "Semana do Merecimento", cat: "emocional", nichos: ["Geral"],
+    tipo: "Campanha emocional",
+    como: "Ativa a compra por motivação pessoal (autocuidado, merecimento), sem depender de desconto agressivo. A mesma lógica funciona com outros temas: 'Dia de se Escolher', 'Projeto Autoestima', 'Semana da Mulher Real', 'Você Primeiro'.",
+    duracao: "Semana",
+    canalPrincipal: "Stories",
+    canaisApoio: ["WhatsApp individual"],
+    objetivo: ["Ativar a compra por motivação pessoal, sem depender de desconto agressivo"],
+    quandoUsar: ["Semanas sem apelo comercial natural, quando a comunicação emocional pode carregar a campanha"],
+    quandoEvitar: ["Sem conteúdo de conexão antes da oferta — a mensagem soa vazia"],
+    checklist: ["Construir conteúdo de conexão antes de anunciar a condição", "Definir a condição especial da semana", "Revisar a linguagem: autocuidado e merecimento, não desconto"],
+    checklistExecucao: ["Publicar o conteúdo de conexão antes da oferta", "Anunciar a condição com linguagem emocional"],
+    planoDivulgacao: [
+      { marco: "Antes da oferta", itens: ["Construir conteúdo de conexão com a audiência"] },
+      { marco: "No lançamento da condição", itens: ["Comunicar com linguagem de autocuidado e merecimento"] },
     ],
-    checklist: ["Mês de aniversário cadastrado", "Catálogo montado", "Benefício definido (cashback ou brinde)", "Controle de reservas ativo"],
-    dicas: "Avisar a base com um mês de antecedência do aniversário aumenta a adesão — de última hora reduz o tempo de divulgação da lista.",
-    erros: "Não controlar quem já comprou cada item da lista, gerando presente repetido e cliente insatisfeita.",
-    resultado: "Vendas para pessoas que nunca compraram na loja, ticket médio maior e relacionamento mais forte com a base de mães.",
-    relacionadas: ["amiga-indica"],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Essas campanhas não vendem desconto — elas vendem significado. Funciona melhor quando vem depois de conteúdo que já construiu conexão com a audiência.",
+    resultado: ["Ativação de compra por motivação pessoal", "Percepção de marca mais forte"],
+    relacionadas: ["closet-exclusivo"],
+  },
+  {
+    id: "estacionamento-conveniado", nome: "Estacionamento Conveniado", cat: "diferenciais", nichos: ["Geral"],
+    tipo: "Diferencial permanente",
+    como: "Elimina objeções relacionadas a deslocamento e conforto, oferecendo estacionamento gratuito, com desconto ou validação do ticket.",
+    duracao: "Permanente",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Site"],
+    objetivo: ["Eliminar objeções de deslocamento e conforto"],
+    quandoUsar: ["Como diferencial permanente da loja"],
+    quandoEvitar: [],
+    checklist: ["Definir o benefício (gratuito, desconto ou validação do ticket)", "Fechar parceria com o estacionamento"],
+    checklistExecucao: ["Comunicar na bio, destaques e vitrine"],
+    planoDivulgacao: [],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Comunique isso como um diferencial de conforto, não como detalhe operacional perdido no meio de outras informações.",
+    resultado: ["Mais conforto percebido", "Menos objeção de deslocamento"],
+    relacionadas: ["ajuste-perfeito", "parcelamento-vip-diferencial"],
+  },
+  {
+    id: "ajuste-perfeito", nome: "Ajuste Perfeito", cat: "diferenciais", nichos: ["Geral"],
+    tipo: "Diferencial permanente (parceria com costureira)",
+    como: "Aumenta a segurança na compra oferecendo pequenos ajustes gratuitos (barra, cintura) em compras acima de determinado valor.",
+    duracao: "Permanente",
+    canalPrincipal: "Loja física",
+    canaisApoio: [],
+    objetivo: ["Aumentar segurança na compra"],
+    quandoUsar: ["Como diferencial permanente"],
+    quandoEvitar: [],
+    checklist: ["Fechar parceria com costureira", "Definir o valor mínimo de compra que dá direito ao ajuste"],
+    checklistExecucao: ["Comunicar no momento da venda"],
+    planoDivulgacao: [],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Esse diferencial reduz a insegurança de compra em peças que precisam de caimento.",
+    resultado: ["Mais segurança na compra", "Menos trocas por caimento"],
+    relacionadas: ["estacionamento-conveniado"],
+  },
+  {
+    id: "parcelamento-vip-diferencial", nome: "Parcelamento VIP", cat: "diferenciais", nichos: ["Geral"],
+    tipo: "Diferencial comercial permanente",
+    como: "Facilita compras de maior valor com mais parcelas, entrada facilitada ou parcelamento exclusivo pra clientes VIP.",
+    duracao: "Permanente",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Site"],
+    objetivo: ["Facilitar compras de maior valor"],
+    quandoUsar: ["Para peças de ticket mais alto"],
+    quandoEvitar: ["Sem calcular o custo da taxa de parcelamento"],
+    checklist: ["Calcular o custo do parcelamento estendido", "Definir quais clientes ou peças têm acesso"],
+    checklistExecucao: ["Comunicar junto da peça específica, não de forma genérica"],
+    planoDivulgacao: [],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Comunicar a condição junto da peça específica converte mais do que um anúncio genérico.",
+    resultado: ["Aumento de conversão em peças de ticket mais alto"],
+    relacionadas: ["estacionamento-conveniado", "ajuste-perfeito"],
+  },
+  {
+    id: "clube-secreto", nome: "Clube Secreto — Portas Abertas", cat: "vip", nichos: ["Geral"],
+    tipo: "Campanha para grupo fechado de WhatsApp",
+    como: "Acesso a ofertas exclusivas dentro de um grupo fechado, construindo relacionamento direto e recorrente fora do Instagram.",
+    duracao: "Semana",
+    canalPrincipal: "Grupo VIP",
+    canaisApoio: [],
+    objetivo: ["Construir uma base de relacionamento direto e recorrente fora do Instagram"],
+    quandoUsar: ["Quando a loja quer reduzir a dependência do alcance do Instagram para vender"],
+    quandoEvitar: ["Sem rotina definida de conteúdo para o grupo — ele esvazia rápido"],
+    checklist: ["Criar o grupo e definir a proposta de exclusividade", "Convidar as clientes mais engajadas primeiro", "Definir a rotina mínima de conteúdo (ofertas, prévias, novidades)"],
+    checklistExecucao: ["Manter a rotina de conteúdo combinada", "Abrir ofertas exclusivas periodicamente dentro do grupo"],
+    planoDivulgacao: [{ marco: "Contínuo", itens: ["Prévias de peças antes do lançamento oficial são o que mais engaja um grupo fechado"] }],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Abrir o grupo e deixar sem conteúdo por semanas faz a cliente silenciar e depois sair — mantenha a rotina combinada.",
+    resultado: ["Canal direto de vendas com menos dependência do algoritmo"],
+    relacionadas: ["closet-exclusivo", "preview-nova-colecao"],
   },
   {
     id: "story-batalha", nome: "Story Interativo — Batalha de Estilos", cat: "engajamento", nichos: ["Geral"],
-    tipo: "Enquete de 4 opções", como: "Enquete com 4 fotos (looks, produtos ou modelos) perguntando qual a cliente prefere; quem vota entra numa lista para abordagem personalizada no Direct.",
+    tipo: "Enquete de 4 opções",
+    como: "Enquete com 4 fotos (looks, produtos ou modelos) perguntando qual a cliente prefere; quem vota entra numa lista para abordagem personalizada no Direct.",
     duracao: "1 dia (sequência de 3 stories)",
-    canais: ["Stories"],
-    objetivo: "Gerar interação em massa nos Stories e abrir conversas individuais no Direct com quem já demonstrou preferência.",
-    quandoUsar: "Quando o objetivo é aumentar o alcance dos Stories e gerar oportunidades de venda consultiva no Direct.",
-    quandoEvitar: "Sem preparar antes a mensagem de abordagem para cada opção — a enquete vira só engajamento vazio, sem venda.",
-    passos: [
+    canalPrincipal: "Stories",
+    canaisApoio: [],
+    objetivo: ["Gerar interação em massa nos Stories e abrir conversas individuais no Direct com quem já demonstrou preferência"],
+    quandoUsar: ["Quando o objetivo é aumentar o alcance dos Stories e gerar oportunidades de venda consultiva no Direct"],
+    quandoEvitar: ["Sem preparar antes a mensagem de abordagem para cada opção — a enquete vira só engajamento vazio, sem venda"],
+    checklist: ["4 fotos escolhidas", "Pergunta da enquete definida", "Mensagens de Direct por opção escritas antes de postar"],
+    checklistExecucao: ["Postar a enquete no horário certo", "Responder cada grupo de voto no Direct com a vantagem exclusiva"],
+    planoDivulgacao: [{ marco: "Sequência do dia", itens: [
       "Story 1: preparar a audiência pedindo para não pular o próximo story",
       "Story 2: montar a enquete com 4 fotos (looks, produtos ou modelos do nicho)",
       "Aguardar os votos e separar os contatos por opção escolhida",
       "Enviar mensagem personalizada no Direct para cada grupo de voto, com uma vantagem exclusiva",
       "Story 3: fechar o dia mostrando o resultado (prints de conversa ou sacolas fechadas)",
-    ],
-    checklist: ["4 fotos escolhidas", "Pergunta da enquete definida", "Mensagens de Direct por opção escritas antes de postar"],
+    ]}],
+    modelosMensagens: [],
+    ideiasStories: ["Enquete com 4 fotos do nicho", "Mensagem individual no Direct pra cada grupo de voto"],
     dicas: "O que gera venda não é a enquete em si, é a mensagem individual enviada depois para quem votou.",
-    erros: "Postar a enquete sem ter as mensagens de resposta prontas — a interação esfria antes da lojista conseguir responder todo mundo.",
-    resultado: "Mais alcance nos Stories e conversas abertas no Direct com intenção de compra.",
+    resultado: ["Mais alcance nos Stories", "Conversas abertas no Direct com intenção de compra"],
     relacionadas: ["story-presente", "story-caca-palavras"],
     nichoExemplos: {
       "Moda Feminina": "4 looks (trabalho, jantar, almoço em família, balada) — 'qual look combina mais com seu estilo?'",
@@ -628,53 +784,59 @@ const ACTIONS = [
   },
   {
     id: "story-presente", nome: "Story Interativo — Escolha seu Presente", cat: "engajamento", nichos: ["Geral"],
-    tipo: "Jogo de emojis ou números", como: "A cliente escolhe uma entre 3 caixas (emoji ou número) e manda a escolha por mensagem; cada caixa esconde um benefício diferente.",
+    tipo: "Jogo de emojis ou números",
+    como: "A cliente escolhe uma entre 3 caixas (emoji ou número) e manda a escolha por mensagem; cada caixa esconde um benefício diferente.",
     duracao: "1 dia",
-    canais: ["Stories"],
-    objetivo: "Gerar volume alto de mensagens diretas em um curto espaço de tempo, criando urgência e senso de sorte.",
-    quandoUsar: "Em dias de movimento mais fraco, para gerar picos de conversas e vendas rápidas.",
-    quandoEvitar: "Sem definir os 3 benefícios com antecedência — a resposta no Direct precisa ser imediata para manter o clima do jogo.",
-    passos: [
-      "Definir os 3 benefícios (ex: frete grátis, desconto, mimo físico)",
+    canalPrincipal: "Stories",
+    canaisApoio: [],
+    objetivo: ["Gerar volume alto de mensagens diretas em um curto espaço de tempo, criando urgência e senso de sorte"],
+    quandoUsar: ["Em dias de movimento mais fraco, para gerar picos de conversas e vendas rápidas"],
+    quandoEvitar: ["Sem definir os 3 benefícios com antecedência"],
+    checklist: ["Definir os 3 benefícios (ex: frete grátis, desconto, mimo físico)", "Textos de resposta prontos para cada caixa", "Prazo de validade definido"],
+    checklistExecucao: ["Responder cada mensagem com o benefício correspondente e prazo de validade curto"],
+    planoDivulgacao: [{ marco: "Sequência do dia", itens: [
       "Story 1: anunciar que vem um jogo com presente exclusivo",
       "Story 2: mostrar as 3 caixas e pedir para responder por mensagem",
       "Responder cada mensagem com o benefício correspondente e prazo de validade curto",
       "Story 3: fechar o dia mostrando quantos benefícios foram desbloqueados",
-    ],
-    checklist: ["3 benefícios definidos", "Textos de resposta prontos para cada caixa", "Prazo de validade definido"],
-    dicas: "Definir um prazo curto (ex: até as 18h) para resgatar o benefício aumenta a conversão imediata.",
-    erros: "Demorar para responder as mensagens — o efeito de urgência do jogo se perde.",
-    resultado: "Pico de conversas no Direct convertendo em vendas no mesmo dia.",
+    ]}],
+    modelosMensagens: [],
+    ideiasStories: ["3 caixas escondendo benefícios diferentes", "Prazo curto pra resgatar (ex: até as 18h)"],
+    dicas: "Definir um prazo curto para resgatar o benefício aumenta a conversão imediata.",
+    resultado: ["Pico de conversas no Direct convertendo em vendas no mesmo dia"],
     relacionadas: ["story-batalha", "story-caca-palavras"],
   },
   {
     id: "story-caca-palavras", nome: "Story Interativo — Caça-Palavras", cat: "engajamento", nichos: ["Geral"],
-    tipo: "Desafio de atenção", como: "Um caça-palavras simples esconde uma palavra do nicho; quem encontra e responde o story ganha um cupom ou benefício.",
+    tipo: "Desafio de atenção",
+    como: "Um caça-palavras simples esconde uma palavra do nicho; quem encontra e responde o story ganha um cupom ou benefício.",
     duracao: "1 dia",
-    canais: ["Stories"],
-    objetivo: "Gerar respostas diretas ao story — sinal forte de engajamento para o algoritmo — e recompensar quem presta atenção na marca.",
-    quandoUsar: "Quando a loja quer reforçar a percepção de marca através de um desafio leve e divertido.",
-    quandoEvitar: "Com a palavra fácil demais ou difícil demais — o equilíbrio de dificuldade é o que sustenta o interesse.",
-    passos: [
-      "Escolher uma palavra do nicho (ex: LOOK, GLOW, MATE)",
+    canalPrincipal: "Stories",
+    canaisApoio: [],
+    objetivo: ["Gerar respostas diretas ao story e recompensar quem presta atenção na marca"],
+    quandoUsar: ["Quando a loja quer reforçar a percepção de marca através de um desafio leve e divertido"],
+    quandoEvitar: ["Com a palavra fácil demais ou difícil demais"],
+    checklist: ["Escolher uma palavra do nicho (ex: LOOK, GLOW, MATE)", "Imagem do caça-palavras pronta", "Benefício de recompensa definido"],
+    checklistExecucao: ["Responder cada acerto com o benefício (cupom ou acesso antecipado)"],
+    planoDivulgacao: [{ marco: "Sequência do dia", itens: [
       "Montar a imagem do caça-palavras com a palavra escondida entre letras aleatórias",
       "Pedir para responder o story com a palavra encontrada",
-      "Responder cada acerto com o benefício (cupom ou acesso antecipado)",
+      "Responder cada acerto com o benefício",
       "Fechar o dia mostrando o resultado do desafio",
-    ],
-    checklist: ["Palavra escolhida", "Imagem do caça-palavras pronta", "Benefício de recompensa definido"],
+    ]}],
+    modelosMensagens: [],
+    ideiasStories: ["Caça-palavras com a palavra do nicho escondida"],
     dicas: "Oferecer 2 opções de prêmio (ex: acesso antecipado ao grupo VIP ou desconto) deixa a cliente escolher o que mais valoriza.",
-    erros: "Usar uma palavra sem relação com o nicho — perde a graça e a identificação.",
-    resultado: "Aumento de respostas diretas ao story, o que melhora a entrega dos próximos stories pelo algoritmo.",
+    resultado: ["Aumento de respostas diretas ao story, o que melhora a entrega dos próximos stories pelo algoritmo"],
     relacionadas: ["story-batalha", "story-presente"],
   },
 ];
 
-function CanalChip({ label, small }) {
+function CanalChip({ label, small, main }) {
   const info = canalInfo(label);
   const Icon = info.icon;
   return (
-    <span className={small ? "canal-pill sm" : "canal-pill"}>
+    <span className={`canal-pill ${small ? "sm" : ""} ${main ? "main" : ""}`}>
       <Icon size={small ? 10 : 11} /> {label}
     </span>
   );
@@ -702,8 +864,8 @@ function TagCard({ action, isFav, onToggleFav, onOpen }) {
         <h3 className="tagcard-nome">{action.nome}</h3>
         <p className="tagcard-como">{action.como}</p>
         <div className="tagcard-canais">
-          {action.canais.slice(0, 2).map((c) => <CanalChip key={c} label={c} small />)}
-          {action.canais.length > 2 && <span className="canal-pill sm">+{action.canais.length - 2}</span>}
+          <CanalChip label={action.canalPrincipal} small main />
+          {action.canaisApoio.length > 0 && <span className="canal-pill sm">+{action.canaisApoio.length} apoio</span>}
         </div>
         <div className="tagcard-foot">
           <span className="tagcard-duracao">
@@ -741,7 +903,8 @@ function Callout({ icon: Icon, title, children, tone }) {
 function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote, setDoneNote, doneValor, setDoneValor, isDone }) {
   const info = catInfo(action.cat);
   const Icon = info.icon;
-  const [checked, setChecked] = useState({});
+  const [checkedPrep, setCheckedPrep] = useState({});
+  const [checkedExec, setCheckedExec] = useState({});
   const relacionadas = action.relacionadas
     .map((id) => ACTIONS.find((a) => a.id === id))
     .filter(Boolean);
@@ -762,26 +925,31 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
           <h1 className="detail-nome">{action.nome}</h1>
           <p className="detail-tipo">{action.tipo}</p>
           <div className="detail-canais">
-            {action.canais.map((c) => <CanalChip key={c} label={c} />)}
+            <CanalChip label={action.canalPrincipal} main />
+            {action.canaisApoio.map((c) => <CanalChip key={c} label={c} />)}
           </div>
           <div className="detail-meta">
             <span><Clock size={13} /> {action.duracao}</span>
           </div>
         </div>
 
+        <p className="detail-oque">{action.como}</p>
+
         <div className="resumo-card">
           <div className="resumo-row">
             <span className="resumo-label">Objetivo</span>
-            <p>{action.objetivo}</p>
+            <ul className="bullet-list">{action.objetivo.map((o, i) => <li key={i}>{o}</li>)}</ul>
           </div>
           <div className="resumo-row">
             <span className="resumo-label">Quando usar</span>
-            <p>{action.quandoUsar}</p>
+            <ul className="bullet-list">{action.quandoUsar.map((o, i) => <li key={i}>{o}</li>)}</ul>
           </div>
-          <div className="resumo-row">
-            <span className="resumo-label">Quando evitar</span>
-            <p>{action.quandoEvitar}</p>
-          </div>
+          {action.quandoEvitar.length > 0 && (
+            <div className="resumo-row">
+              <span className="resumo-label">Quando evitar</span>
+              <ul className="bullet-list">{action.quandoEvitar.map((o, i) => <li key={i}>{o}</li>)}</ul>
+            </div>
+          )}
         </div>
 
         <Section title="Roteiro de antecipação">
@@ -789,42 +957,68 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
 
           <div className="etapa-bloco">
             <span className="etapa-titulo"><span className="etapa-num">1</span> Preparação</span>
-            <ol className="steps">
-              {action.passos.map((p, i) => <li key={i}>{p}</li>)}
-            </ol>
-          </div>
-
-          <div className="etapa-bloco">
-            <span className="etapa-titulo"><span className="etapa-num">2</span> Execução</span>
             <div className="checklist">
               {action.checklist.map((c, i) => (
                 <label key={i} className="checkitem">
-                  <input
-                    type="checkbox"
-                    checked={!!checked[i]}
-                    onChange={() => setChecked((s) => ({ ...s, [i]: !s[i] }))}
-                  />
-                  <span className={checked[i] ? "done" : ""}>{c}</span>
+                  <input type="checkbox" checked={!!checkedPrep[i]} onChange={() => setCheckedPrep((s) => ({ ...s, [i]: !s[i] }))} />
+                  <span className={checkedPrep[i] ? "done" : ""}>{c}</span>
                 </label>
               ))}
             </div>
           </div>
 
-          <div className="etapa-bloco">
-            <span className="etapa-titulo"><span className="etapa-num">3</span> Divulgação</span>
-            {getRoteiros(action).map((r, ri) => (
-              <div key={ri} className="roteiro-sub">
-                <span className="roteiro-titulo">{r.titulo}</span>
-                <ol className="steps">
-                  {r.passos.map((p, i) => <li key={i}>{p}</li>)}
-                </ol>
+          {action.checklistExecucao.length > 0 && (
+            <div className="etapa-bloco">
+              <span className="etapa-titulo"><span className="etapa-num">2</span> Execução</span>
+              <div className="checklist">
+                {action.checklistExecucao.map((c, i) => (
+                  <label key={i} className="checkitem">
+                    <input type="checkbox" checked={!!checkedExec[i]} onChange={() => setCheckedExec((s) => ({ ...s, [i]: !s[i] }))} />
+                    <span className={checkedExec[i] ? "done" : ""}>{c}</span>
+                  </label>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+
+          {action.planoDivulgacao.length > 0 && (
+            <div className="etapa-bloco">
+              <span className="etapa-titulo"><span className="etapa-num">3</span> Divulgação</span>
+              {action.planoDivulgacao.map((p, pi) => (
+                <div key={pi} className="roteiro-sub">
+                  <span className="roteiro-titulo">{p.marco}</span>
+                  <ol className="steps">
+                    {p.itens.map((it, i) => <li key={i}>{it}</li>)}
+                  </ol>
+                </div>
+              ))}
+            </div>
+          )}
         </Section>
 
+        {action.modelosMensagens.length > 0 && (
+          <Section title="Modelos de mensagens">
+            <div className="msg-list">
+              {action.modelosMensagens.map((m, i) => (
+                <div key={i} className="msg-item">
+                  <span className="msg-canal">{m.canal}</span>
+                  <p className="msg-texto">"{m.texto}"</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {action.ideiasStories.length > 0 && (
+          <Section title="Ideias de Stories / Reels">
+            <ul className="bullet-list">{action.ideiasStories.map((s, i) => <li key={i}>{s}</li>)}</ul>
+          </Section>
+        )}
+
         <Callout icon={Lightbulb} title="Dica estratégica" tone="solid">{action.dicas}</Callout>
-        <Callout icon={TrendingUp} title="Resultado esperado" tone="solid">{action.resultado}</Callout>
+        <Callout icon={TrendingUp} title="Resultado esperado" tone="solid">
+          <ul className="bullet-list callout-bullets">{action.resultado.map((r, i) => <li key={i}>{r}</li>)}</ul>
+        </Callout>
 
         {action.nichoExemplos && (
           <Section title="Exemplos por nicho">
@@ -1184,7 +1378,7 @@ export default function App() {
 
   const filtered = ACTIONS.filter((a) => {
     const matchesCat = !catFilter || a.cat === catFilter;
-    const matchesCanal = !canalFilter || a.canais.includes(canalFilter);
+    const matchesCanal = !canalFilter || a.canalPrincipal === canalFilter || a.canaisApoio.includes(canalFilter);
     const matchesNicho = !nichoFilter || (a.nichos && a.nichos.includes(nichoFilter));
     const q = search.trim().toLowerCase();
     const matchesSearch = !q || a.nome.toLowerCase().includes(q) || a.tipo.toLowerCase().includes(q) || a.como.toLowerCase().includes(q);
@@ -1511,6 +1705,7 @@ export default function App() {
       border-radius: 999px; padding: 3px 8px; font-size: 10.5px; color: var(--ink-soft);
     }
     .canal-pill.sm { padding: 2px 7px; font-size: 10px; }
+    .canal-pill.main { background: var(--wine); color: #fff; border-color: var(--wine); font-weight: 500; }
 
     .empty-state { text-align: center; padding: 60px 30px; color: var(--ink-soft); }
     .empty-state svg { margin-bottom: 10px; opacity: 0.5; }
@@ -1519,6 +1714,7 @@ export default function App() {
     .detail-header { padding: 16px 0 4px; }
     .detail-nome { font-family: 'Fraunces', serif; font-size: 25px; font-weight: 600; margin: 6px 0 2px; line-height: 1.15; }
     .detail-tipo { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 10px; }
+    .detail-oque { font-size: 13.5px; line-height: 1.55; color: var(--ink); margin: 4px 0 0; font-style: italic; }
     .detail-canais { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
     .detail-meta {
       display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-soft);
@@ -1549,6 +1745,16 @@ export default function App() {
       text-transform: uppercase; color: var(--mustard); margin-bottom: 4px;
     }
     .resumo-row p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
+    .bullet-list { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
+    .bullet-list li { margin-bottom: 4px; }
+    .bullet-list li:last-child { margin-bottom: 0; }
+    .callout-bullets { padding-left: 16px; }
+    .callout-bullets li { color: #fff; }
+
+    .msg-list { display: flex; flex-direction: column; gap: 10px; }
+    .msg-item { background: var(--paper); border: 1px solid var(--line); border-left: 3px solid var(--wine); border-radius: 8px; padding: 10px 12px; }
+    .msg-canal { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--wine); margin-bottom: 4px; }
+    .msg-texto { margin: 0; font-size: 13px; font-style: italic; color: var(--ink); line-height: 1.5; }
 
     .callout { display: flex; gap: 11px; border-radius: 12px; padding: 14px 16px; margin: 12px 0; }
     .callout-solid { background: var(--wine); color: #fff; }
@@ -1790,7 +1996,7 @@ export default function App() {
                     <div className="filter-title">Por canal</div>
                     <div className="menu-list">
                       {CANAIS.map((c) => {
-                        const count = ACTIONS.filter((a) => a.canais.includes(c.label)).length;
+                        const count = ACTIONS.filter((a) => a.canalPrincipal === c.label || a.canaisApoio.includes(c.label)).length;
                         return (
                           <button key={c.label} className="menu-row" onClick={() => setCanalFilter(c.label)}>
                             <span className="menu-row-icon"><c.icon size={16} /></span>
