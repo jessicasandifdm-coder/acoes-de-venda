@@ -242,6 +242,8 @@ const ACTIONS = [
     id: "cabide-livre", nome: "Operação Cabide Livre", cat: "giro",
     nichos: ["Moda Feminina", "Moda Masculina", "Moda Fitness", "Moda Plus Size", "Infantil", "Moda Evangélica"],
     tipo: "Campanha de giro de estoque",
+    sugestoesNomes: ["Limpa-Arara", "Semana da Renovação", "Giro Inteligente", "Última Chance", "Renovação de Estoque"],
+    alternativaCanal: "Sem loja física? Essa campanha funciona igual só pelo Instagram — use Stories como canal principal, com Status do WhatsApp e Lista de transmissão como apoio. Sendo só online, estenda a duração pra 10 a 14 dias, já que o alcance orgânico é mais lento que o presencial.",
     como: "Acelera o giro de estoque, libera espaço na loja e transforma peças paradas em caixa para novas compras.",
     duracao: "7 a 10 dias",
     canalPrincipal: "Loja física",
@@ -249,7 +251,7 @@ const ACTIONS = [
     objetivo: ["Giro de estoque", "Liberar caixa", "Abrir espaço para nova coleção"],
     quandoUsar: ["Troca de coleção", "Mudança de estação", "Estoque parado há mais de 60 dias", "Necessidade de gerar caixa", "Excesso de produtos acumulados"],
     quandoEvitar: ["Durante lançamento de coleção nova", "Quando existir outra campanha acontecendo ao mesmo tempo", "Em períodos onde a comunicação principal seja outra"],
-    checklist: ["Separar as peças participantes", "Definir percentual de desconto", "Criar tabela de preços", "Trocar etiquetas", "Identificar peças da campanha", "Organizar araras", "Preparar vitrine", "Atualizar identidade visual da campanha", "Produzir materiais gráficos", "Definir data de início e encerramento"],
+    checklist: ["Separar as peças participantes", "Definir percentual de desconto (sugestão: 10%, 15%, 20% ou 30%, dependendo de quanto o estoque está parado)", "Criar tabela de preços", "Trocar etiquetas", "Identificar peças da campanha", "Organizar araras", "Preparar vitrine", "Atualizar identidade visual da campanha", "Produzir materiais gráficos", "Definir data de início e encerramento"],
     checklistExecucao: ["Atualizar vitrine", "Colocar comunicação visual", "Organizar peças", "Equipe preparada", "Registrar movimento"],
     planoDivulgacao: [
       { marco: "2 dias antes", itens: [
@@ -282,6 +284,7 @@ const ACTIONS = [
   {
     id: "comprou-ganhou-stories", nome: "Comprou, Ganhou Express (Stories)", cat: "brindes", nichos: ["Geral"],
     tipo: "Ação relâmpago de 1 dia",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Gera pico de vendas imediato através da escassez, usando os Stories como canal principal.",
     duracao: "1 dia",
     canalPrincipal: "Stories",
@@ -307,6 +310,7 @@ const ACTIONS = [
   {
     id: "comprou-ganhou-vip", nome: "Comprou, Ganhou Express (Grupo VIP)", cat: "brindes", nichos: ["Geral"],
     tipo: "Ação relâmpago exclusiva para o grupo",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Mesma mecânica do Comprou Ganhou Express, só que o canal principal passa a ser o Grupo VIP em vez dos Stories.",
     duracao: "1 dia",
     canalPrincipal: "Grupo VIP",
@@ -329,6 +333,7 @@ const ACTIONS = [
   {
     id: "desbloqueie-brindes", nome: "Desbloqueie Brindes", cat: "brindes", nichos: ["Geral"],
     tipo: "Campanha de incentivo (não é urgência)",
+    sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Stories — a régua de faixas funciona igual em vendas por WhatsApp ou site.",
     como: "Aumenta o ticket médio através de faixas de valor que desbloqueiam brindes cada vez melhores — a lógica é de incentivo, não de urgência.",
     duracao: "Semana",
     canalPrincipal: "Loja física",
@@ -348,6 +353,7 @@ const ACTIONS = [
   {
     id: "cashback-inteligente", nome: "Cashback Inteligente", cat: "cashback", nichos: ["Geral"],
     tipo: "Campanha de recorrência programada",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Em vez de dar desconto imediato, a loja entrega um crédito que pode ser usado numa próxima compra, aumentando a recorrência e reduzindo a dependência de promoções frequentes. Pode ser feita em loja física ou site.",
     duracao: "3 a 7 dias",
     canalPrincipal: "Loja física",
@@ -375,6 +381,7 @@ const ACTIONS = [
   {
     id: "cashback-relampago-vip", nome: "Cashback Relâmpago (Grupo VIP)", cat: "cashback", nichos: ["Geral"],
     tipo: "Ação relâmpago de exclusividade",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Gera vendas rápidas dentro do Grupo VIP oferecendo cashback por tempo limitado.",
     duracao: "1 dia",
     canalPrincipal: "Grupo VIP",
@@ -398,6 +405,7 @@ const ACTIONS = [
   {
     id: "cashback-permanente", nome: "Cashback Permanente (Programa de Fidelidade)", cat: "cashback", nichos: ["Geral"],
     tipo: "Programa permanente, não é campanha",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Um benefício contínuo da loja: toda compra gera um crédito para ser usado nas próximas compras. Não é campanha, é diferencial permanente da marca.",
     duracao: "Contínua",
     canalPrincipal: "Loja física",
@@ -417,6 +425,7 @@ const ACTIONS = [
   {
     id: "frete-gratis-relampago", nome: "Frete Grátis Relâmpago", cat: "frete", nichos: ["Geral"],
     tipo: "Ação relâmpago de 1 dia",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Gera um pico de vendas oferecendo frete gratuito durante um período curto. O canal principal pode ser Stories ou Grupo VIP — escolha só um, pra não diluir a comunicação.",
     duracao: "1 dia",
     canalPrincipal: "Stories",
@@ -439,6 +448,7 @@ const ACTIONS = [
   {
     id: "frete-valor-minimo", nome: "Frete Grátis por Valor Mínimo", cat: "frete", nichos: ["Geral"],
     tipo: "Estratégia permanente ou campanha de ticket médio",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Oferece frete grátis apenas para compras acima de um valor definido, incentivando o cliente a completar a compra.",
     duracao: "Campanha de uma semana, mensal ou benefício permanente",
     canalPrincipal: "Site",
@@ -458,6 +468,7 @@ const ACTIONS = [
   {
     id: "frete-fixo-inteligente", nome: "Frete Fixo Inteligente", cat: "frete", nichos: ["Geral"],
     tipo: "Diferencial permanente",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "O cliente sempre sabe quanto vai pagar de frete, eliminando a objeção do frete caro.",
     duracao: "Permanente",
     canalPrincipal: "Site",
@@ -477,6 +488,7 @@ const ACTIONS = [
   {
     id: "dia-do-frete-especial", nome: "Dia do Frete Especial", cat: "frete", nichos: ["Geral"],
     tipo: "Campanha recorrente semanal",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Uma campanha recorrente em um dia fixo da semana, criando hábito de compra e concentrando vendas nos dias de menor movimento.",
     duracao: "Recorrente (ex: toda quarta-feira)",
     canalPrincipal: "Stories",
@@ -500,6 +512,7 @@ const ACTIONS = [
   {
     id: "combo-inteligente", nome: "Combo Inteligente", cat: "combos", nichos: ["Geral"],
     tipo: "Estratégia permanente de ticket médio",
+    sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Site ou Stories — o restante da estrutura continua igual.",
     como: "Reúne produtos complementares em uma única oferta fixa da loja, facilitando a decisão de compra e aumentando o ticket médio.",
     duracao: "Permanente",
     canalPrincipal: "Loja física",
@@ -519,6 +532,7 @@ const ACTIONS = [
   {
     id: "leve-mais-pague-menos", nome: "Leve Mais, Pague Menos", cat: "combos", nichos: ["Moda Feminina", "Moda Masculina"],
     tipo: "Campanha de ticket médio",
+    sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Site ou Stories — a régua de quantidade funciona igual online.",
     como: "Incentiva o cliente a adicionar mais produtos ao carrinho em troca de um benefício progressivo (ex: leve 2 e ganhe 10%, leve 3 e ganhe 15%).",
     duracao: "3 a 7 dias",
     canalPrincipal: "Loja física",
@@ -538,6 +552,7 @@ const ACTIONS = [
   {
     id: "pague-2-leve-3", nome: "Pague 2, Leve 3", cat: "combos", nichos: ["Geral"],
     tipo: "Mecânica promocional clássica",
+    sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Stories ou Grupo VIP — a mecânica continua a mesma.",
     como: "Na compra de 2 peças participantes, a terceira é por conta da loja — elimina estoque específico e aumenta o volume vendido.",
     duracao: "1 a 7 dias",
     canalPrincipal: "Loja física",
@@ -557,6 +572,7 @@ const ACTIONS = [
   {
     id: "cliente-indica-ganha", nome: "Cliente Indica, Cliente Ganha", cat: "indicacao", nichos: ["Geral"],
     tipo: "Programa permanente de indicação",
+    sugestoesNomes: [], alternativaCanal: "Sem loja física? O pós-venda pode acontecer inteiro por WhatsApp — o cartão ou QR code vai junto com a embalagem do envio.",
     como: "Após a compra, a cliente recebe um benefício para indicar uma amiga; quando a nova cliente compra pela primeira vez, ambas recebem uma recompensa.",
     duracao: "Permanente",
     canalPrincipal: "WhatsApp individual",
@@ -576,6 +592,7 @@ const ACTIONS = [
   {
     id: "convide-uma-amiga", nome: "Convide uma Amiga", cat: "indicacao", nichos: ["Geral"],
     tipo: "Campanha de data específica",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Diferente do programa permanente, essa acontece em datas específicas (Dia do Amigo, Dia das Mães, aniversário da loja, Black Friday VIP).",
     duracao: "1 a 7 dias",
     canalPrincipal: "Stories",
@@ -595,6 +612,7 @@ const ACTIONS = [
   {
     id: "clube-presente", nome: "Clube Presente", cat: "indicacao", nichos: ["Infantil", "Geral"],
     tipo: "Programa de lista de presentes",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "A loja cria uma lista de presentes para o aniversariante; os convidados compram diretamente dessa lista. Excelente para lojas infantis, mas pode ser adaptado.",
     duracao: "Contínua, mês a mês por aniversariante",
     canalPrincipal: "Loja física",
@@ -614,6 +632,7 @@ const ACTIONS = [
   {
     id: "closet-exclusivo", nome: "Closet Exclusivo", cat: "vip", nichos: ["Geral"],
     tipo: "Experiência VIP presencial",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "A loja fecha um horário exclusivo para poucas clientes conhecerem uma coleção antes do público, com experiência completa (espumante, café, doces, consultoria de looks, fotos, atendimento exclusivo).",
     duracao: "Evento de 2 a 3 horas",
     canalPrincipal: "WhatsApp individual",
@@ -633,6 +652,7 @@ const ACTIONS = [
   {
     id: "preview-nova-colecao", nome: "Preview da Nova Coleção", cat: "lancamentos", nichos: ["Geral"],
     tipo: "Acesso antecipado VIP",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Clientes selecionadas compram antes da coleção chegar oficialmente ao público.",
     duracao: "Antes do lançamento oficial",
     canalPrincipal: "Grupo VIP",
@@ -652,6 +672,7 @@ const ACTIONS = [
   {
     id: "merecimento", nome: "Semana do Merecimento", cat: "emocional", nichos: ["Geral"],
     tipo: "Campanha emocional",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Ativa a compra por motivação pessoal (autocuidado, merecimento), sem depender de desconto agressivo. A mesma lógica funciona com outros temas: 'Dia de se Escolher', 'Projeto Autoestima', 'Semana da Mulher Real', 'Você Primeiro'.",
     duracao: "Semana",
     canalPrincipal: "Stories",
@@ -674,6 +695,7 @@ const ACTIONS = [
   {
     id: "estacionamento-conveniado", nome: "Estacionamento Conveniado", cat: "diferenciais", nichos: ["Geral"],
     tipo: "Diferencial permanente",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Elimina objeções relacionadas a deslocamento e conforto, oferecendo estacionamento gratuito, com desconto ou validação do ticket.",
     duracao: "Permanente",
     canalPrincipal: "Loja física",
@@ -693,6 +715,7 @@ const ACTIONS = [
   {
     id: "ajuste-perfeito", nome: "Ajuste Perfeito", cat: "diferenciais", nichos: ["Geral"],
     tipo: "Diferencial permanente (parceria com costureira)",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Aumenta a segurança na compra oferecendo pequenos ajustes gratuitos (barra, cintura) em compras acima de determinado valor.",
     duracao: "Permanente",
     canalPrincipal: "Loja física",
@@ -712,6 +735,7 @@ const ACTIONS = [
   {
     id: "parcelamento-vip-diferencial", nome: "Parcelamento VIP", cat: "diferenciais", nichos: ["Geral"],
     tipo: "Diferencial comercial permanente",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Facilita compras de maior valor com mais parcelas, entrada facilitada ou parcelamento exclusivo pra clientes VIP.",
     duracao: "Permanente",
     canalPrincipal: "Loja física",
@@ -731,6 +755,7 @@ const ACTIONS = [
   {
     id: "clube-secreto", nome: "Clube Secreto — Portas Abertas", cat: "vip", nichos: ["Geral"],
     tipo: "Campanha para grupo fechado de WhatsApp",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Acesso a ofertas exclusivas dentro de um grupo fechado, construindo relacionamento direto e recorrente fora do Instagram.",
     duracao: "Semana",
     canalPrincipal: "Grupo VIP",
@@ -750,6 +775,7 @@ const ACTIONS = [
   {
     id: "story-batalha", nome: "Story Interativo — Batalha de Estilos", cat: "engajamento", nichos: ["Geral"],
     tipo: "Enquete de 4 opções",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Enquete com 4 fotos (looks, produtos ou modelos) perguntando qual a cliente prefere; quem vota entra numa lista para abordagem personalizada no Direct.",
     duracao: "1 dia (sequência de 3 stories)",
     canalPrincipal: "Stories",
@@ -785,6 +811,7 @@ const ACTIONS = [
   {
     id: "story-presente", nome: "Story Interativo — Escolha seu Presente", cat: "engajamento", nichos: ["Geral"],
     tipo: "Jogo de emojis ou números",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "A cliente escolhe uma entre 3 caixas (emoji ou número) e manda a escolha por mensagem; cada caixa esconde um benefício diferente.",
     duracao: "1 dia",
     canalPrincipal: "Stories",
@@ -809,6 +836,7 @@ const ACTIONS = [
   {
     id: "story-caca-palavras", nome: "Story Interativo — Caça-Palavras", cat: "engajamento", nichos: ["Geral"],
     tipo: "Desafio de atenção",
+    sugestoesNomes: [], alternativaCanal: null,
     como: "Um caça-palavras simples esconde uma palavra do nicho; quem encontra e responde o story ganha um cupom ou benefício.",
     duracao: "1 dia",
     canalPrincipal: "Stories",
@@ -934,17 +962,16 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
 
       <div className="scroll">
         <div className="detail-header">
-          <span className="tagcard-cat"><Icon size={12} /> {info.label}{action.nichos && action.nichos[0] !== "Geral" ? ` · ${action.nichos.join(", ")}` : ""}</span>
           <h1 className="detail-nome">{action.nome}</h1>
           <p className="detail-tipo">{action.tipo}</p>
           <div className="detail-duracao-row">
             <span className="resumo-label" style={{ marginBottom: 0 }}>Duração</span>
             <span className="detail-duracao-valor">{action.duracao}</span>
           </div>
-          <p className="detail-oque">{action.como}</p>
         </div>
 
         <Accordion title="Objetivo, quando usar e quando evitar" defaultOpen>
+          <p className="acc-plain-text" style={{ marginBottom: 12 }}>{action.como}</p>
           <div className="resumo-card" style={{ margin: 0 }}>
             <div className="resumo-row">
               <span className="resumo-label">Objetivo</span>
@@ -958,6 +985,20 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
               <div className="resumo-row">
                 <span className="resumo-label">Quando evitar</span>
                 <ul className="bullet-list">{action.quandoEvitar.map((o, i) => <li key={i}>{o}</li>)}</ul>
+              </div>
+            )}
+            <div className="resumo-row">
+              <span className="resumo-label">Indicado para</span>
+              <div className="chiprow">
+                {(action.nichos && action.nichos[0] !== "Geral" ? action.nichos : ["Qualquer segmento"]).map((n) => <span key={n} className="chip">{n}</span>)}
+              </div>
+            </div>
+            {action.sugestoesNomes.length > 0 && (
+              <div className="resumo-row">
+                <span className="resumo-label">Sugestões de nome pra divulgar</span>
+                <div className="chiprow">
+                  {action.sugestoesNomes.map((n) => <span key={n} className="chip">{n}</span>)}
+                </div>
               </div>
             )}
           </div>
@@ -975,6 +1016,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
             </div>
           )}
           <p className="canal-caption">O canal principal é onde a ação acontece de fato. Os demais só existem pra levar as clientes até ele.</p>
+          {action.alternativaCanal && <p className="canal-alt-nota">{action.alternativaCanal}</p>}
         </Accordion>
 
         <Accordion title="Etapa 1 · Preparação">
@@ -1274,6 +1316,64 @@ function DiagnosticoScreen({ onContinue, session }) {
   );
 }
 
+function PerfilScreen({ onContinue, session }) {
+  const [nomeLoja, setNomeLoja] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [erro, setErro] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const salvar = async () => {
+    if (!nomeLoja.trim() || !telefone.trim()) { setErro("Preencha ao menos o nome da loja e o telefone."); return; }
+    setErro(""); setLoading(true);
+    try {
+      const perfil = { nome_loja: nomeLoja.trim(), telefone: telefone.trim(), instagram: instagram.trim() };
+      if (session) {
+        await supaInsert("av_perfis", session.accessToken, { user_id: session.userId, ...perfil });
+      }
+      onContinue(perfil);
+    } catch (e) {
+      setErro(e.message || "Não foi possível salvar. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="auth-wrap">
+      <div className="auth-card">
+        <span className="auth-eyebrow">Antes de começar</span>
+        <h1 className="auth-title" style={{ fontSize: 22 }}>Conta pra gente sobre a sua loja</h1>
+        <p className="auth-sub">Só pra deixar tudo personalizado — e pra gente poder falar com você se precisar.</p>
+
+        <label className="auth-label">Nome da loja</label>
+        <div className="auth-input">
+          <Store size={16} color="#6B7268" />
+          <input placeholder="Ex: Studio Bella Moda" value={nomeLoja} onChange={(e) => setNomeLoja(e.target.value)} />
+        </div>
+
+        <label className="auth-label">Telefone / WhatsApp</label>
+        <div className="auth-input">
+          <MessageCircle size={16} color="#6B7268" />
+          <input placeholder="(00) 00000-0000" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
+        </div>
+
+        <label className="auth-label">Instagram (opcional)</label>
+        <div className="auth-input">
+          <span style={{ color: "#6B7268", fontSize: 14 }}>@</span>
+          <input placeholder="suaLoja" value={instagram} onChange={(e) => setInstagram(e.target.value)} />
+        </div>
+
+        {erro && <p className="auth-erro">{erro}</p>}
+
+        <button className="btn-primary" style={{ marginTop: 12 }} onClick={salvar} disabled={loading}>
+          {loading ? "Salvando…" : "Continuar"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 const NAV = [
   { id: "inicio", label: "Início", icon: Home },
   { id: "biblioteca", label: "Biblioteca", icon: BookOpen },
@@ -1302,7 +1402,10 @@ export default function App() {
   const [novaMetaAcao, setNovaMetaAcao] = useState("");
   const [novaMetaValor, setNovaMetaValor] = useState("");
   const [adminDiagnosticos, setAdminDiagnosticos] = useState([]);
+  const [adminPerfis, setAdminPerfis] = useState([]);
   const [adminLoading, setAdminLoading] = useState(false);
+  const [perfil, setPerfil] = useState(null);
+  const [meuDiagnostico, setMeuDiagnostico] = useState(null);
 
   const isAdmin = session?.email === ADMIN_EMAIL;
   const navItems = isAdmin ? [...NAV, { id: "admin", label: "Admin", icon: Shield }] : NAV;
@@ -1311,10 +1414,12 @@ export default function App() {
     if (stage !== "app" || !session) return;
     (async () => {
       try {
-        const [h, m, f] = await Promise.all([
+        const [h, m, f, meusDiag, meuPerfil] = await Promise.all([
           supaSelect("av_historico", session.accessToken, session.userId),
           supaSelect("av_metas", session.accessToken, session.userId),
           supaSelect("av_favoritos", session.accessToken, session.userId),
+          supaSelect("av_diagnosticos", session.accessToken, session.userId),
+          supaSelect("av_perfis", session.accessToken, session.userId),
         ]);
         setHistorico(h.map((row) => ({
           id: row.acao_id, rowId: row.id, nota: row.nota, valor: Number(row.valor) || 0,
@@ -1323,6 +1428,8 @@ export default function App() {
         })));
         setMetas(m.map((row) => ({ id: row.id, acaoId: row.acao_id, mes: row.mes_idx, ano: row.ano, valorMeta: Number(row.valor_meta) || 0 })));
         setFavs(new Set(f.map((row) => row.acao_id)));
+        if (meusDiag.length > 0) setMeuDiagnostico(meusDiag[0]);
+        if (meuPerfil.length > 0) setPerfil(meuPerfil[0]);
       } catch (e) { console.error("Erro ao carregar dados do Supabase:", e); }
     })();
   }, [stage, session]);
@@ -1330,8 +1437,11 @@ export default function App() {
   useEffect(() => {
     if (tab !== "admin" || !isAdmin || !session) return;
     setAdminLoading(true);
-    supaSelectAll("av_diagnosticos", session.accessToken)
-      .then((rows) => setAdminDiagnosticos(rows))
+    Promise.all([
+      supaSelectAll("av_diagnosticos", session.accessToken),
+      supaSelectAll("av_perfis", session.accessToken),
+    ])
+      .then(([diags, perfis]) => { setAdminDiagnosticos(diags); setAdminPerfis(perfis); })
       .catch((e) => console.error("Erro ao carregar diagnósticos:", e))
       .finally(() => setAdminLoading(false));
   }, [tab, isAdmin, session]);
@@ -1464,6 +1574,7 @@ export default function App() {
     setStage("login"); setSession(null); setTab("inicio"); setOpenId(null);
     setSearch(""); setCatFilter(null); setCanalFilter(null); setNichoFilter(null);
     setHistorico([]); setMetas([]); setFavs(new Set());
+    setPerfil(null); setMeuDiagnostico(null);
   };
 
   const baseStyles = `
@@ -1662,6 +1773,24 @@ export default function App() {
       padding: 16px 18px; margin-bottom: 12px;
     }
     .resultados-summary .stat-num { color: #fff; font-size: 22px; }
+
+    .diag-mini-card { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+    .diag-mini-indice { display: flex; align-items: baseline; gap: 2px; color: var(--wine); flex-shrink: 0; }
+    .diag-mini-info { display: flex; flex-direction: column; gap: 2px; }
+    .diag-mini-faixa { font-size: 12px; color: var(--mustard); font-weight: 500; margin-bottom: 2px; }
+    .diag-mini-linha { font-size: 12px; color: var(--ink-soft); }
+    .diag-mini-linha b { color: var(--ink); font-weight: 600; }
+
+    .admin-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .admin-contato { display: flex; flex-direction: column; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+    .admin-loja-nome { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; }
+    .admin-data { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-soft); }
+    .admin-contato-linha { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .admin-respostas { display: flex; flex-direction: column; gap: 8px; }
+    .admin-resposta-item { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; padding-bottom: 6px; border-bottom: 1px dashed var(--line); }
+    .admin-resposta-item:last-child { border-bottom: none; }
+    .admin-resposta-pergunta { color: var(--ink-soft); flex: 1; }
+    .admin-resposta-valor { color: var(--ink); font-weight: 500; text-align: right; flex-shrink: 0; }
     .resultados-summary .stat-label { color: rgba(255,255,255,0.75); }
 
     .chart-box { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 10px 6px; }
@@ -1763,6 +1892,7 @@ export default function App() {
     .canal-row:last-of-type { margin-bottom: 8px; }
     .canal-row-label { font-size: 11.5px; color: var(--ink-soft); min-width: 105px; flex-shrink: 0; }
     .canal-caption { font-size: 11.5px; color: var(--ink-soft); font-style: italic; margin: 4px 0 0; line-height: 1.4; }
+    .canal-alt-nota { font-size: 12px; color: var(--ink); line-height: 1.5; margin: 10px 0 0; padding: 10px 12px; background: var(--paper); border-radius: 8px; border-left: 3px solid var(--mustard); }
 
     .section { margin: 16px 0; }
     .section-title {
@@ -1875,17 +2005,25 @@ export default function App() {
       setSession(s);
       (async () => {
         try {
-          const existentes = await supaSelect("av_diagnosticos", s.accessToken, s.userId);
-          setStage(existentes.length > 0 ? "app" : "diagnostico");
+          const [diags, perfis] = await Promise.all([
+            supaSelect("av_diagnosticos", s.accessToken, s.userId),
+            supaSelect("av_perfis", s.accessToken, s.userId),
+          ]);
+          if (diags.length === 0) setStage("diagnostico");
+          else if (perfis.length === 0) setStage("perfil");
+          else setStage("app");
         } catch (e) {
-          console.error("Erro ao verificar diagnóstico existente:", e);
+          console.error("Erro ao verificar cadastro existente:", e);
           setStage("diagnostico");
         }
       })();
     }} /></div>
   );
   if (stage === "diagnostico") return (
-    <div className="app-wrap"><style>{baseStyles}</style><DiagnosticoScreen session={session} onContinue={() => setStage("app")} /></div>
+    <div className="app-wrap"><style>{baseStyles}</style><DiagnosticoScreen session={session} onContinue={() => setStage("perfil")} /></div>
+  );
+  if (stage === "perfil") return (
+    <div className="app-wrap"><style>{baseStyles}</style><PerfilScreen session={session} onContinue={(p) => { setPerfil(p); setStage("app"); }} /></div>
   );
 
   return (
@@ -1922,7 +2060,7 @@ export default function App() {
             ) : tab === "inicio" ? (
               <div className="screen">
                 <div className="home-header">
-                  <span className="home-eyebrow">O que vamos ativar hoje?</span>
+                  <span className="home-eyebrow">{perfil?.nome_loja ? `Olá, ${perfil.nome_loja}` : "O que vamos ativar hoje?"}</span>
                   <h1 className="home-title">Gerador de Caixa</h1>
                   <p className="home-sub">Uma seleção pronta pra movimentar a loja agora e construir vendas previsíveis.</p>
                 </div>
@@ -1937,6 +2075,30 @@ export default function App() {
                   <div className="stat-box"><div className="stat-num">{historico.length}</div><div className="stat-label">Executadas</div></div>
                   <div className="stat-box"><div className="stat-num">{ACTIONS.length}</div><div className="stat-label">No banco</div></div>
                 </div>
+
+                {meuDiagnostico && (
+                  <>
+                    <div className="section-label">Seu diagnóstico</div>
+                    <div className="resultados-wrap" style={{ marginBottom: 8 }}>
+                      <div className="diag-mini-card">
+                        <div className="diag-mini-indice">
+                          <span className="indice-num" style={{ fontSize: 30 }}>{meuDiagnostico.indice}</span>
+                          <span className="indice-max" style={{ fontSize: 12 }}>/100</span>
+                        </div>
+                        <div className="diag-mini-info">
+                          <span className="diag-mini-faixa">{meuDiagnostico.faixa_indice}</span>
+                          <span className="diag-mini-linha">Ponto forte: <b>{meuDiagnostico.ponto_forte}</b></span>
+                          <span className="diag-mini-linha">Trabalhar agora: <b>{meuDiagnostico.gargalo}</b></span>
+                        </div>
+                      </div>
+                      {meuDiagnostico.areas?.length > 0 && (
+                        <div className="chiprow" style={{ marginTop: 8 }}>
+                          {meuDiagnostico.areas.map((a) => <span key={a} className="chip">{a}</span>)}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
 
                 <div className="section-label">Planejamento</div>
                 <div className="mes-nav">
@@ -2167,7 +2329,7 @@ export default function App() {
               </div>
             ) : (
               <div className="screen">
-                <div className="topbar"><span className="topbar-title">Respostas do diagnóstico</span><span /></div>
+                <div className="topbar"><span className="topbar-title">Lojistas cadastradas</span><span /></div>
                 <div className="scroll" style={{ paddingTop: 14 }}>
                   {adminLoading ? (
                     <p style={{ textAlign: "center", color: "#6B7268", fontSize: 13 }}>Carregando…</p>
@@ -2175,27 +2337,44 @@ export default function App() {
                     <div className="empty-state"><Shield size={28} /><p>Nenhuma lojista respondeu o diagnóstico ainda.</p></div>
                   ) : (
                     <div className="list-wrap" style={{ padding: 0 }}>
-                      {adminDiagnosticos.map((d) => (
-                        <div className="hist-item" key={d.id}>
-                          <div className="hist-top">
-                            <span className="hist-nome">{d.respostas?.segmento?.l || "Segmento não informado"}</span>
-                            <span className="hist-data">{new Date(d.criado_em).toLocaleDateString("pt-BR")}</span>
-                          </div>
-                          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", margin: "6px 0" }}>
-                            <span className="canal-pill sm">Índice {d.indice} · {d.faixa_indice}</span>
-                            <span className="canal-pill sm">Forte: {d.ponto_forte}</span>
-                            <span className="canal-pill sm">Gargalo: {d.gargalo}</span>
-                          </div>
-                          <div className="hist-nota">
-                            Faturamento: {d.respostas?.faturamento?.l || "—"} · Equipe: {d.respostas?.equipe?.l || "—"} · Seguidores: {d.respostas?.seguidores?.l || "—"}
-                          </div>
-                          {d.areas?.length > 0 && (
-                            <div className="chiprow" style={{ marginTop: 8 }}>
-                              {d.areas.map((a) => <span key={a} className="chip">{a}</span>)}
+                      {adminDiagnosticos.map((d) => {
+                        const p = adminPerfis.find((x) => x.user_id === d.user_id);
+                        return (
+                          <div className="admin-card" key={d.id}>
+                            <div className="admin-contato">
+                              <span className="admin-loja-nome">{p?.nome_loja || "Nome da loja não informado"}</span>
+                              <span className="admin-data">{new Date(d.criado_em).toLocaleDateString("pt-BR")}</span>
+                              <div className="admin-contato-linha">
+                                {p?.telefone && <span className="canal-pill sm"><MessageCircle size={10} /> {p.telefone}</span>}
+                                {p?.instagram && <span className="canal-pill sm">@{p.instagram.replace(/^@/, "")}</span>}
+                                {!p?.telefone && !p?.instagram && <span className="canal-pill sm">Sem contato informado</span>}
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      ))}
+
+                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0" }}>
+                              <span className="canal-pill sm">Índice {d.indice} · {d.faixa_indice}</span>
+                              <span className="canal-pill sm">Forte: {d.ponto_forte}</span>
+                              <span className="canal-pill sm">Gargalo: {d.gargalo}</span>
+                            </div>
+                            {d.areas?.length > 0 && (
+                              <div className="chiprow" style={{ marginBottom: 10 }}>
+                                {d.areas.map((a) => <span key={a} className="chip">{a}</span>)}
+                              </div>
+                            )}
+
+                            <Accordion title="Ver todas as respostas">
+                              <div className="admin-respostas">
+                                {DIAG_PERGUNTAS.map((q) => (
+                                  <div className="admin-resposta-item" key={q.id}>
+                                    <span className="admin-resposta-pergunta">{q.texto}</span>
+                                    <span className="admin-resposta-valor">{d.respostas?.[q.id]?.l || "—"}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </Accordion>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
