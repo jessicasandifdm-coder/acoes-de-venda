@@ -900,6 +900,19 @@ function Callout({ icon: Icon, title, children, tone }) {
   );
 }
 
+function Accordion({ title, icon: Icon, defaultOpen, accent, children }) {
+  const [open, setOpen] = useState(!!defaultOpen);
+  return (
+    <div className={`acc ${accent ? `acc-${accent}` : ""}`}>
+      <button className="acc-header" onClick={() => setOpen((o) => !o)} type="button">
+        <span className="acc-header-left">{Icon && <Icon size={15} />} {title}</span>
+        <ChevronRight size={16} className={`acc-chevron ${open ? "open" : ""}`} />
+      </button>
+      {open && <div className="acc-body">{children}</div>}
+    </div>
+  );
+}
+
 function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote, setDoneNote, doneValor, setDoneValor, isDone }) {
   const info = catInfo(action.cat);
   const Icon = info.icon;
@@ -924,80 +937,85 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
           <span className="tagcard-cat"><Icon size={12} /> {info.label}{action.nichos && action.nichos[0] !== "Geral" ? ` · ${action.nichos.join(", ")}` : ""}</span>
           <h1 className="detail-nome">{action.nome}</h1>
           <p className="detail-tipo">{action.tipo}</p>
-          <div className="detail-canais">
-            <CanalChip label={action.canalPrincipal} main />
-            {action.canaisApoio.map((c) => <CanalChip key={c} label={c} />)}
+          <div className="detail-duracao-row">
+            <span className="resumo-label" style={{ marginBottom: 0 }}>Duração</span>
+            <span className="detail-duracao-valor">{action.duracao}</span>
           </div>
-          <div className="detail-meta">
-            <span><Clock size={13} /> {action.duracao}</span>
-          </div>
+          <p className="detail-oque">{action.como}</p>
         </div>
 
-        <p className="detail-oque">{action.como}</p>
-
-        <div className="resumo-card">
-          <div className="resumo-row">
-            <span className="resumo-label">Objetivo</span>
-            <ul className="bullet-list">{action.objetivo.map((o, i) => <li key={i}>{o}</li>)}</ul>
-          </div>
-          <div className="resumo-row">
-            <span className="resumo-label">Quando usar</span>
-            <ul className="bullet-list">{action.quandoUsar.map((o, i) => <li key={i}>{o}</li>)}</ul>
-          </div>
-          {action.quandoEvitar.length > 0 && (
+        <Accordion title="Objetivo, quando usar e quando evitar" defaultOpen>
+          <div className="resumo-card" style={{ margin: 0 }}>
             <div className="resumo-row">
-              <span className="resumo-label">Quando evitar</span>
-              <ul className="bullet-list">{action.quandoEvitar.map((o, i) => <li key={i}>{o}</li>)}</ul>
+              <span className="resumo-label">Objetivo</span>
+              <ul className="bullet-list">{action.objetivo.map((o, i) => <li key={i}>{o}</li>)}</ul>
+            </div>
+            <div className="resumo-row">
+              <span className="resumo-label">Quando usar</span>
+              <ul className="bullet-list">{action.quandoUsar.map((o, i) => <li key={i}>{o}</li>)}</ul>
+            </div>
+            {action.quandoEvitar.length > 0 && (
+              <div className="resumo-row">
+                <span className="resumo-label">Quando evitar</span>
+                <ul className="bullet-list">{action.quandoEvitar.map((o, i) => <li key={i}>{o}</li>)}</ul>
+              </div>
+            )}
+          </div>
+        </Accordion>
+
+        <Accordion title="Canais">
+          <div className="canal-row">
+            <span className="canal-row-label">Canal principal</span>
+            <CanalChip label={action.canalPrincipal} main />
+          </div>
+          {action.canaisApoio.length > 0 && (
+            <div className="canal-row">
+              <span className="canal-row-label">Canais de apoio</span>
+              <div className="chiprow">{action.canaisApoio.map((c) => <CanalChip key={c} label={c} />)}</div>
             </div>
           )}
-        </div>
+          <p className="canal-caption">O canal principal é onde a ação acontece de fato. Os demais só existem pra levar as clientes até ele.</p>
+        </Accordion>
 
-        <Section title="Roteiro de antecipação">
-          <p className="roteiro-lead">A antecipação é o que garante o resultado — ninguém aparece no dia e vende bem sem preparar o terreno antes.</p>
+        <Accordion title="Etapa 1 · Preparação">
+          <div className="checklist">
+            {action.checklist.map((c, i) => (
+              <label key={i} className="checkitem">
+                <input type="checkbox" checked={!!checkedPrep[i]} onChange={() => setCheckedPrep((s) => ({ ...s, [i]: !s[i] }))} />
+                <span className={checkedPrep[i] ? "done" : ""}>{c}</span>
+              </label>
+            ))}
+          </div>
+        </Accordion>
 
-          <div className="etapa-bloco">
-            <span className="etapa-titulo"><span className="etapa-num">1</span> Preparação</span>
+        {action.checklistExecucao.length > 0 && (
+          <Accordion title="Etapa 2 · Execução">
             <div className="checklist">
-              {action.checklist.map((c, i) => (
+              {action.checklistExecucao.map((c, i) => (
                 <label key={i} className="checkitem">
-                  <input type="checkbox" checked={!!checkedPrep[i]} onChange={() => setCheckedPrep((s) => ({ ...s, [i]: !s[i] }))} />
-                  <span className={checkedPrep[i] ? "done" : ""}>{c}</span>
+                  <input type="checkbox" checked={!!checkedExec[i]} onChange={() => setCheckedExec((s) => ({ ...s, [i]: !s[i] }))} />
+                  <span className={checkedExec[i] ? "done" : ""}>{c}</span>
                 </label>
               ))}
             </div>
-          </div>
+          </Accordion>
+        )}
 
-          {action.checklistExecucao.length > 0 && (
-            <div className="etapa-bloco">
-              <span className="etapa-titulo"><span className="etapa-num">2</span> Execução</span>
-              <div className="checklist">
-                {action.checklistExecucao.map((c, i) => (
-                  <label key={i} className="checkitem">
-                    <input type="checkbox" checked={!!checkedExec[i]} onChange={() => setCheckedExec((s) => ({ ...s, [i]: !s[i] }))} />
-                    <span className={checkedExec[i] ? "done" : ""}>{c}</span>
-                  </label>
-                ))}
+        {action.planoDivulgacao.length > 0 && (
+          <Accordion title="Etapa 3 · Divulgação">
+            {action.planoDivulgacao.map((p, pi) => (
+              <div key={pi} className="roteiro-sub">
+                <span className="roteiro-titulo">{p.marco}</span>
+                <ol className="steps">
+                  {p.itens.map((it, i) => <li key={i}>{it}</li>)}
+                </ol>
               </div>
-            </div>
-          )}
-
-          {action.planoDivulgacao.length > 0 && (
-            <div className="etapa-bloco">
-              <span className="etapa-titulo"><span className="etapa-num">3</span> Divulgação</span>
-              {action.planoDivulgacao.map((p, pi) => (
-                <div key={pi} className="roteiro-sub">
-                  <span className="roteiro-titulo">{p.marco}</span>
-                  <ol className="steps">
-                    {p.itens.map((it, i) => <li key={i}>{it}</li>)}
-                  </ol>
-                </div>
-              ))}
-            </div>
-          )}
-        </Section>
+            ))}
+          </Accordion>
+        )}
 
         {action.modelosMensagens.length > 0 && (
-          <Section title="Modelos de mensagens">
+          <Accordion title="Modelos de mensagens" icon={MessageCircle}>
             <div className="msg-list">
               {action.modelosMensagens.map((m, i) => (
                 <div key={i} className="msg-item">
@@ -1006,22 +1024,25 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
                 </div>
               ))}
             </div>
-          </Section>
+          </Accordion>
         )}
 
         {action.ideiasStories.length > 0 && (
-          <Section title="Ideias de Stories / Reels">
+          <Accordion title="Ideias de Stories / Reels" icon={Radio}>
             <ul className="bullet-list">{action.ideiasStories.map((s, i) => <li key={i}>{s}</li>)}</ul>
-          </Section>
+          </Accordion>
         )}
 
-        <Callout icon={Lightbulb} title="Dica estratégica" tone="solid">{action.dicas}</Callout>
-        <Callout icon={TrendingUp} title="Resultado esperado" tone="solid">
-          <ul className="bullet-list callout-bullets">{action.resultado.map((r, i) => <li key={i}>{r}</li>)}</ul>
-        </Callout>
+        <Accordion title="Dica estratégica" icon={Lightbulb} accent="gold">
+          <p className="acc-plain-text">{action.dicas}</p>
+        </Accordion>
+
+        <Accordion title="Resultado esperado" icon={TrendingUp} accent="green">
+          <ul className="bullet-list">{action.resultado.map((r, i) => <li key={i}>{r}</li>)}</ul>
+        </Accordion>
 
         {action.nichoExemplos && (
-          <Section title="Exemplos por nicho">
+          <Accordion title="Exemplos por nicho">
             <div className="nicho-examples">
               {Object.entries(action.nichoExemplos).map(([nicho, exemplo]) => (
                 <div key={nicho} className="nicho-example-item">
@@ -1030,17 +1051,17 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
                 </div>
               ))}
             </div>
-          </Section>
+          </Accordion>
         )}
 
         {relacionadas.length > 0 && (
-          <Section title="Ações relacionadas">
+          <Accordion title="Ações relacionadas">
             <div className="chiprow">
               {relacionadas.map((r) => (
                 <span key={r.id} className="chip">{r.nome}</span>
               ))}
             </div>
-          </Section>
+          </Accordion>
         )}
 
         <div className="done-box">
@@ -1106,7 +1127,7 @@ function LoginScreen({ onAuthed }) {
   return (
     <div className="auth-wrap">
       <div className="auth-card">
-        <span className="auth-eyebrow">Ações de venda</span>
+        <span className="auth-eyebrow">Gerador de Caixa</span>
         <h1 className="auth-title">{modo === "criar" ? "Criar conta" : "Acesso da lojista"}</h1>
         <p className="auth-sub">{modo === "criar" ? "Crie sua conta pra começar a usar o banco de ações." : "Entre para acessar o banco de ações e organizar sua rotina comercial."}</p>
 
@@ -1714,13 +1735,34 @@ export default function App() {
     .detail-header { padding: 16px 0 4px; }
     .detail-nome { font-family: 'Fraunces', serif; font-size: 25px; font-weight: 600; margin: 6px 0 2px; line-height: 1.15; }
     .detail-tipo { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 10px; }
-    .detail-oque { font-size: 13.5px; line-height: 1.55; color: var(--ink); margin: 4px 0 0; font-style: italic; }
-    .detail-canais { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-    .detail-meta {
-      display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-soft);
-      border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 8px 0; margin-bottom: 4px;
+    .detail-duracao-row {
+      display: flex; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line); margin-bottom: 12px;
     }
-    .detail-meta span { display: flex; align-items: center; gap: 4px; }
+    .detail-duracao-valor { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .detail-oque { font-size: 13.5px; line-height: 1.55; color: var(--ink); margin: 0 0 6px; }
+
+    .acc { border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; background: var(--card); overflow: hidden; }
+    .acc-header {
+      width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 12px 14px; background: none; border: none; cursor: pointer; text-align: left;
+    }
+    .acc-header-left {
+      display: flex; align-items: center; gap: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      letter-spacing: 0.05em; text-transform: uppercase; color: var(--wine);
+    }
+    .acc-chevron { color: var(--ink-soft); transition: transform 0.2s; flex-shrink: 0; }
+    .acc-chevron.open { transform: rotate(90deg); }
+    .acc-body { padding: 0 14px 14px; }
+    .acc-plain-text { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+    .acc.acc-gold { border-left: 3px solid var(--mustard); }
+    .acc.acc-gold .acc-header-left { color: var(--mustard); }
+    .acc.acc-green { border-left: 3px solid var(--wine); }
+
+    .canal-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .canal-row:last-of-type { margin-bottom: 8px; }
+    .canal-row-label { font-size: 11.5px; color: var(--ink-soft); min-width: 105px; flex-shrink: 0; }
+    .canal-caption { font-size: 11.5px; color: var(--ink-soft); font-style: italic; margin: 4px 0 0; line-height: 1.4; }
 
     .section { margin: 16px 0; }
     .section-title {
@@ -1829,7 +1871,18 @@ export default function App() {
   `;
 
   if (stage === "login") return (
-    <div className="app-wrap"><style>{baseStyles}</style><LoginScreen onAuthed={(s) => { setSession(s); setStage("diagnostico"); }} /></div>
+    <div className="app-wrap"><style>{baseStyles}</style><LoginScreen onAuthed={(s) => {
+      setSession(s);
+      (async () => {
+        try {
+          const existentes = await supaSelect("av_diagnosticos", s.accessToken, s.userId);
+          setStage(existentes.length > 0 ? "app" : "diagnostico");
+        } catch (e) {
+          console.error("Erro ao verificar diagnóstico existente:", e);
+          setStage("diagnostico");
+        }
+      })();
+    }} /></div>
   );
   if (stage === "diagnostico") return (
     <div className="app-wrap"><style>{baseStyles}</style><DiagnosticoScreen session={session} onContinue={() => setStage("app")} /></div>
@@ -1840,7 +1893,7 @@ export default function App() {
       <style>{baseStyles}</style>
       <div className="shell">
         <aside className="sidebar">
-          <div className="sidebar-logo">Ações de venda</div>
+          <div className="sidebar-logo">Gerador de Caixa</div>
           <nav className="sidebar-nav">
             {navItems.map((n) => (
               <button key={n.id} className={`sidebar-link ${tab === n.id && !openAction ? "active" : ""}`} onClick={() => goto(n.id, true)}>
@@ -1869,9 +1922,9 @@ export default function App() {
             ) : tab === "inicio" ? (
               <div className="screen">
                 <div className="home-header">
-                  <span className="home-eyebrow">Ações de venda</span>
-                  <h1 className="home-title">O que vamos ativar hoje?</h1>
-                  <p className="home-sub">Escolha uma ação pronta para movimentar a loja agora.</p>
+                  <span className="home-eyebrow">O que vamos ativar hoje?</span>
+                  <h1 className="home-title">Gerador de Caixa</h1>
+                  <p className="home-sub">Uma seleção pronta pra movimentar a loja agora e construir vendas previsíveis.</p>
                 </div>
 
                 <div className="search-bar" onClick={() => goto("biblioteca", true)}>
