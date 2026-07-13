@@ -1401,6 +1401,8 @@ export default function App() {
   const [showMetaForm, setShowMetaForm] = useState(false);
   const [novaMetaAcao, setNovaMetaAcao] = useState("");
   const [novaMetaValor, setNovaMetaValor] = useState("");
+  const [showRegistrar, setShowRegistrar] = useState(false);
+  const [registrarAcaoId, setRegistrarAcaoId] = useState("");
   const [adminDiagnosticos, setAdminDiagnosticos] = useState([]);
   const [adminPerfis, setAdminPerfis] = useState([]);
   const [adminLoading, setAdminLoading] = useState(false);
@@ -1476,6 +1478,13 @@ export default function App() {
     if (session) {
       supaInsert("av_historico", session.accessToken, { user_id: session.userId, acao_id: id, valor, nota, mes_idx: mesIdx, ano }).catch(console.error);
     }
+  };
+
+  const registrarRapido = () => {
+    if (!registrarAcaoId) return;
+    markDone(registrarAcaoId);
+    setRegistrarAcaoId("");
+    setShowRegistrar(false);
   };
 
   const shiftDash = (delta) => {
@@ -1781,6 +1790,27 @@ export default function App() {
     .diag-mini-linha { font-size: 12px; color: var(--ink-soft); }
     .diag-mini-linha b { color: var(--ink); font-weight: 600; }
 
+    .registrar-atalho {
+      width: 100%; display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 14px 16px; cursor: pointer; text-align: left; font-family: 'Work Sans', sans-serif;
+    }
+    .registrar-atalho-icon {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--wine); color: #fff; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .registrar-atalho-texto { display: flex; flex-direction: column; flex: 1; gap: 2px; }
+    .registrar-atalho-titulo { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+    .registrar-atalho-sub { font-size: 11.5px; color: var(--ink-soft); line-height: 1.4; }
+    .registrar-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+
+    .tutorial-placeholder {
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      background: var(--paper); border: 1.5px dashed var(--line); border-radius: 12px; margin-bottom: 12px;
+    }
+    .tutorial-placeholder > div { display: flex; flex-direction: column; gap: 2px; }
+    .tutorial-titulo { display: block; font-size: 13px; font-weight: 600; color: var(--ink); }
+    .tutorial-sub { display: block; font-size: 11.5px; color: var(--ink-soft); line-height: 1.4; }
+
     .admin-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
     .admin-contato { display: flex; flex-direction: column; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
     .admin-loja-nome { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; }
@@ -2074,6 +2104,52 @@ export default function App() {
                   <div className="stat-box"><div className="stat-num">{favs.size}</div><div className="stat-label">Favoritas</div></div>
                   <div className="stat-box"><div className="stat-num">{historico.length}</div><div className="stat-label">Executadas</div></div>
                   <div className="stat-box"><div className="stat-num">{ACTIONS.length}</div><div className="stat-label">No banco</div></div>
+                </div>
+
+                <div className="resultados-wrap" style={{ marginBottom: 4 }}>
+                  {showRegistrar ? (
+                    <div className="registrar-card">
+                      <span className="resumo-label" style={{ display: "block", marginBottom: 8 }}>Registrar resultado de uma ação</span>
+                      <select className="meta-select" value={registrarAcaoId} onChange={(e) => setRegistrarAcaoId(e.target.value)}>
+                        <option value="">Escolha a ação</option>
+                        {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                      </select>
+                      <div className="valor-input" style={{ margin: "8px 0" }}>
+                        <span className="valor-prefix">R$</span>
+                        <input type="number" inputMode="decimal" placeholder="Quanto gerou" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
+                      </div>
+                      <textarea
+                        placeholder="Observação (opcional)"
+                        value={doneNote}
+                        onChange={(e) => setDoneNote(e.target.value)}
+                        className="done-input"
+                        style={{ marginBottom: 8 }}
+                      />
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button className="btn-primary" onClick={registrarRapido}>Salvar</button>
+                        <button className="btn-ghost-box" onClick={() => { setShowRegistrar(false); setRegistrarAcaoId(""); setDoneValor(""); setDoneNote(""); }}>Cancelar</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button className="registrar-atalho" onClick={() => setShowRegistrar(true)}>
+                      <div className="registrar-atalho-icon"><DollarSign size={18} /></div>
+                      <div className="registrar-atalho-texto">
+                        <span className="registrar-atalho-titulo">Registrar resultado</span>
+                        <span className="registrar-atalho-sub">Aponte rapidinho quanto uma ação gerou, sem entrar no detalhe dela</span>
+                      </div>
+                      <ChevronRight size={18} color="#A9B0A4" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="resultados-wrap">
+                  <div className="tutorial-placeholder">
+                    <Radio size={20} color="#163B2E" />
+                    <div>
+                      <span className="tutorial-titulo">Vídeo: como usar a biblioteca</span>
+                      <span className="tutorial-sub">Em breve — um vídeo curto mostrando como encontrar e aplicar cada ação.</span>
+                    </div>
+                  </div>
                 </div>
 
                 {meuDiagnostico && (
