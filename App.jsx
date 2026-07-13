@@ -1784,6 +1784,17 @@ export default function App() {
     .resultados-summary .stat-num { color: #fff; font-size: 22px; }
 
     .diag-mini-card { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+    .diag-mini-card-sm { padding: 10px 14px; gap: 10px; }
+    .diag-mini-card-sm .diag-mini-faixa { font-size: 11px; }
+    .diag-mini-card-sm .diag-mini-linha { font-size: 11px; }
+
+    .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+    .resultado-tile {
+      background: var(--wine); color: #fff; border-radius: 10px; padding: 12px 10px; display: flex;
+      flex-direction: column; gap: 4px; min-height: 66px; justify-content: center;
+    }
+    .resultado-tile-valor { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; }
+    .resultado-tile-nome { font-size: 10.5px; opacity: 0.85; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
     .diag-mini-indice { display: flex; align-items: baseline; gap: 2px; color: var(--wine); flex-shrink: 0; }
     .diag-mini-info { display: flex; flex-direction: column; gap: 2px; }
     .diag-mini-faixa { font-size: 12px; color: var(--mustard); font-weight: 500; margin-bottom: 2px; }
@@ -1805,7 +1816,7 @@ export default function App() {
 
     .tutorial-placeholder {
       display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-      background: var(--paper); border: 1.5px dashed var(--line); border-radius: 12px; margin-bottom: 12px;
+      background: var(--paper); border: 1.5px dashed var(--line); border-radius: 12px; margin: 0 20px 14px;
     }
     .tutorial-placeholder > div { display: flex; flex-direction: column; gap: 2px; }
     .tutorial-titulo { display: block; font-size: 13px; font-weight: 600; color: var(--ink); }
@@ -2095,88 +2106,13 @@ export default function App() {
                   <p className="home-sub">Uma seleção pronta pra movimentar a loja agora e construir vendas previsíveis.</p>
                 </div>
 
-                <div className="search-bar" onClick={() => goto("biblioteca", true)}>
-                  <Search size={16} color="#6B7268" />
-                  <input placeholder="Buscar ação por objetivo ou nome" readOnly />
-                </div>
-
                 <div className="stats-row">
                   <div className="stat-box"><div className="stat-num">{favs.size}</div><div className="stat-label">Favoritas</div></div>
                   <div className="stat-box"><div className="stat-num">{historico.length}</div><div className="stat-label">Executadas</div></div>
                   <div className="stat-box"><div className="stat-num">{ACTIONS.length}</div><div className="stat-label">No banco</div></div>
                 </div>
 
-                <div className="resultados-wrap" style={{ marginBottom: 4 }}>
-                  {showRegistrar ? (
-                    <div className="registrar-card">
-                      <span className="resumo-label" style={{ display: "block", marginBottom: 8 }}>Registrar resultado de uma ação</span>
-                      <select className="meta-select" value={registrarAcaoId} onChange={(e) => setRegistrarAcaoId(e.target.value)}>
-                        <option value="">Escolha a ação</option>
-                        {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-                      </select>
-                      <div className="valor-input" style={{ margin: "8px 0" }}>
-                        <span className="valor-prefix">R$</span>
-                        <input type="number" inputMode="decimal" placeholder="Quanto gerou" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
-                      </div>
-                      <textarea
-                        placeholder="Observação (opcional)"
-                        value={doneNote}
-                        onChange={(e) => setDoneNote(e.target.value)}
-                        className="done-input"
-                        style={{ marginBottom: 8 }}
-                      />
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button className="btn-primary" onClick={registrarRapido}>Salvar</button>
-                        <button className="btn-ghost-box" onClick={() => { setShowRegistrar(false); setRegistrarAcaoId(""); setDoneValor(""); setDoneNote(""); }}>Cancelar</button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button className="registrar-atalho" onClick={() => setShowRegistrar(true)}>
-                      <div className="registrar-atalho-icon"><DollarSign size={18} /></div>
-                      <div className="registrar-atalho-texto">
-                        <span className="registrar-atalho-titulo">Registrar resultado</span>
-                        <span className="registrar-atalho-sub">Aponte rapidinho quanto uma ação gerou, sem entrar no detalhe dela</span>
-                      </div>
-                      <ChevronRight size={18} color="#A9B0A4" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="resultados-wrap">
-                  <div className="tutorial-placeholder">
-                    <Radio size={20} color="#163B2E" />
-                    <div>
-                      <span className="tutorial-titulo">Vídeo: como usar a biblioteca</span>
-                      <span className="tutorial-sub">Em breve — um vídeo curto mostrando como encontrar e aplicar cada ação.</span>
-                    </div>
-                  </div>
-                </div>
-
-                {meuDiagnostico && (
-                  <>
-                    <div className="section-label">Seu diagnóstico</div>
-                    <div className="resultados-wrap" style={{ marginBottom: 8 }}>
-                      <div className="diag-mini-card">
-                        <div className="diag-mini-indice">
-                          <span className="indice-num" style={{ fontSize: 30 }}>{meuDiagnostico.indice}</span>
-                          <span className="indice-max" style={{ fontSize: 12 }}>/100</span>
-                        </div>
-                        <div className="diag-mini-info">
-                          <span className="diag-mini-faixa">{meuDiagnostico.faixa_indice}</span>
-                          <span className="diag-mini-linha">Ponto forte: <b>{meuDiagnostico.ponto_forte}</b></span>
-                          <span className="diag-mini-linha">Trabalhar agora: <b>{meuDiagnostico.gargalo}</b></span>
-                        </div>
-                      </div>
-                      {meuDiagnostico.areas?.length > 0 && (
-                        <div className="chiprow" style={{ marginTop: 8 }}>
-                          {meuDiagnostico.areas.map((a) => <span key={a} className="chip">{a}</span>)}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                <div className="section-label">Planejamento</div>
+                <div className="section-label">Meta do mês</div>
                 <div className="mes-nav">
                   <button className="mes-nav-btn" onClick={() => shiftDash(-1)}><ChevronLeft size={16} /></button>
                   <span className="mes-nav-label">{nomeMesAno}</span>
@@ -2227,29 +2163,95 @@ export default function App() {
                   ) : (
                     <button className="btn-ghost-box" onClick={() => setShowMetaForm(true)}><Plus size={15} /> Definir meta para {nomeMesAno}</button>
                   )}
+                </div>
 
+                <div className="section-label">Ações feitas em {nomeMesAno}</div>
+                <div className="resultados-wrap">
                   {historicoMes.length === 0 ? (
                     <div className="empty-state small">
                       <BarChart3 size={24} />
-                      <p>Nenhuma ação registrada em {nomeMesAno} ainda. Marque uma ação como executada e informe o valor gerado para começar a ver o gráfico aqui.</p>
+                      <p>Nenhuma ação registrada em {nomeMesAno} ainda. Registre uma ação executada pra começar a ver aqui.</p>
                     </div>
                   ) : (
-                    <div className="chart-box">
-                      <ResponsiveContainer width="100%" height={Math.max(120, chartMes.length * 42)}>
-                        <BarChart data={chartMes} layout="vertical" margin={{ top: 4, right: 20, left: 4, bottom: 4 }}>
-                          <XAxis type="number" tickFormatter={(v) => formatBRL(v)} tick={{ fontSize: 10, fill: "#6B7268" }} axisLine={false} tickLine={false} />
-                          <YAxis type="category" dataKey="nome" width={140} tick={{ fontSize: 11, fill: "#1C201D" }} axisLine={false} tickLine={false} />
-                          <Tooltip formatter={(v) => formatBRL(v)} contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E2E4DE" }} />
-                          <Bar dataKey="valor" fill="#163B2E" radius={[0, 6, 6, 0]} barSize={18} />
-                        </BarChart>
-                      </ResponsiveContainer>
+                    <div className="tile-grid">
+                      {chartMes.map((item) => (
+                        <div key={item.nome} className="resultado-tile">
+                          <span className="resultado-tile-valor">{formatBRL(item.valor)}</span>
+                          <span className="resultado-tile-nome">{item.nome}</span>
+                        </div>
+                      ))}
                     </div>
                   )}
+                </div>
+
+                <div className="resultados-wrap" style={{ marginBottom: 4 }}>
+                  {showRegistrar ? (
+                    <div className="registrar-card">
+                      <span className="resumo-label" style={{ display: "block", marginBottom: 8 }}>Registrar resultado de uma ação</span>
+                      <select className="meta-select" value={registrarAcaoId} onChange={(e) => setRegistrarAcaoId(e.target.value)}>
+                        <option value="">Escolha a ação</option>
+                        {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                      </select>
+                      <div className="valor-input" style={{ margin: "8px 0" }}>
+                        <span className="valor-prefix">R$</span>
+                        <input type="number" inputMode="decimal" placeholder="Quanto gerou" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
+                      </div>
+                      <textarea
+                        placeholder="Observação (opcional)"
+                        value={doneNote}
+                        onChange={(e) => setDoneNote(e.target.value)}
+                        className="done-input"
+                        style={{ marginBottom: 8 }}
+                      />
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button className="btn-primary" onClick={registrarRapido}>Salvar</button>
+                        <button className="btn-ghost-box" onClick={() => { setShowRegistrar(false); setRegistrarAcaoId(""); setDoneValor(""); setDoneNote(""); }}>Cancelar</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button className="registrar-atalho" onClick={() => setShowRegistrar(true)}>
+                      <div className="registrar-atalho-icon"><DollarSign size={18} /></div>
+                      <div className="registrar-atalho-texto">
+                        <span className="registrar-atalho-titulo">Registrar resultado</span>
+                        <span className="registrar-atalho-sub">Aponte rapidinho quanto uma ação gerou, sem entrar no detalhe dela</span>
+                      </div>
+                      <ChevronRight size={18} color="#A9B0A4" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="search-bar" onClick={() => goto("biblioteca", true)}>
+                  <Search size={16} color="#6B7268" />
+                  <input placeholder="Buscar ação por objetivo ou nome" readOnly />
                 </div>
 
                 <div className="home-cta-wrap">
                   <button className="btn-primary" onClick={() => goto("biblioteca", true)}>Ver biblioteca de ações</button>
                 </div>
+
+                {meuDiagnostico && (
+                  <>
+                    <div className="section-label">Seu diagnóstico</div>
+                    <div className="resultados-wrap" style={{ marginBottom: 24 }}>
+                      <div className="diag-mini-card diag-mini-card-sm">
+                        <div className="diag-mini-indice">
+                          <span className="indice-num" style={{ fontSize: 22 }}>{meuDiagnostico.indice}</span>
+                          <span className="indice-max" style={{ fontSize: 11 }}>/100</span>
+                        </div>
+                        <div className="diag-mini-info">
+                          <span className="diag-mini-faixa">{meuDiagnostico.faixa_indice}</span>
+                          <span className="diag-mini-linha">Ponto forte: <b>{meuDiagnostico.ponto_forte}</b></span>
+                          <span className="diag-mini-linha">Trabalhar agora: <b>{meuDiagnostico.gargalo}</b></span>
+                        </div>
+                      </div>
+                      {meuDiagnostico.areas?.length > 0 && (
+                        <div className="chiprow" style={{ marginTop: 8 }}>
+                          {meuDiagnostico.areas.map((a) => <span key={a} className="chip">{a}</span>)}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             ) : tab === "biblioteca" ? (
               <div className="screen">
@@ -2269,6 +2271,14 @@ export default function App() {
 
                 {bibShowMenu ? (
                   <div className="menu-wrap">
+                    <div className="tutorial-placeholder">
+                      <Radio size={20} color="#163B2E" />
+                      <div>
+                        <span className="tutorial-titulo">Vídeo: como usar a biblioteca</span>
+                        <span className="tutorial-sub">Em breve — um vídeo curto mostrando como encontrar e aplicar cada ação.</span>
+                      </div>
+                    </div>
+
                     <div className="filter-title">Por categoria</div>
                     <div className="menu-list">
                       {CATS.map((c) => {
