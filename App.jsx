@@ -2153,6 +2153,11 @@ export default function App() {
 
     .bib-video-wrap { max-width: 720px; margin: 14px auto 0; padding: 0 20px; }
     .bib-video-destaque { margin: 0; box-shadow: 0 2px 8px rgba(20,63,53,0.05); }
+    .bib-video-embed {
+      position: relative; width: 100%; padding-top: 56.25%; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 2px 8px rgba(20,63,53,0.08); background: #000;
+    }
+    .bib-video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     .bib-video-caption { font-size: 12px; color: var(--ink-soft); line-height: 1.5; margin: 8px 4px 0; }
 
     .bib-busca-wrap { max-width: 720px; margin: 18px auto 4px; padding: 0 20px; }
@@ -2890,12 +2895,14 @@ export default function App() {
 
                 {bibShowMenu && (
                   <div className="bib-video-wrap">
-                    <div className="tutorial-placeholder bib-video-destaque">
-                      <Radio size={22} color="#143F35" />
-                      <div>
-                        <span className="tutorial-titulo">Vídeo: como usar a Biblioteca de Ações</span>
-                        <span className="tutorial-sub">Em breve — um vídeo curto mostrando como encontrar e aplicar cada ação.</span>
-                      </div>
+                    <div className="bib-video-embed">
+                      <iframe
+                        src="https://www.youtube.com/embed/kUry5SeSTYc"
+                        title="Como usar a Biblioteca de Ações"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
                     </div>
                     <p className="bib-video-caption">Não sabe por onde começar? Assista este vídeo de 2 minutos e entenda como encontrar rapidamente a melhor estratégia para sua loja.</p>
                   </div>
