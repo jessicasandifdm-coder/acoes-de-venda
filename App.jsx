@@ -5,7 +5,7 @@ import {
   Star, Target, Sparkles, Check, ChevronRight, X, Store, Crown,
   Megaphone, UserMinus, UserPlus, Globe, Radio, LogOut, Mail, KeyRound,
   Lightbulb, AlertTriangle, TrendingUp, DollarSign, BarChart3,
-  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle
+  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle, Shirt
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
@@ -40,6 +40,63 @@ const NICHOS = [
   "Geral", "Moda Feminina", "Moda Masculina", "Moda Fitness", "Acessórios",
   "Cosméticos / Skincare", "Chimarrão", "Moda Evangélica", "Moda Plus Size", "Infantil",
 ];
+
+const NICHO_GRUPOS = [
+  {
+    label: "Moda", emoji: "👗", icon: Shirt,
+    itens: [
+      { valor: "Moda Feminina", label: "Moda Feminina" },
+      { valor: "Moda Masculina", label: "Moda Masculina" },
+      { valor: "Infantil", label: "Moda Infantil" },
+      { valor: "Moda Fitness", label: "Moda Fitness" },
+      { valor: "Moda Plus Size", label: "Moda Plus Size" },
+      { valor: "Moda Evangélica", label: "Moda Evangélica" },
+    ],
+  },
+  {
+    label: "Beleza", emoji: "💄", icon: Sparkles,
+    itens: [{ valor: "Cosméticos / Skincare", label: "Cosméticos / Skincare" }],
+  },
+  { label: "Chimarrão", emoji: "🧉", icon: null, itens: null, valorDireto: "Chimarrão" },
+  { label: "Acessórios", emoji: "👜", icon: null, itens: null, valorDireto: "Acessórios" },
+];
+
+const KEYWORD_MAP = [
+  { termos: ["girar estoque", "estoque parado", "produto parado", "produtos parados", "giro"], tipo: "cat", valor: "giro" },
+  { termos: ["promoção", "promocao", "promo"], tipo: "cat", valor: "giro" },
+  { termos: ["brinde", "brindes"], tipo: "cat", valor: "brindes" },
+  { termos: ["fideliz", "cliente antigo", "clientes antigos", "reativar"], tipo: "cat", valor: "cashback" },
+  { termos: ["cashback"], tipo: "cat", valor: "cashback" },
+  { termos: ["frete"], tipo: "cat", valor: "frete" },
+  { termos: ["ticket médio", "ticket medio", "aumentar ticket", "combo"], tipo: "cat", valor: "combos" },
+  { termos: ["captação", "captacao", "cliente novo", "clientes novos", "novos clientes", "indicação", "indicacao"], tipo: "cat", valor: "indicacao" },
+  { termos: ["vip", "experiência vip", "experiencia vip"], tipo: "cat", valor: "vip" },
+  { termos: ["emocional", "autoestima"], tipo: "cat", valor: "emocional" },
+  { termos: ["data comemorativa", "datas comemorativas"], tipo: "cat", valor: "datas" },
+  { termos: ["lançamento", "lancamento", "nova coleção", "nova colecao"], tipo: "cat", valor: "lancamentos" },
+  { termos: ["engajamento", "enquete", "jogo"], tipo: "cat", valor: "engajamento" },
+  { termos: ["stories", "instagram", "reels"], tipo: "canal", valor: "Stories" },
+  { termos: ["whatsapp individual", "whatsapp"], tipo: "canal", valor: "WhatsApp individual" },
+  { termos: ["status"], tipo: "canal", valor: "Status do WhatsApp" },
+  { termos: ["lista de transmissão", "lista de transmissao"], tipo: "canal", valor: "Lista de transmissão" },
+  { termos: ["grupo vip"], tipo: "canal", valor: "Grupo VIP" },
+  { termos: ["loja física", "loja fisica", "presencial"], tipo: "canal", valor: "Loja física" },
+  { termos: ["site", "e-commerce", "ecommerce"], tipo: "canal", valor: "Site" },
+];
+
+function buscaInteligente(query) {
+  const q = query.toLowerCase();
+  const cats = new Set(); const canais = new Set();
+  KEYWORD_MAP.forEach((k) => {
+    if (k.termos.some((t) => q.includes(t))) {
+      if (k.tipo === "cat") cats.add(k.valor);
+      if (k.tipo === "canal") canais.add(k.valor);
+    }
+  });
+  return { cats, canais };
+}
+
+const BUSCA_SUGESTOES = ["Girar estoque", "Stories", "Grupo VIP", "WhatsApp", "Fidelização", "Brindes", "Ticket médio", "Lançamento", "Datas comemorativas", "Clientes antigos", "Clientes novos"];
 
 const CHART_CORES = ["#143F35", "#2F5C46", "#4E7A5E", "#4E9C7C", "#8FA88F", "#B7D9C9", "#0B2A23"];
 const MESES_ABREV = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
@@ -881,11 +938,11 @@ function CanalChip({ label, small, main }) {
   );
 }
 
-function TagCard({ action, isFav, onToggleFav, onOpen }) {
+function TagCard({ action, isFav, onToggleFav, onOpen, alt }) {
   const info = catInfo(action.cat);
   const Icon = info.icon;
   return (
-    <div className="tagcard" onClick={() => onOpen(action.id)}>
+    <div className={`tagcard ${alt ? "tagcard-alt" : ""}`} onClick={() => onOpen(action.id)}>
       <div className="tagcard-hole" />
       <div className="tagcard-body">
         <div className="tagcard-top">
@@ -1004,9 +1061,54 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
           </div>
         </div>
 
-        <div className="dtl-checklist-card">
+        <div className="dtl-section-card">
+          <div className="dtl-section-title">Antes de começar</div>
+
+          <Accordion title="Objetivo" icon={Target} defaultOpen>
+            <ul className="bullet-list" style={{ marginBottom: 10 }}>{action.objetivo.map((o, i) => <li key={i}>{o}</li>)}</ul>
+            <div className="canal-row">
+              <span className="canal-row-label">Indicado para</span>
+              <div className="chiprow">
+                {(action.nichos && action.nichos[0] !== "Geral" ? action.nichos : ["Qualquer segmento"]).map((n) => <span key={n} className="chip">{n}</span>)}
+              </div>
+            </div>
+            {action.sugestoesNomes.length > 0 && (
+              <div className="canal-row" style={{ marginTop: 8 }}>
+                <span className="canal-row-label">Outros nomes</span>
+                <div className="chiprow">{action.sugestoesNomes.map((n) => <span key={n} className="chip">{n}</span>)}</div>
+              </div>
+            )}
+          </Accordion>
+
+          <Accordion title="Quando usar" icon={Check}>
+            <ul className="bullet-list">{action.quandoUsar.map((o, i) => <li key={i}>{o}</li>)}</ul>
+          </Accordion>
+
+          {action.quandoEvitar.length > 0 && (
+            <Accordion title="Quando evitar" icon={AlertTriangle}>
+              <ul className="bullet-list">{action.quandoEvitar.map((o, i) => <li key={i}>{o}</li>)}</ul>
+            </Accordion>
+          )}
+
+          <Accordion title="Canais recomendados" icon={Radio}>
+            <div className="canal-row">
+              <span className="canal-row-label">Principal</span>
+              <CanalChip label={action.canalPrincipal} main />
+            </div>
+            {action.canaisApoio.length > 0 && (
+              <div className="canal-row">
+                <span className="canal-row-label">De apoio</span>
+                <div className="chiprow">{action.canaisApoio.map((c) => <CanalChip key={c} label={c} />)}</div>
+              </div>
+            )}
+            <p className="canal-caption">O canal principal é onde a ação acontece de fato. Os demais só existem pra levar as clientes até ele.</p>
+            {action.alternativaCanal && <p className="canal-alt-nota">{action.alternativaCanal}</p>}
+          </Accordion>
+        </div>
+
+        <div className="dtl-section-card dtl-checklist-card">
           <div className="dtl-checklist-top">
-            <span className="dtl-checklist-titulo">Checklist de execução</span>
+            <span className="dtl-checklist-titulo">Vamos executar</span>
             <span className="dtl-checklist-pct">{pctExecucao}% concluído</span>
           </div>
           <div className="dash-progress-track" style={{ marginBottom: 4 }}>
@@ -1045,91 +1147,56 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
           )}
         </div>
 
-        <div className="dtl-guia-title">Guia da campanha</div>
+        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos) && (
+          <div className="dtl-section-card">
+            <div className="dtl-section-title">Materiais de apoio</div>
 
-        <Accordion title="Objetivo" icon={Target}>
-          <ul className="bullet-list" style={{ marginBottom: 10 }}>{action.objetivo.map((o, i) => <li key={i}>{o}</li>)}</ul>
-          <div className="canal-row">
-            <span className="canal-row-label">Indicado para</span>
-            <div className="chiprow">
-              {(action.nichos && action.nichos[0] !== "Geral" ? action.nichos : ["Qualquer segmento"]).map((n) => <span key={n} className="chip">{n}</span>)}
-            </div>
-          </div>
-          {action.sugestoesNomes.length > 0 && (
-            <div className="canal-row" style={{ marginTop: 8 }}>
-              <span className="canal-row-label">Outros nomes</span>
-              <div className="chiprow">{action.sugestoesNomes.map((n) => <span key={n} className="chip">{n}</span>)}</div>
-            </div>
-          )}
-        </Accordion>
-
-        <Accordion title="Quando usar" icon={Check}>
-          <ul className="bullet-list">{action.quandoUsar.map((o, i) => <li key={i}>{o}</li>)}</ul>
-        </Accordion>
-
-        {action.quandoEvitar.length > 0 && (
-          <Accordion title="Quando evitar" icon={AlertTriangle}>
-            <ul className="bullet-list">{action.quandoEvitar.map((o, i) => <li key={i}>{o}</li>)}</ul>
-          </Accordion>
-        )}
-
-        <Accordion title="Canais" icon={Radio}>
-          <div className="canal-row">
-            <span className="canal-row-label">Principal</span>
-            <CanalChip label={action.canalPrincipal} main />
-          </div>
-          {action.canaisApoio.length > 0 && (
-            <div className="canal-row">
-              <span className="canal-row-label">De apoio</span>
-              <div className="chiprow">{action.canaisApoio.map((c) => <CanalChip key={c} label={c} />)}</div>
-            </div>
-          )}
-          <p className="canal-caption">O canal principal é onde a ação acontece de fato. Os demais só existem pra levar as clientes até ele.</p>
-          {action.alternativaCanal && <p className="canal-alt-nota">{action.alternativaCanal}</p>}
-        </Accordion>
-
-        {action.modelosMensagens.length > 0 && (
-          <Accordion title="Modelos de mensagens" icon={MessageCircle}>
-            <div className="msg-list">
-              {action.modelosMensagens.map((m, i) => (
-                <div key={i} className="msg-item">
-                  <span className="msg-canal">{m.canal}</span>
-                  <p className="msg-texto">"{m.texto}"</p>
+            {action.modelosMensagens.length > 0 && (
+              <Accordion title="Modelos de mensagens" icon={MessageCircle} defaultOpen>
+                <div className="msg-list">
+                  {action.modelosMensagens.map((m, i) => (
+                    <div key={i} className="msg-item">
+                      <span className="msg-canal">{m.canal}</span>
+                      <p className="msg-texto">"{m.texto}"</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </Accordion>
-        )}
+              </Accordion>
+            )}
 
-        {action.ideiasStories.length > 0 && (
-          <Accordion title="Ideias de Stories e Reels" icon={Radio}>
-            <ul className="bullet-list">{action.ideiasStories.map((s, i) => <li key={i}>{s}</li>)}</ul>
-          </Accordion>
-        )}
+            {action.ideiasStories.length > 0 && (
+              <Accordion title="Ideias de Stories e Reels" icon={Radio}>
+                <ul className="bullet-list">{action.ideiasStories.map((s, i) => <li key={i}>{s}</li>)}</ul>
+              </Accordion>
+            )}
 
-        <Accordion title="Dica estratégica" icon={Lightbulb} accent="gold">
-          <p className="acc-plain-text">{action.dicas}</p>
-        </Accordion>
-
-        <Accordion title="Resultado esperado" icon={TrendingUp} accent="green">
-          <ul className="bullet-list">{action.resultado.map((r, i) => <li key={i}>{r}</li>)}</ul>
-        </Accordion>
-
-        {action.nichoExemplos && (
-          <Accordion title="Exemplos por nicho">
-            <div className="nicho-examples">
-              {Object.entries(action.nichoExemplos).map(([nicho, exemplo]) => (
-                <div key={nicho} className="nicho-example-item">
-                  <span className="nicho-example-label">{nicho}</span>
-                  <span className="nicho-example-text">{exemplo}</span>
+            {action.nichoExemplos && (
+              <Accordion title="Exemplos por nicho" icon={Sparkles}>
+                <div className="nicho-examples">
+                  {Object.entries(action.nichoExemplos).map(([nicho, exemplo]) => (
+                    <div key={nicho} className="nicho-example-item">
+                      <span className="nicho-example-label">{nicho}</span>
+                      <span className="nicho-example-text">{exemplo}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </Accordion>
+              </Accordion>
+            )}
+          </div>
         )}
+
+        <div className="dtl-dica-block">
+          <div className="dtl-dica-titulo"><Lightbulb size={15} /> Dica estratégica</div>
+          <p className="dtl-dica-texto">{action.dicas}</p>
+        </div>
+
+        <div className="dtl-resultado-block">
+          <div className="dtl-resultado-titulo"><TrendingUp size={15} /> Resultado esperado</div>
+          <ul className="bullet-list dtl-resultado-lista">{action.resultado.map((r, i) => <li key={i}>{r}</li>)}</ul>
+        </div>
 
         <div className="dtl-resultados-card">
-          <span className="dtl-resultados-titulo">Resultado desta campanha</span>
+          <span className="dtl-resultados-titulo">Como essa campanha está performando</span>
           <div className="dtl-resultados-grid">
             <div className="dtl-resultados-item">
               <span className="dtl-resultados-label">Total gerado</span>
@@ -1456,6 +1523,7 @@ export default function App() {
   const [perfil, setPerfil] = useState(null);
   const [meuDiagnostico, setMeuDiagnostico] = useState(null);
   const [showDiagCompleto, setShowDiagCompleto] = useState(false);
+  const [searchFocado, setSearchFocado] = useState(false);
 
   const isAdmin = session?.email === ADMIN_EMAIL;
   const navItems = isAdmin ? [...NAV, { id: "admin", label: "Admin", icon: Shield }] : NAV;
@@ -1564,12 +1632,15 @@ export default function App() {
     }
   };
 
+  const buscaKw = search.trim() ? buscaInteligente(search) : { cats: new Set(), canais: new Set() };
   const filtered = ACTIONS.filter((a) => {
     const matchesCat = !catFilter || a.cat === catFilter;
     const matchesCanal = !canalFilter || a.canalPrincipal === canalFilter || a.canaisApoio.includes(canalFilter);
     const matchesNicho = !nichoFilter || (a.nichos && a.nichos.includes(nichoFilter));
     const q = search.trim().toLowerCase();
-    const matchesSearch = !q || a.nome.toLowerCase().includes(q) || a.tipo.toLowerCase().includes(q) || a.como.toLowerCase().includes(q);
+    const matchesTexto = !q || a.nome.toLowerCase().includes(q) || a.tipo.toLowerCase().includes(q) || a.como.toLowerCase().includes(q);
+    const matchesKw = buscaKw.cats.has(a.cat) || buscaKw.canais.has(a.canalPrincipal) || a.canaisApoio.some((c) => buscaKw.canais.has(c));
+    const matchesSearch = !q || matchesTexto || matchesKw;
     return matchesCat && matchesCanal && matchesNicho && matchesSearch;
   });
 
@@ -1778,9 +1849,36 @@ export default function App() {
     .catchip {
       flex-shrink: 0; display: flex; align-items: center; gap: 6px;
       background: var(--card); border: 1px solid var(--line); border-radius: 999px;
-      padding: 7px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; color: var(--ink);
+      padding: 7px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; color: var(--wine); font-weight: 500;
     }
     .catchip.active { background: var(--wine); border-color: var(--wine); color: #fff; }
+
+    .bib-section-title {
+      display: inline-block; background: var(--wine); color: #fff; font-family: 'IBM Plex Mono', monospace;
+      font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 14px; border-radius: 999px;
+      margin: 18px auto 10px; max-width: 720px; width: fit-content;
+    }
+    .bib-section-title:first-of-type { margin-top: 4px; }
+
+    .bib-video-wrap { max-width: 720px; margin: 14px auto 0; padding: 0 20px; }
+    .bib-video-destaque { margin: 0; box-shadow: 0 2px 8px rgba(20,63,53,0.05); }
+    .bib-video-caption { font-size: 12px; color: var(--ink-soft); line-height: 1.5; margin: 8px 4px 0; }
+
+    .bib-busca-wrap { max-width: 720px; margin: 18px auto 4px; padding: 0 20px; }
+    .bib-busca-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--wine); margin-bottom: 8px;
+    }
+    .bib-busca-bar { margin: 0 !important; padding: 14px 16px !important; border: 1.5px solid var(--wine) !important; box-shadow: 0 2px 10px rgba(20,63,53,0.08); }
+    .bib-busca-bar input { font-size: 14px !important; }
+    .bib-sugestoes { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .bib-sugestao-chip {
+      background: var(--paper); border: 1px solid var(--line); color: var(--wine); font-size: 11.5px; font-weight: 500;
+      padding: 6px 12px; border-radius: 999px; cursor: pointer; font-family: 'Work Sans', sans-serif;
+    }
+    .bib-sugestao-chip:hover { background: var(--wine); color: #fff; border-color: var(--wine); }
+
+    .tagcard.tagcard-alt { background: #EEF6F1; }
 
     .filter-block { max-width: 720px; margin: 0 auto; width: 100%; }
     .filter-title { font-size: 10.5px; color: var(--ink-soft); padding: 6px 20px 2px; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'IBM Plex Mono', monospace; }
@@ -2039,21 +2137,58 @@ export default function App() {
     }
     .dtl-chip svg { color: var(--wine); flex-shrink: 0; }
 
-    .dtl-checklist-card {
+    .dtl-section-card {
       background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
       box-shadow: 0 2px 8px rgba(20,63,53,0.05); margin: 16px 0;
     }
+    .dtl-section-title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 15px; color: var(--ink); margin-bottom: 4px; }
+    .dtl-section-card .acc { border: none; border-bottom: 1px solid var(--line); border-radius: 0; margin-bottom: 0; background: none; }
+    .dtl-section-card .acc:last-child { border-bottom: none; }
+    .dtl-section-card .acc-header { padding: 12px 2px; }
+
     .dtl-checklist-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
     .dtl-checklist-titulo { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 15px; color: var(--ink); }
     .dtl-checklist-pct { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 12.5px; color: var(--wine); }
-    .dtl-checklist-card .acc { border: none; border-bottom: 1px solid var(--line); border-radius: 0; margin-bottom: 0; background: none; }
-    .dtl-checklist-card .acc:last-child { border-bottom: none; }
-    .dtl-checklist-card .acc-header { padding: 12px 2px; }
     .dtl-marco { padding: 8px 0 14px; }
     .dtl-marco:last-child { padding-bottom: 0; }
     .dtl-marco-titulo { display: block; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--mustard); margin-bottom: 8px; }
 
+    /* Vamos executar: tema escuro (verde escuro da identidade) */
+    .dtl-checklist-card {
+      background: var(--wine); border-color: var(--wine); color: #fff;
+    }
+    .dtl-checklist-card .dtl-checklist-titulo { color: #fff; }
+    .dtl-checklist-card .dtl-checklist-pct { color: rgba(255,255,255,0.85); }
+    .dtl-checklist-card .dash-progress-track { background: rgba(255,255,255,0.18); border-color: transparent; }
+    .dtl-checklist-card .dash-progress-fill { background: #fff; }
+    .dtl-checklist-card .acc { border-bottom-color: rgba(255,255,255,0.18); }
+    .dtl-checklist-card .acc-header-left { color: #fff; }
+    .dtl-checklist-card .acc-chevron { color: rgba(255,255,255,0.7); }
+    .dtl-checklist-card .checkitem span { color: rgba(255,255,255,0.95); }
+    .dtl-checklist-card .checkitem .done { color: rgba(255,255,255,0.5); }
+    .dtl-checklist-card .checkitem input { accent-color: #fff; }
+    .dtl-checklist-card .dtl-marco-titulo { color: rgba(255,255,255,0.65); }
+
     .dtl-guia-title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 13px; color: var(--ink); margin: 22px 2px 10px; }
+
+    .dtl-dica-block {
+      background: var(--mustard); color: #fff; border-radius: 14px; padding: 18px; margin: 16px 0;
+      box-shadow: 0 2px 8px rgba(20,63,53,0.06);
+    }
+    .dtl-dica-titulo {
+      display: flex; align-items: center; gap: 7px; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12.5px;
+      text-transform: uppercase; letter-spacing: 0.04em; color: rgba(255,255,255,0.85); margin-bottom: 8px;
+    }
+    .dtl-dica-texto { margin: 0; font-size: 13.5px; line-height: 1.55; color: #fff; }
+
+    .dtl-resultado-block {
+      background: #EAF5EF; border: 1px solid #D3E8DD; border-radius: 14px; padding: 18px; margin: 16px 0;
+    }
+    .dtl-resultado-titulo {
+      display: flex; align-items: center; gap: 7px; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12.5px;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--wine); margin-bottom: 8px;
+    }
+    .dtl-resultado-lista { margin: 0; }
 
     .dtl-resultados-card {
       background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
@@ -2462,23 +2597,44 @@ export default function App() {
                   <span style={{ width: 20 }} />
                 </div>
 
-                <div className="search-bar" style={{ margin: "14px auto 8px" }}>
-                  <Search size={16} color="#6B7268" />
-                  <input placeholder="O que você precisa resolver hoje?" value={search} onChange={(e) => setSearch(e.target.value)} />
-                  {search && <X size={14} color="#6B7268" style={{ cursor: "pointer" }} onClick={() => setSearch("")} />}
+                {bibShowMenu && (
+                  <div className="bib-video-wrap">
+                    <div className="tutorial-placeholder bib-video-destaque">
+                      <Radio size={22} color="#143F35" />
+                      <div>
+                        <span className="tutorial-titulo">Vídeo: como usar a Biblioteca de Ações</span>
+                        <span className="tutorial-sub">Em breve — um vídeo curto mostrando como encontrar e aplicar cada ação.</span>
+                      </div>
+                    </div>
+                    <p className="bib-video-caption">Não sabe por onde começar? Assista este vídeo de 2 minutos e entenda como encontrar rapidamente a melhor estratégia para sua loja.</p>
+                  </div>
+                )}
+
+                <div className="bib-busca-wrap">
+                  <div className="bib-busca-label">Busca inteligente</div>
+                  <div className="search-bar bib-busca-bar">
+                    <Search size={17} color="#143F35" />
+                    <input
+                      placeholder="Ex: quero girar estoque, vender no WhatsApp, fazer uma promoção..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      onFocus={() => setSearchFocado(true)}
+                      onBlur={() => setTimeout(() => setSearchFocado(false), 150)}
+                    />
+                    {search && <X size={14} color="#6B7268" style={{ cursor: "pointer" }} onClick={() => setSearch("")} />}
+                  </div>
+                  {searchFocado && (
+                    <div className="bib-sugestoes">
+                      {BUSCA_SUGESTOES.map((s) => (
+                        <button key={s} className="bib-sugestao-chip" onMouseDown={() => setSearch(s)}>{s}</button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {bibShowMenu ? (
                   <div className="menu-wrap">
-                    <div className="tutorial-placeholder">
-                      <Radio size={20} color="#143F35" />
-                      <div>
-                        <span className="tutorial-titulo">Vídeo: como usar a biblioteca</span>
-                        <span className="tutorial-sub">Em breve — um vídeo curto mostrando como encontrar e aplicar cada ação.</span>
-                      </div>
-                    </div>
-
-                    <div className="filter-title">Por categoria</div>
+                    <div className="bib-section-title">Explorar por objetivo</div>
                     <div className="menu-list">
                       {CATS.map((c) => {
                         const count = ACTIONS.filter((a) => a.cat === c.id).length;
@@ -2493,7 +2649,7 @@ export default function App() {
                       })}
                     </div>
 
-                    <div className="filter-title">Por canal</div>
+                    <div className="bib-section-title">Explorar por canal</div>
                     <div className="menu-list">
                       {CANAIS.map((c) => {
                         const count = ACTIONS.filter((a) => a.canalPrincipal === c.label || a.canaisApoio.includes(c.label)).length;
@@ -2508,16 +2664,35 @@ export default function App() {
                       })}
                     </div>
 
-                    <div className="filter-title">Por nicho</div>
+                    <div className="bib-section-title">Explorar por nicho</div>
                     <div className="menu-list" style={{ marginBottom: 20 }}>
-                      {NICHOS.filter((n) => n !== "Geral").map((n) => {
-                        const count = ACTIONS.filter((a) => a.nichos && a.nichos.includes(n)).length;
+                      {NICHO_GRUPOS.map((g) => {
+                        if (!g.itens) {
+                          const count = ACTIONS.filter((a) => a.nichos && a.nichos.includes(g.valorDireto)).length;
+                          return (
+                            <button key={g.label} className="menu-row" onClick={() => setNichoFilter(g.valorDireto)}>
+                              <span className="menu-row-label" style={{ marginLeft: 0 }}>{g.emoji} {g.label}</span>
+                              <span className="menu-count">{count}</span>
+                              <ChevronRight size={16} color="#A9B0A4" />
+                            </button>
+                          );
+                        }
+                        const totalGrupo = g.itens.reduce((s, it) => s + ACTIONS.filter((a) => a.nichos && a.nichos.includes(it.valor)).length, 0);
                         return (
-                          <button key={n} className="menu-row" onClick={() => setNichoFilter(n)}>
-                            <span className="menu-row-label" style={{ marginLeft: 0 }}>{n}</span>
-                            <span className="menu-count">{count}</span>
-                            <ChevronRight size={16} color="#A9B0A4" />
-                          </button>
+                          <Accordion key={g.label} title={`${g.emoji} ${g.label}`}>
+                            <div className="menu-list" style={{ padding: 0 }}>
+                              {g.itens.map((it) => {
+                                const count = ACTIONS.filter((a) => a.nichos && a.nichos.includes(it.valor)).length;
+                                return (
+                                  <button key={it.valor} className="menu-row" onClick={() => setNichoFilter(it.valor)}>
+                                    <span className="menu-row-label" style={{ marginLeft: 0 }}>{it.label}</span>
+                                    <span className="menu-count">{count}</span>
+                                    <ChevronRight size={16} color="#A9B0A4" />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </Accordion>
                         );
                       })}
                     </div>
@@ -2544,8 +2719,8 @@ export default function App() {
                           <p>Nenhuma ação encontrada com esse filtro. Ajuste a busca ou volte ao menu para tentar outra combinação.</p>
                         </div>
                       ) : (
-                        filtered.map((a) => (
-                          <TagCard key={a.id} action={a} isFav={favs.has(a.id)} onToggleFav={toggleFav} onOpen={(id) => setOpenId(id)} />
+                        filtered.map((a, i) => (
+                          <TagCard key={a.id} action={a} isFav={favs.has(a.id)} onToggleFav={toggleFav} onOpen={(id) => setOpenId(id)} alt={i % 2 === 1} />
                         ))
                       )}
                     </div>
