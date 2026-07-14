@@ -5,7 +5,7 @@ import {
   Star, Target, Sparkles, Check, ChevronRight, X, Store, Crown,
   Megaphone, UserMinus, UserPlus, Globe, Radio, LogOut, Mail, KeyRound,
   Lightbulb, AlertTriangle, TrendingUp, DollarSign, BarChart3,
-  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle, Shirt, Video
+  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle, Shirt, Video, Film, LayoutGrid
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
@@ -26,6 +26,8 @@ const CATS = [
 
 const CANAIS = [
   { label: "Stories", icon: Radio },
+  { label: "Reels", icon: Film },
+  { label: "Feed", icon: LayoutGrid },
   { label: "Loja física", icon: Store },
   { label: "Grupo VIP", icon: Crown },
   { label: "Live de vendas", icon: Video },
@@ -351,73 +353,228 @@ const ACTIONS = [
     relacionadas: ["pague-2-leve-3", "comprou-ganhou-stories", "dia-do-frete-especial"],
   },
   {
+    id: "comprou-ganhou", nome: "Comprou, Ganhou", cat: "brindes", nichos: ["Geral"],
+    tipo: "Campanha completa de brindes",
+    sugestoesNomes: [],
+    objetivoPrincipal: "Aumentar a conversão e gerar mais vendas através de um benefício exclusivo.",
+    alternativaCanal: "O canal principal pode ser a Loja física, o Site ou o Atendimento pelo WhatsApp — escolha o que fizer mais sentido pro jeito que sua loja vende hoje. Os demais canais abaixo (Stories, Reels, Feed, Status, Lista de transmissão) servem de apoio pra divulgar, independentemente de qual você escolher como principal.",
+    como: "A campanha Comprou, Ganhou é uma estratégia comercial criada para aumentar as vendas durante um período específico oferecendo um benefício para quem realizar uma compra. Ao invés de oferecer desconto, a loja entrega um brinde de alto valor percebido, aumentando a sensação de vantagem e incentivando a decisão de compra sem desvalorizar os produtos. Essa estratégia pode ser utilizada em lançamentos de coleção, aniversários da loja, campanhas sazonais, datas comemorativas ou qualquer período em que o objetivo seja gerar mais vendas e movimentar a loja.",
+    duracao: "3 a 7 dias",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Site", "WhatsApp individual", "Stories", "Reels", "Feed", "Status do WhatsApp", "Lista de transmissão"],
+    objetivo: [
+      "Aumentar as vendas durante um período específico.",
+      "Aumentar a conversão sem depender de descontos.",
+      "Agregar valor à compra.",
+      "Incentivar clientes indecisos.",
+      "Fortalecer campanhas de lançamento ou datas especiais.",
+    ],
+    quandoUsar: [
+      "Lançamento de coleção.",
+      "Datas comemorativas.",
+      "Aniversário da loja.",
+      "Semana especial de vendas.",
+      "Campanhas para aumentar faturamento.",
+      "Sempre que desejar oferecer um benefício sem reduzir a margem.",
+    ],
+    quandoEvitar: [
+      "Durante liquidações com descontos muito agressivos.",
+      "Quando houver outra campanha principal acontecendo ao mesmo tempo.",
+      "Quando o brinde não tiver valor percebido para o cliente.",
+    ],
+    comoEscolherBrinde: {
+      intro: "O sucesso da campanha depende da escolha do brinde. Evite brindes muito simples ou sem relação com o seu público. O ideal é que o cliente sinta que está recebendo um benefício exclusivo e que valha a pena aproveitar a campanha.",
+      boasOpcoes: ["Necessaire personalizada", "Garrafa térmica", "Acessório exclusivo", "Cosmético", "Produto da nova coleção", "Segunda peça selecionada", "Kit da marca", "Lenço", "Organizador", "Vale para um serviço exclusivo"],
+      perguntaChave: "Pergunte sempre: 'Esse brinde faria meu cliente comprar hoje para não perder essa oportunidade?' Se a resposta for não, escolha outro.",
+    },
+    checklist: [
+      "Definir qual será o brinde.",
+      "Definir a quantidade disponível.",
+      "Definir as regras da campanha.",
+      "Estabelecer o período da ação.",
+      "Fotografar o brinde.",
+      "Organizar os brindes na loja.",
+      "Criar a comunicação visual da campanha.",
+      "Preparar vitrine, site ou catálogo.",
+      "Alinhar toda a equipe sobre as regras da campanha.",
+    ],
+    checklistExecucao: [
+      "Iniciar a campanha na data planejada.",
+      "Apresentar o benefício em todos os atendimentos.",
+      "Mostrar o brinde antes de apresentar o preço.",
+      "Entregar o brinde de forma especial para aumentar a percepção de valor.",
+      "Registrar fotos e vídeos de clientes recebendo o benefício.",
+      "Atualizar diariamente os conteúdos da campanha.",
+      "Registrar internamente as vendas da campanha para acompanhar os resultados posteriormente.",
+    ],
+    planoDivulgacao: [
+      { marco: "Dois dias antes", itens: [
+        "Publicar um Reels anunciando que uma campanha especial está chegando.",
+        "Mostrar bastidores da preparação nos Stories.",
+        "Atualizar o Status do WhatsApp.",
+        "Avisar clientes pelo WhatsApp que uma campanha exclusiva começa em breve.",
+      ]},
+      { marco: "Um dia antes", itens: [
+        "Fazer contagem regressiva nos Stories.",
+        "Mostrar parte do brinde sem revelar todos os detalhes.",
+        "Reforçar a data de início da campanha.",
+        "Publicar um lembrete no Status do WhatsApp.",
+      ]},
+      { marco: "Durante toda a campanha", itens: [
+        "Mostrar clientes recebendo o brinde.",
+        "Mostrar produtos participantes.",
+        "Mostrar bastidores da loja.",
+        "Compartilhar provas sociais e depoimentos.",
+        "Mostrar quantidade limitada de brindes, quando fizer sentido.",
+        "Fazer lembretes diários nos Stories.",
+        "Reforçar a campanha no WhatsApp para clientes interessados.",
+      ]},
+    ],
+    modelosMensagens: [
+      { canal: "WhatsApp", texto: "Oi! Passei para avisar em primeira mão que nossa campanha Comprou, Ganhou começa em breve. Durante esse período, nas compras participantes, você recebe um presente exclusivo preparado especialmente para nossas clientes. Se quiser conhecer os produtos participantes, é só me chamar." },
+    ],
+    ideiasStories: [
+      "Reels — Tema: 'Tem presente chegando por aqui.' Roteiro: comece mostrando detalhes do brinde sem revelar completamente, depois mostre alguns produtos participantes, finalize convidando o cliente para acompanhar a campanha e descobrir como garantir o presente.",
+      "Story 1: mostre os bastidores da preparação da campanha.",
+      "Story 2: apresente parte do brinde e gere curiosidade.",
+      "Story 3: explique que a campanha começa em uma data específica.",
+      "Story 4: mostre alguns produtos participantes.",
+      "Story 5: finalize com uma chamada para ação — 'A partir de amanhã, nas compras participantes, você garante um presente exclusivo. Ative o lembrete e não perca.'",
+    ],
+    materiaisNecessarios: ["Brindes", "Embalagens", "Comunicação visual", "Celular para produção dos conteúdos", "Cartazes ou etiquetas (opcional)"],
+    dicas: "Não comunique apenas 'ganhe um brinde'. Mostre o benefício de forma visual e destaque por que ele torna a compra ainda mais vantajosa. Quanto maior a percepção de valor do presente, maior será o desejo de participar da campanha.",
+    resultado: [
+      "Aumento das vendas durante a campanha.",
+      "Maior conversão de clientes indecisos.",
+      "Fortalecimento da percepção de valor da marca.",
+      "Aumento do ticket médio (quando houver valor mínimo para participação).",
+      "Maior engajamento nos canais de comunicação da loja.",
+    ],
+    relacionadas: ["comprou-ganhou-stories", "comprou-ganhou-vip", "desbloqueie-brindes", "cashback-inteligente", "frete-gratis-relampago", "combo-inteligente"],
+  },
+  {
     id: "comprou-ganhou-stories", nome: "Comprou, Ganhou Express (Stories)", cat: "brindes", nichos: ["Geral"],
     tipo: "Ação relâmpago de 1 dia",
     sugestoesNomes: [], alternativaCanal: null,
-    como: "Gera pico de vendas imediato através da escassez, usando os Stories como canal principal.",
+    objetivoPrincipal: "Gerar um pico imediato de vendas utilizando urgência e escassez.",
+    como: "A campanha Comprou, Ganhou Express é uma ação relâmpago realizada exclusivamente pelos Stories com o objetivo de gerar um pico de vendas em poucas horas. A estratégia utiliza a combinação de urgência + escassez + exclusividade, incentivando os clientes a comprarem imediatamente para garantir um benefício limitado. Diferente da campanha tradicional, essa ação acontece em apenas um dia e normalmente possui uma quantidade limitada de brindes ou um período específico de duração. É ideal para movimentar um dia de baixo fluxo, destacar um produto específico, impulsionar uma coleção ou gerar vendas rápidas sem depender de descontos.",
     duracao: "1 dia",
     canalPrincipal: "Stories",
-    canaisApoio: ["WhatsApp individual"],
-    objetivo: ["Gerar pico de vendas imediato através da escassez"],
-    quandoUsar: ["Dias de movimento mais fraco, para gerar picos de conversa e vendas rápidas"],
-    quandoEvitar: ["Sem definir os benefícios e produtos com antecedência"],
-    checklist: ["Escolher até 10 produtos", "Definir quantidade de brindes", "Fotografar os produtos", "Definir horário da abertura"],
-    checklistExecucao: ["Publicar a sequência de Stories no horário definido", "Responder mensagens em tempo real", "Atualizar quantos brindes já foram resgatados"],
+    canaisApoio: ["WhatsApp individual", "Status do WhatsApp"],
+    objetivo: ["Gerar vendas rápidas.", "Movimentar produtos específicos.", "Criar sensação de oportunidade.", "Aumentar o fluxo de pedidos em poucas horas.", "Gerar engajamento nos Stories."],
+    quandoUsar: ["Dias de baixo movimento.", "Meta de vendas do dia.", "Lançamento de um produto específico.", "Quando deseja destacar poucas peças.", "Para gerar faturamento rápido."],
+    quandoEvitar: ["Durante campanhas maiores que já estejam acontecendo.", "Quando não houver disponibilidade suficiente de brindes.", "Quando a equipe não conseguir atender um aumento rápido na demanda."],
+    comoEscolherBrinde: {
+      intro: "Como essa campanha acontece em apenas um dia, o benefício precisa despertar desejo imediato. Escolha um brinde que faça o cliente sentir que vale a pena comprar naquele momento.",
+      boasOpcoes: ["Acessório exclusivo", "Segunda peça selecionada", "Produto da coleção nova", "Necessaire", "Cosmético", "Kit personalizado", "Vale para um benefício futuro"],
+      perguntaChave: "Você também pode limitar a quantidade disponível. Exemplos: primeiras 10 clientes, primeiras 20 compras, enquanto durarem os brindes. Isso aumenta a sensação de urgência.",
+    },
+    checklist: ["Escolher os produtos participantes.", "Definir qual será o brinde.", "Definir a quantidade disponível.", "Fotografar os produtos.", "Fotografar o brinde.", "Organizar os produtos para gravação.", "Definir o horário em que a campanha será aberta.", "Preparar toda a sequência de Stories antes do início."],
+    checklistExecucao: ["Publicar os Stories no horário definido.", "Explicar claramente as regras.", "Mostrar os produtos participantes.", "Mostrar o brinde.", "Informar constantemente quantos brindes ainda restam.", "Responder rapidamente às mensagens.", "Atualizar os Stories durante todo o dia mostrando vendas acontecendo.", "Encerrar oficialmente quando os brindes acabarem ou no horário previsto."],
     planoDivulgacao: [
-      { marco: "1 dia antes", itens: ["Story avisando que amanhã tem oportunidade exclusiva pra quem acompanha", "WhatsApp lembrando de acompanhar os Stories"] },
-      { marco: "No dia", itens: ["Sequência de 6 Stories (ver Ideias de Stories abaixo)"] },
+      { marco: "Um dia antes", itens: ["Publicar Stories avisando que uma oportunidade exclusiva será liberada no dia seguinte.", "Atualizar o Status do WhatsApp.", "Enviar mensagem para clientes mais próximas avisando para acompanharem os Stories."] },
+      { marco: "No dia da campanha", itens: ["Abrir a campanha nos Stories.", "Explicar as regras.", "Mostrar os produtos participantes.", "Mostrar o brinde.", "Fazer atualizações durante o dia.", "Mostrar clientes comprando.", "Mostrar brindes sendo entregues.", "Fazer uma última chamada antes do encerramento."] },
     ],
-    modelosMensagens: [
-      { canal: "Stories (véspera)", texto: "Amanhã vou liberar uma oportunidade para quem acompanha meus Stories. As primeiras clientes vão desbloquear um presente especial." },
-      { canal: "WhatsApp (véspera)", texto: "Amanhã acompanha meus Stories porque vou liberar uma condição exclusiva." },
+    modelosMensagens: [{ canal: "WhatsApp (véspera)", texto: "Oi! Amanhã vou liberar uma oportunidade exclusiva pelos Stories. Se você gosta de garantir condições especiais, acompanha nosso Instagram porque será válido apenas durante o dia e com quantidade limitada." }],
+    ideiasStories: [
+      "Reels (véspera) — Tema: 'Amanhã vou liberar uma oportunidade para quem acompanha meus Stories.' Mostre rapidamente alguns detalhes do brinde e alguns produtos, sem revelar todas as informações. Finalize dizendo: 'Amanhã você vai entender por que vale a pena acompanhar desde cedo.'",
+      "Story 1: 'Hoje preparei uma oportunidade especial para quem acompanha nossos Stories.'",
+      "Story 2: apresente rapidamente o benefício. Exemplo: 'As primeiras 10 clientes que comprarem hoje vão ganhar um presente exclusivo.'",
+      "Story 3: mostre os produtos participantes.",
+      "Story 4: mostre o brinde.",
+      "Story 5: explique como comprar.",
+      "Story 6: mostre pedidos entrando.",
+      "Story 7: atualize — 'Já restam apenas 5 brindes.'",
+      "Story 8: última chamada — 'Estamos encerrando a campanha. Se você ainda quer garantir o presente, essa é a última oportunidade.'",
     ],
-    ideiasStories: ["Story 1: Abertura", "Story 2: Explicação", "Story 3: Mostrar produtos", "Story 4: Mostrar o brinde", "Story 5: 'Restam apenas X brindes'", "Story 6: Última chamada"],
-    dicas: "Esse playbook inteiro cabe em uma tela — a força está na sequência rápida de Stories, não em explicações longas.",
-    resultado: ["Pico de conversas e vendas no mesmo dia", "Sensação de sorte e exclusividade para quem acompanhou"],
-    relacionadas: ["comprou-ganhou-vip", "desbloqueie-brindes"],
+    materiaisNecessarios: ["Brindes", "Produtos participantes", "Celular", "Boa iluminação", "Organização para responder rapidamente os pedidos"],
+    dicas: "Essa campanha funciona porque gera velocidade na decisão de compra. Evite deixá-la aberta por muitos dias. Quanto mais limitada for a oportunidade, maior será a tendência de o cliente agir imediatamente. Sempre mostre movimento durante a campanha: pedidos entrando, brindes sendo entregues e a quantidade restante. Isso aumenta a prova social e reforça a sensação de urgência.",
+    resultado: ["Pico de vendas em um único dia.", "Aumento do engajamento nos Stories.", "Maior fluxo de mensagens no WhatsApp.", "Venda rápida de produtos específicos.", "Fortalecimento da percepção de exclusividade."],
+    relacionadas: ["comprou-ganhou", "comprou-ganhou-vip", "desbloqueie-brindes", "frete-gratis-relampago", "cashback-relampago-vip"],
   },
   {
     id: "comprou-ganhou-vip", nome: "Comprou, Ganhou Express (Grupo VIP)", cat: "brindes", nichos: ["Geral"],
     tipo: "Ação relâmpago exclusiva para o grupo",
     sugestoesNomes: [], alternativaCanal: null,
-    como: "Mesma mecânica do Comprou Ganhou Express, só que o canal principal passa a ser o Grupo VIP em vez dos Stories.",
+    objetivoPrincipal: "Gerar um pico imediato de vendas e fortalecer o Grupo VIP da loja.",
+    como: "A campanha Comprou, Ganhou Express (Grupo VIP) é uma estratégia relâmpago criada para gerar um pico de vendas utilizando um grupo exclusivo no WhatsApp. O benefício é disponibilizado apenas para quem faz parte do grupo, tornando a campanha mais exclusiva e incentivando clientes a permanecerem na comunidade para não perder futuras oportunidades. Diferente da campanha tradicional, essa ação acontece em apenas um dia e utiliza a antecipação para criar expectativa antes da abertura oficial.",
     duracao: "1 dia",
     canalPrincipal: "Grupo VIP",
-    canaisApoio: ["Stories"],
-    objetivo: ["Gerar pico de vendas imediato através da escassez, de forma exclusiva para o grupo"],
-    quandoUsar: ["Quando a loja quer fortalecer o Grupo VIP como canal de vendas"],
-    quandoEvitar: ["Quando o grupo ainda é muito pequeno ou pouco engajado"],
-    checklist: ["Escolher até 10 produtos", "Definir quantidade de brindes", "Fotografar os produtos", "Definir horário da abertura"],
-    checklistExecucao: ["Publicar mensagem de abertura no grupo", "Postar produtos e atualizações durante o dia", "Fazer a última chamada e encerrar oficialmente"],
+    canaisApoio: ["Stories", "Status do WhatsApp", "WhatsApp individual"],
+    objetivo: ["Gerar vendas rápidas.", "Aumentar o movimento no Grupo VIP.", "Criar exclusividade.", "Incentivar clientes a entrarem no grupo.", "Gerar sensação de oportunidade limitada."],
+    quandoUsar: ["Dias de baixo movimento.", "Lançamento de produtos.", "Queima de estoque de poucas peças.", "Meta de vendas do dia.", "Quando deseja fortalecer o Grupo VIP."],
+    quandoEvitar: ["Quando o grupo estiver pouco movimentado.", "Sem tempo suficiente para fazer a antecipação.", "Durante campanhas maiores acontecendo ao mesmo tempo."],
+    comoEscolherBrinde: {
+      intro: "O benefício precisa ser percebido como exclusivo. Escolha brindes que despertem desejo e façam o cliente sentir que vale a pena participar do grupo.",
+      boasOpcoes: ["Acessório exclusivo", "Necessaire", "Produto da nova coleção", "Cosmético", "Segunda peça selecionada", "Kit personalizado", "Vale para um benefício futuro"],
+      perguntaChave: "Sempre limite a quantidade disponível. Exemplos: primeiras 10 compras, primeiras 15 clientes, enquanto durarem os brindes.",
+    },
+    checklist: ["Definir qual será o brinde.", "Escolher os produtos participantes.", "Definir quantidade disponível.", "Organizar fotos e vídeos dos produtos.", "Preparar todas as mensagens do grupo antecipadamente.", "Definir o horário oficial da abertura.", "Criar link de convite do Grupo VIP."],
+    checklistExecucao: ["Abrir oficialmente a campanha no grupo.", "Explicar claramente as regras.", "Publicar os produtos participantes.", "Mostrar o brinde.", "Atualizar constantemente as vendas.", "Informar quantos brindes ainda restam.", "Responder rapidamente às clientes.", "Encerrar oficialmente a campanha ao final do dia ou quando os brindes acabarem."],
     planoDivulgacao: [
-      { marco: "2 dias antes", itens: ["Stories convidando para entrar no grupo, com spoiler da condição exclusiva"] },
-      { marco: "Dia da ação", itens: ["Mensagem de abertura ('Começou!')", "Publicar produtos e atualizar vendas durante o dia", "Mostrar peças encerrando e fazer a última chamada", "Encerrar oficialmente"] },
+      { marco: "Dois dias antes", itens: ["Publicar Stories convidando pessoas para entrarem no Grupo VIP.", "Atualizar o Status do WhatsApp.", "Compartilhar o link do grupo com clientes estratégicas."] },
+      { marco: "Um dia antes", itens: ["Enviar uma mensagem no grupo informando que uma campanha exclusiva acontecerá no dia seguinte.", "Publicar Stories reforçando que somente participantes do grupo terão acesso.", "Fazer uma contagem regressiva."] },
+      { marco: "No dia da campanha", itens: ["Abrir oficialmente a campanha no grupo.", "Publicar os produtos participantes.", "Mostrar o brinde.", "Atualizar as vendas ao longo do dia.", "Mostrar quais produtos já foram vendidos.", "Informar a quantidade restante de brindes.", "Fazer uma última chamada antes do encerramento."] },
     ],
-    modelosMensagens: [{ canal: "Grupo VIP (abertura)", texto: "Começou! Hoje é dia de condição exclusiva só pra quem está aqui no grupo." }],
-    ideiasStories: ["Convite pro grupo com spoiler da condição exclusiva"],
-    dicas: "Só muda o canal principal — o resto da estrutura continua igual ao Comprou Ganhou Express de Stories.",
-    resultado: ["Crescimento do Grupo VIP", "Pico de vendas exclusivo", "Geração de senso de pertencimento"],
-    relacionadas: ["comprou-ganhou-stories", "clube-secreto"],
+    modelosMensagens: [
+      { canal: "Grupo VIP (véspera)", texto: "Amanhã vou liberar uma campanha exclusiva para quem está aqui no grupo. Preparei um presente especial para as primeiras clientes que comprarem. Fique de olho porque a abertura será às ____." },
+      { canal: "Grupo VIP (abertura)", texto: "Começou! A partir de agora, as primeiras clientes que realizarem compras participantes garantem um presente exclusivo preparado especialmente para esta campanha. Assim que os brindes acabarem, a campanha será encerrada." },
+      { canal: "Grupo VIP (encerramento)", texto: "Encerramos nossa campanha de hoje! Obrigada a todas que participaram. Se você não conseguiu aproveitar desta vez, continue no grupo porque novas ações exclusivas serão liberadas por aqui." },
+    ],
+    ideiasStories: [
+      "Reels (2 dias antes) — Tema: 'Essa oportunidade não vai acontecer no Instagram.' Mostre apenas pequenos detalhes do benefício e finalize convidando as pessoas para entrarem no Grupo VIP. Final: 'Se você quer participar, entre no nosso Grupo VIP. A campanha será exclusiva para quem estiver lá.'",
+      "Story 1: 'Estou preparando uma ação exclusiva.'",
+      "Story 2: 'Ela vai acontecer somente dentro do nosso Grupo VIP.'",
+      "Story 3: mostre rapidamente o brinde sem revelar tudo.",
+      "Story 4: explique que o grupo será fechado antes da campanha começar.",
+      "Story 5: compartilhe o link para entrada.",
+      "Story 6 (no dia): avise que a campanha começou dentro do grupo.",
+    ],
+    materiaisNecessarios: ["Grupo VIP organizado", "Link de convite", "Brindes", "Produtos participantes", "Fotos e vídeos prontos", "Celular disponível para atendimento rápido"],
+    dicas: "O verdadeiro objetivo dessa campanha não é apenas vender naquele dia, mas fazer o cliente perceber que estar no Grupo VIP gera vantagens reais. Evite repetir esse tipo de ação com muita frequência. Quanto mais exclusiva ela parecer, maior será o interesse das clientes em permanecer no grupo e acompanhar as próximas oportunidades.",
+    resultado: ["Pico de vendas em um único dia.", "Crescimento do Grupo VIP.", "Maior engajamento das clientes.", "Fortalecimento do relacionamento com a base.", "Mais vendas através do WhatsApp."],
+    relacionadas: ["comprou-ganhou", "comprou-ganhou-stories", "desbloqueie-brindes", "cashback-relampago-vip", "frete-gratis-relampago", "preview-nova-colecao"],
   },
   {
-    id: "desbloqueie-brindes", nome: "Desbloqueie Brindes", cat: "brindes", nichos: ["Geral"],
-    tipo: "Campanha de incentivo (não é urgência)",
-    sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Stories — a régua de faixas funciona igual em vendas por WhatsApp ou site.",
-    como: "Aumenta o ticket médio através de faixas de valor que desbloqueiam brindes cada vez melhores — a lógica é de incentivo, não de urgência.",
-    duracao: "Semana",
+    id: "desbloqueie-brindes", nome: "Desbloqueando Brindes", cat: "brindes", nichos: ["Geral"],
+    tipo: "Compre mais, conquiste mais.",
+    sugestoesNomes: [],
+    objetivoPrincipal: "Aumentar o ticket médio através de brindes progressivos.",
+    alternativaCanal: "O canal principal pode ser a Loja física, o Site ou o Atendimento pelo WhatsApp — escolha o que fizer mais sentido pro jeito que sua loja vende hoje.",
+    como: "A campanha Desbloqueando Brindes é uma estratégia criada para aumentar o ticket médio incentivando o cliente a comprar mais para conquistar novos benefícios. Ao invés de oferecer apenas um único brinde, o cliente vai desbloqueando recompensas conforme aumenta o valor da sua compra. Isso cria uma sensação de progressão e faz com que ele queira adicionar mais produtos ao carrinho para alcançar o próximo nível. Essa estratégia funciona muito bem em lançamentos de coleção, datas comemorativas, semanas especiais e campanhas para aumentar o faturamento sem depender de descontos.",
+    duracao: "3 a 7 dias",
     canalPrincipal: "Loja física",
-    canaisApoio: ["Stories", "WhatsApp individual"],
-    objetivo: ["Aumentar ticket médio"],
-    quandoUsar: ["Quando o objetivo é ticket médio, não volume de clientes novas"],
-    quandoEvitar: ["Comunicar como se fosse urgência — a lógica aqui é incentivo, não corrida contra o tempo"],
-    checklist: ["Definir as faixas de valor e os brindes de cada uma (ex: R$199 → Brinde 1, R$299 → Brinde 2, R$399 → Brinde 3, R$499 → Kit completo)", "Separar os brindes por faixa", "Treinar a equipe para oferecer a próxima faixa no fechamento"],
-    checklistExecucao: ["Equipe comunica a régua de faixas no caixa", "Registrar quais brindes foram desbloqueados por cliente"],
-    planoDivulgacao: [{ marco: "Durante a campanha", itens: ["Comunicar sempre como 'quanto mais você compra, mais vantagens desbloqueia' — nunca como corrida contra o tempo"] }],
-    modelosMensagens: [],
-    ideiasStories: ["Mostrar a régua de faixas de forma visual (tabela ou carrossel)"],
-    dicas: "A comunicação muda completamente aqui: não fale 'corre que acaba', fale 'quanto mais você compra, mais vantagens desbloqueia'.",
-    resultado: ["Ticket médio mais alto", "Clientes levando mais itens por atendimento"],
-    relacionadas: ["comprou-ganhou-stories", "leve-mais-pague-menos"],
+    canaisApoio: ["Site", "WhatsApp individual", "Stories", "Reels", "Feed", "Status do WhatsApp", "Lista de transmissão"],
+    objetivo: ["Aumentar o valor médio das compras.", "Incentivar o cliente a adicionar mais produtos ao carrinho.", "Criar uma experiência de compra mais divertida.", "Aumentar a percepção de valor da campanha.", "Vender mais sem oferecer descontos."],
+    quandoUsar: ["Lançamento de coleção.", "Datas comemorativas.", "Aniversário da loja.", "Campanhas de aumento de faturamento.", "Semanas especiais de vendas.", "Quando deseja aumentar o ticket médio."],
+    quandoEvitar: ["Durante liquidações agressivas.", "Quando os brindes não possuem valor percebido.", "Quando não for possível controlar os níveis de premiação."],
+    comoEscolherBrinde: {
+      intro: "Os brindes devem aumentar de valor conforme o cliente sobe de nível. A ideia é que cada recompensa desperte ainda mais desejo para que ele continue comprando. Evite oferecer brindes aleatórios ou sem relação entre si. Uma ótima estratégia é montar um kit progressivo. Exemplo: compras acima de R$150 → escova de cabelo personalizada; acima de R$300 → escova + espelho personalizado; acima de R$450 → escova + espelho + necessaire exclusiva. O cliente percebe que, comprando um pouco mais, recebe um benefício muito maior.",
+      boasOpcoes: ["Cosméticos", "Acessórios", "Produtos exclusivos", "Kits personalizados", "Vale para um serviço", "Produtos da nova coleção"],
+      perguntaChave: "Você também pode adaptar os níveis para qualquer segmento da sua loja.",
+    },
+    checklist: ["Definir quantos níveis de brindes existirão.", "Escolher os brindes de cada nível.", "Definir os valores mínimos para desbloqueio.", "Fotografar todos os brindes.", "Criar uma identidade visual mostrando cada etapa.", "Organizar os brindes por categoria.", "Alinhar toda a equipe sobre as regras da campanha."],
+    checklistExecucao: ["Apresentar os níveis da campanha para todos os clientes.", "Durante o atendimento, informar quanto falta para desbloquear o próximo nível.", "Sugerir produtos complementares para atingir o próximo valor.", "Entregar os brindes de forma especial.", "Registrar fotos e vídeos dos clientes recebendo os kits.", "Atualizar diariamente os conteúdos da campanha.", "Registrar internamente as vendas para acompanhar o resultado da ação."],
+    planoDivulgacao: [
+      { marco: "Dois dias antes", itens: ["Publicar um Reels mostrando que uma campanha especial está chegando.", "Mostrar apenas partes dos brindes nos Stories.", "Atualizar o Status do WhatsApp.", "Avisar clientes que uma campanha exclusiva será lançada em breve."] },
+      { marco: "Um dia antes", itens: ["Publicar uma contagem regressiva.", "Mostrar que existirão diferentes níveis de brindes.", "Criar expectativa sem revelar todos os detalhes."] },
+      { marco: "Durante toda a campanha", itens: ["Mostrar clientes desbloqueando os brindes.", "Mostrar os kits completos.", "Explicar quanto falta para alcançar o próximo nível.", "Mostrar sugestões de combinações de produtos.", "Compartilhar depoimentos e provas sociais.", "Fazer lembretes diários nos Stories.", "Reforçar a campanha pelo WhatsApp."] },
+    ],
+    modelosMensagens: [{ canal: "WhatsApp", texto: "Nossa campanha Desbloqueando Brindes já começou! Quanto maior o valor da sua compra, mais presentes você conquista. Posso te mostrar algumas combinações que já desbloqueiam os próximos níveis." }],
+    ideiasStories: [
+      "Reels — Tema: 'Até onde você consegue desbloquear?' Comece mostrando apenas o primeiro brinde, depois revele rapidamente o segundo, finalize mostrando o kit completo. Encerramento: 'Quanto maior a sua compra, mais presentes você desbloqueia durante nossa campanha.'",
+      "Story 1: apresente a campanha — 'Hoje você pode desbloquear presentes conforme aumenta sua compra.'",
+      "Story 2: mostre o primeiro nível.",
+      "Story 3: mostre o segundo nível.",
+      "Story 4: mostre o terceiro nível.",
+      "Story 5: monte uma combinação de produtos que já atinge um dos níveis.",
+      "Story 6: mostre clientes desbloqueando brindes.",
+      "Story 7: faça uma última chamada — 'Ainda dá tempo de garantir o seu kit antes do encerramento da campanha.'",
+    ],
+    materiaisNecessarios: ["Brindes organizados por nível", "Comunicação visual da campanha", "Cartaz ou tabela mostrando os níveis", "Celular para produção dos conteúdos", "Embalagens para os kits"],
+    dicas: "O segredo dessa campanha não está apenas nos brindes, mas em mostrar ao cliente que ele está muito próximo de conquistar um benefício ainda melhor. Durante o atendimento, utilize frases como: 'Faltam apenas R$40 para você desbloquear o próximo presente' ou 'Com mais uma peça você leva um kit completo.' Esse tipo de abordagem aumenta naturalmente o ticket médio sem que o cliente tenha a sensação de estar sendo pressionado.",
+    resultado: ["Aumento do ticket médio.", "Mais produtos por venda.", "Maior percepção de valor.", "Aumento do faturamento durante a campanha.", "Maior engajamento nos canais da loja."],
+    relacionadas: ["comprou-ganhou", "comprou-ganhou-stories", "comprou-ganhou-vip", "combo-inteligente", "leve-mais-pague-menos", "cashback-inteligente"],
   },
   {
     id: "cashback-inteligente", nome: "Cashback Inteligente", cat: "cashback", nichos: ["Geral"],
@@ -1158,7 +1315,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
           <p className="dtl-desc">{action.como}</p>
           <div className="dtl-chips">
             <span className="dtl-chip"><Clock size={13} /> {action.duracao}</span>
-            <span className="dtl-chip"><Target size={13} /> {action.objetivo[0]}</span>
+            <span className="dtl-chip"><Target size={13} /> {action.objetivoPrincipal || action.objetivo[0]}</span>
             <span className="dtl-chip"><Icon size={13} /> {info.label}</span>
           </div>
         </div>
@@ -1206,6 +1363,19 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
             <p className="canal-caption">O canal principal é onde a ação acontece de fato. Os demais só existem pra levar as clientes até ele.</p>
             {action.alternativaCanal && <p className="canal-alt-nota">{action.alternativaCanal}</p>}
           </Accordion>
+
+          {action.comoEscolherBrinde && (
+            <Accordion title="Como escolher o brinde" icon={Gift}>
+              <p className="acc-plain-text" style={{ marginBottom: 10 }}>{action.comoEscolherBrinde.intro}</p>
+              {action.comoEscolherBrinde.boasOpcoes.length > 0 && (
+                <div className="canal-row" style={{ alignItems: "flex-start" }}>
+                  <span className="canal-row-label">Boas opções</span>
+                  <div className="chiprow">{action.comoEscolherBrinde.boasOpcoes.map((o) => <span key={o} className="chip">{o}</span>)}</div>
+                </div>
+              )}
+              <p className="canal-caption" style={{ marginTop: 10 }}>{action.comoEscolherBrinde.perguntaChave}</p>
+            </Accordion>
+          )}
         </div>
 
         <div className="dtl-section-card dtl-checklist-card">
@@ -1249,7 +1419,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
           )}
         </div>
 
-        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData) && (
+        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData || action.materiaisNecessarios) && (
           <div className="dtl-section-card">
             <div className="dtl-section-title">Materiais de apoio</div>
 
@@ -1295,6 +1465,12 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
                     </div>
                   ))}
                 </div>
+              </Accordion>
+            )}
+
+            {action.materiaisNecessarios && (
+              <Accordion title="Materiais necessários" icon={Package}>
+                <ul className="bullet-list">{action.materiaisNecessarios.map((m, i) => <li key={i}>{m}</li>)}</ul>
               </Accordion>
             )}
           </div>
