@@ -926,6 +926,96 @@ const ACTIONS = [
     resultado: ["Aumento de respostas diretas ao story, o que melhora a entrega dos próximos stories pelo algoritmo"],
     relacionadas: ["story-batalha", "story-presente"],
   },
+  {
+    id: "sacola-premiada", nome: "Sacola Premiada", cat: "brindes",
+    nichos: ["Chimarrão", "Acessórios", "Cosméticos / Skincare"],
+    tipo: "Campanha de compra por impulso e surpresa",
+    sugestoesNomes: [],
+    alternativaCanal: "Também funciona 100% online: dá pra fazer numa live de vendas, sem loja física. O Grupo VIP ou os Stories cuidam da divulgação, e a live vira o momento de abrir as sacolas ao vivo.",
+    como: "A loja monta sacolas com o mesmo valor de venda, mas algumas recebem produtos extras como prêmio. A cliente compra sem saber exatamente o que está levando — o diferencial não é o desconto, é a experiência de descoberta.",
+    duracao: "1 dia (no máximo 1x por mês, pra manter o efeito surpresa)",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories", "WhatsApp individual", "Grupo VIP", "Lista de transmissão"],
+    objetivo: ["Gerar vendas rápidas através da curiosidade e do fator surpresa", "Aumentar o faturamento em curto período", "Incentivar a compra por impulso sem depender de desconto agressivo"],
+    quandoUsar: [
+      "Criar um pico de vendas em um único dia",
+      "Movimentar o Grupo VIP",
+      "Gerar engajamento nas redes sociais",
+      "Aumentar o fluxo na loja física",
+      "Trabalhar campanhas relâmpago",
+      "Aproveitar datas comemorativas: Dia das Crianças, Primavera, Dia do Amigo, Dia das Mães, Dia dos Pais, aniversário da loja, Black Friday, Natal",
+      "Em dias comuns, quando a loja quer gerar faturamento rápido",
+    ],
+    quandoEvitar: [
+      "A loja tem poucos produtos pra montar kits variados",
+      "Os produtos exigem escolha de tamanho ou numeração",
+      "Não há organização suficiente pra montar as sacolas com antecedência",
+      "O público não costuma aceitar bem compras surpresa",
+    ],
+    checklist: [
+      "Definir o valor único das sacolas",
+      "Escolher os produtos que vão compor os kits",
+      "Montar todas as sacolas com o mesmo valor comercial",
+      "Selecionar quais sacolas vão receber os produtos premiados",
+      "Identificar cada sacola só com nome ou número, sem revelar o conteúdo",
+      "Organizar um espaço de destaque na loja, se for presencial",
+      "Definir o tema/nome de cada sacola (ex: Dia das Mães — Mãe Clássica, Mãe Vaidosa, Mãe Elegante)",
+      "Combinar itens de menor giro com produtos de alta procura dentro dos kits",
+      "Garantir que toda sacola entregue, no mínimo, o valor pago pela cliente",
+    ],
+    checklistExecucao: [
+      "Apresentar a dinâmica da campanha",
+      "Explicar que todas as sacolas têm o valor pago em produtos",
+      "Informar que algumas têm um prêmio extra, sem revelar quais",
+      "Avisar que os produtos da ação não têm troca",
+      "Incentivar a cliente a escolher sua sacola",
+      "Registrar os momentos de abertura como prova social",
+    ],
+    planoDivulgacao: [{ marco: "Divulgação", itens: [
+      "Publicar Stories mostrando só as sacolas fechadas",
+      "Criar contagem regressiva antes do início",
+      "Mostrar clientes abrindo as sacolas (com autorização)",
+      "Compartilhar os prêmios encontrados",
+      "Enviar mensagens pro Grupo VIP e WhatsApp",
+      "Fazer uma live curta apresentando a campanha",
+      "Atualizar sempre a quantidade de sacolas disponíveis pra gerar urgência",
+    ]}],
+    modelosMensagens: [
+      { canal: "WhatsApp", texto: "Hoje tem Sacola Premiada! Preparamos sacolas-surpresa com o mesmo valor de venda, mas algumas escondem prêmios especiais. Você só descobre o que ganhou quando abrir a sua! As unidades são limitadas — quer garantir uma?" },
+      { canal: "Grupo VIP", texto: "As Sacolas Premiadas estão liberadas! Todas possuem o mesmo valor, mas algumas receberam produtos extras. Qual delas será a premiada? Quem participa descobre só na hora da abertura." },
+    ],
+    ideiasStories: [
+      "Story 1: 'Você teria coragem de escolher uma sacola sem saber o que tem dentro?'",
+      "Story 2: 'Todas possuem o mesmo valor… mas algumas escondem um presente especial.'",
+      "Story 3: 'Qual será a premiada de hoje?'",
+      "Story 4: 'Disponíveis enquanto durarem as unidades.'",
+      "Enquete: 'Qual sacola você escolheria?'",
+      "Mostrar alguém abrindo uma sacola premiada",
+      "Bastidores da montagem sem revelar os prêmios",
+      "Mostrar quantas sacolas ainda restam",
+      "Reações das clientes compartilhadas",
+      "Reels: time-lapse organizando os kits",
+      "Reels: cliente descobrindo que ganhou a sacola premiada",
+      "Reels: antes e depois do espaço montado na loja",
+    ],
+    dicas: "O sucesso dessa campanha não está no prêmio, e sim na experiência. Dê um nome ou tema pra cada sacola — a escolha deixa de ser só uma compra e vira uma brincadeira, o que aumenta a curiosidade e o compartilhamento. Realize no máximo uma vez por mês: a exclusividade é o que sustenta o efeito surpresa.",
+    resultado: [
+      "Aumento das compras por impulso",
+      "Faturamento concentrado em curto período",
+      "Maior interação nos Stories e no Grupo VIP",
+      "Aumento da percepção de valor da compra",
+      "Fortalecimento da experiência da cliente",
+      "Movimentação de produtos de menor saída sem recorrer a desconto",
+      "Aumento do ticket médio quando combinada com vendas complementares",
+    ],
+    relacionadas: ["comprou-ganhou-stories", "desbloqueie-brindes", "clube-secreto"],
+    narrativasPorData: {
+      "Dia das Crianças": "Pega-pega, Esconde-esconde, Amarelinha, Queimada, Cabra-cega",
+      "Primavera": "Girassol, Lavanda, Tulipa, Margarida, Rosa",
+      "Dia do Amigo": "A amiga conselheira, A parceira de tudo, A divertida, A aventureira, A inseparável",
+      "Dia das Mães": "Mãe clássica, Mãe vaidosa, Mãe prática, Mãe elegante, Mãe aventureira",
+    },
+  },
 ];
 
 function CanalChip({ label, small, main }) {
@@ -1147,7 +1237,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
           )}
         </div>
 
-        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos) && (
+        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData) && (
           <div className="dtl-section-card">
             <div className="dtl-section-title">Materiais de apoio</div>
 
@@ -1177,6 +1267,19 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
                     <div key={nicho} className="nicho-example-item">
                       <span className="nicho-example-label">{nicho}</span>
                       <span className="nicho-example-text">{exemplo}</span>
+                    </div>
+                  ))}
+                </div>
+              </Accordion>
+            )}
+
+            {action.narrativasPorData && (
+              <Accordion title="Narrativas por data" icon={Calendar}>
+                <div className="nicho-examples">
+                  {Object.entries(action.narrativasPorData).map(([data, itens]) => (
+                    <div key={data} className="nicho-example-item">
+                      <span className="nicho-example-label">{data}</span>
+                      <span className="nicho-example-text">{itens}</span>
                     </div>
                   ))}
                 </div>
