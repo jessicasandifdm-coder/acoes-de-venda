@@ -41,10 +41,21 @@ const NICHOS = [
   "Cosméticos / Skincare", "Chimarrão", "Moda Evangélica", "Moda Plus Size", "Infantil",
 ];
 
-const CHART_CORES = ["#163B2E", "#2F5C46", "#4E7A5E", "#B68A2E", "#8FA88F", "#D9C48A", "#0E2A20"];
+const CHART_CORES = ["#143F35", "#2F5C46", "#4E7A5E", "#4E9C7C", "#8FA88F", "#B7D9C9", "#0B2A23"];
 const MESES_ABREV = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const MESES_COMPLETOS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 const formatBRL = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+
+function labelRelativo(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const hoje = new Date();
+  const diffDias = Math.round((new Date(hoje.toDateString()) - new Date(d.toDateString())) / 86400000);
+  if (diffDias === 0) return "Hoje";
+  if (diffDias === 1) return "Ontem";
+  return `Dia ${String(d.getDate()).padStart(2, "0")}`;
+}
 
 // --- Conexão com o Supabase (projeto CRMLOJISTA, tabelas com prefixo av_) ---
 const SUPABASE_URL = "https://ihpfexmourrvixtsxhrt.supabase.co";
@@ -886,7 +897,7 @@ function TagCard({ action, isFav, onToggleFav, onOpen }) {
             onClick={(e) => { e.stopPropagation(); onToggleFav(action.id); }}
             aria-label="Favoritar"
           >
-            <Heart size={16} fill={isFav ? "#163B2E" : "none"} color={isFav ? "#163B2E" : "#A9B0A4"} />
+            <Heart size={16} fill={isFav ? "#143F35" : "none"} color={isFav ? "#143F35" : "#A9B0A4"} />
           </button>
         </div>
         <h3 className="tagcard-nome">{action.nome}</h3>
@@ -956,7 +967,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
         <button className="iconbtn" onClick={onBack}><ArrowLeft size={20} /></button>
         <span className="topbar-title">Detalhe da ação</span>
         <button className="iconbtn" onClick={() => onToggleFav(action.id)}>
-          <Heart size={20} fill={isFav ? "#163B2E" : "none"} color={isFav ? "#163B2E" : "#1C201D"} />
+          <Heart size={20} fill={isFav ? "#143F35" : "none"} color={isFav ? "#143F35" : "#1C201D"} />
         </button>
       </div>
 
@@ -1200,6 +1211,72 @@ function LoginScreen({ onAuthed }) {
   );
 }
 
+function DiagnosticoResultadoBody({ resultado }) {
+  return (
+    <>
+      <div className="indice-hero">
+        <span className="indice-num">{resultado.indice}</span>
+        <span className="indice-max">/100</span>
+        <span className="indice-faixa">{resultado.faixaIndice}</span>
+      </div>
+
+      <div className="pilares-wrap">
+        {resultado.pilares.map((p) => (
+          <div key={p.nome} className="pilar-row">
+            <div className="pilar-row-top">
+              <span>{p.nome}</span>
+              <span className={`pilar-faixa faixa-${p.faixa.replace(/\s/g, "")}`}>{p.faixa}</span>
+            </div>
+            <div className="meta-bar-track"><div className="meta-bar-fill" style={{ width: `${(p.pontos / p.max) * 100}%` }} /></div>
+          </div>
+        ))}
+      </div>
+
+      <div className="resumo-card" style={{ margin: "16px 0" }}>
+        <div className="resumo-row"><span className="resumo-label">Ponto forte</span><p>{resultado.pontoForte}</p></div>
+        <div className="resumo-row"><span className="resumo-label">Principal gargalo</span><p>{resultado.gargalo}</p></div>
+        <div className="resumo-row"><span className="resumo-label">Segunda prioridade</span><p>{resultado.segundaPrioridade}</p></div>
+      </div>
+
+      <p className="auth-sub" style={{ textAlign: "left" }}>{resultado.textoForte}</p>
+
+      {resultado.alertas.length > 0 && (
+        <div style={{ margin: "14px 0" }}>
+          {resultado.alertas.map((a, i) => (
+            <Callout key={i} icon={AlertTriangle} title={a.titulo} tone="outline">{a.texto}</Callout>
+          ))}
+        </div>
+      )}
+
+      {resultado.areas.length > 0 && (
+        <div style={{ margin: "10px 0 16px" }}>
+          <span className="resumo-label" style={{ display: "block", marginBottom: 8 }}>Áreas de oportunidade identificadas</span>
+          <div className="chiprow">
+            {resultado.areas.map((a) => <span key={a} className="chip">{a}</span>)}
+          </div>
+        </div>
+      )}
+
+      <Callout icon={TrendingUp} title="Recomendação" tone="solid">{resultado.recomendacao}</Callout>
+    </>
+  );
+}
+
+function DiagnosticoModal({ resultado, onClose }) {
+  return (
+    <div className="auth-wrap modal-overlay">
+      <div className="auth-card resultado-card">
+        <div className="modal-close-row">
+          <span className="auth-eyebrow">Diagnóstico da loja</span>
+          <button className="iconbtn" onClick={onClose}><X size={20} /></button>
+        </div>
+        <DiagnosticoResultadoBody resultado={resultado} />
+        <button className="btn-primary" style={{ marginTop: 16 }} onClick={onClose}>Fechar</button>
+      </div>
+    </div>
+  );
+}
+
 function DiagnosticoScreen({ onContinue, session }) {
   const [idx, setIdx] = useState(0);
   const [respostas, setRespostas] = useState({});
@@ -1245,51 +1322,7 @@ function DiagnosticoScreen({ onContinue, session }) {
       <div className="auth-wrap">
         <div className="auth-card resultado-card">
           <span className="auth-eyebrow">Resultado do diagnóstico</span>
-          <div className="indice-hero">
-            <span className="indice-num">{resultado.indice}</span>
-            <span className="indice-max">/100</span>
-            <span className="indice-faixa">{resultado.faixaIndice}</span>
-          </div>
-
-          <div className="pilares-wrap">
-            {resultado.pilares.map((p) => (
-              <div key={p.nome} className="pilar-row">
-                <div className="pilar-row-top">
-                  <span>{p.nome}</span>
-                  <span className={`pilar-faixa faixa-${p.faixa.replace(/\s/g, "")}`}>{p.faixa}</span>
-                </div>
-                <div className="meta-bar-track"><div className="meta-bar-fill" style={{ width: `${(p.pontos / p.max) * 100}%` }} /></div>
-              </div>
-            ))}
-          </div>
-
-          <div className="resumo-card" style={{ margin: "16px 0" }}>
-            <div className="resumo-row"><span className="resumo-label">Ponto forte</span><p>{resultado.pontoForte}</p></div>
-            <div className="resumo-row"><span className="resumo-label">Principal gargalo</span><p>{resultado.gargalo}</p></div>
-            <div className="resumo-row"><span className="resumo-label">Segunda prioridade</span><p>{resultado.segundaPrioridade}</p></div>
-          </div>
-
-          <p className="auth-sub" style={{ textAlign: "left" }}>{resultado.textoForte}</p>
-
-          {resultado.alertas.length > 0 && (
-            <div style={{ margin: "14px 0" }}>
-              {resultado.alertas.map((a, i) => (
-                <Callout key={i} icon={AlertTriangle} title={a.titulo} tone="outline">{a.texto}</Callout>
-              ))}
-            </div>
-          )}
-
-          {resultado.areas.length > 0 && (
-            <div style={{ margin: "10px 0 16px" }}>
-              <span className="resumo-label" style={{ display: "block", marginBottom: 8 }}>Áreas de oportunidade identificadas</span>
-              <div className="chiprow">
-                {resultado.areas.map((a) => <span key={a} className="chip">{a}</span>)}
-              </div>
-            </div>
-          )}
-
-          <Callout icon={TrendingUp} title="Recomendação" tone="solid">{resultado.recomendacao}</Callout>
-
+          <DiagnosticoResultadoBody resultado={resultado} />
           <button className="btn-primary" style={{ marginTop: 16 }} onClick={onContinue}>Continuar para o app</button>
           <p className="auth-nota">Espaço reservado para o link da Mentoria — encaixa aqui, logo abaixo da recomendação.</p>
         </div>
@@ -1408,6 +1441,7 @@ export default function App() {
   const [adminLoading, setAdminLoading] = useState(false);
   const [perfil, setPerfil] = useState(null);
   const [meuDiagnostico, setMeuDiagnostico] = useState(null);
+  const [showDiagCompleto, setShowDiagCompleto] = useState(false);
 
   const isAdmin = session?.email === ADMIN_EMAIL;
   const navItems = isAdmin ? [...NAV, { id: "admin", label: "Admin", icon: Shield }] : NAV;
@@ -1425,7 +1459,7 @@ export default function App() {
         ]);
         setHistorico(h.map((row) => ({
           id: row.acao_id, rowId: row.id, nota: row.nota, valor: Number(row.valor) || 0,
-          data: new Date(row.criado_em).toLocaleDateString("pt-BR"),
+          data: new Date(row.criado_em).toLocaleDateString("pt-BR"), criadoEm: row.criado_em,
           mesAno: `${row.mes_idx + 1}/${row.ano}`, mesIdx: row.mes_idx, ano: row.ano,
         })));
         setMetas(m.map((row) => ({ id: row.id, acaoId: row.acao_id, mes: row.mes_idx, ano: row.ano, valorMeta: Number(row.valor_meta) || 0 })));
@@ -1470,7 +1504,7 @@ export default function App() {
     const valor = Number(doneValor) || 0;
     const nota = doneNote;
     setHistorico((prev) => [
-      { id, nota, valor, data: now.toLocaleDateString("pt-BR"), mesAno: `${mesIdx + 1}/${ano}`, mesIdx, ano },
+      { id, nota, valor, data: now.toLocaleDateString("pt-BR"), criadoEm: now.toISOString(), mesAno: `${mesIdx + 1}/${ano}`, mesIdx, ano },
       ...prev,
     ]);
     setDoneNote("");
@@ -1545,8 +1579,13 @@ export default function App() {
   const metasDoMes = metas.filter((m) => m.mes === dashMes && m.ano === dashAno).map((m) => {
     const realizado = porAcaoMes[m.acaoId] || 0;
     const pct = m.valorMeta > 0 ? Math.min(100, Math.round((realizado / m.valorMeta) * 100)) : 0;
-    return { ...m, realizado, pct, nome: ACTIONS.find((a) => a.id === m.acaoId)?.nome || m.acaoId };
+    const status = pct >= 100 ? "Concluída" : "Em andamento";
+    return { ...m, realizado, pct, status, nome: ACTIONS.find((a) => a.id === m.acaoId)?.nome || m.acaoId, objetivo: ACTIONS.find((a) => a.id === m.acaoId)?.objetivo?.[0] || "" };
   });
+  const metaTotalMes = metasDoMes.reduce((s, m) => s + (m.valorMeta || 0), 0);
+  const pctMes = metaTotalMes > 0 ? Math.min(100, Math.round((totalMes / metaTotalMes) * 100)) : 0;
+  const historicoMesOrdenado = [...historicoMes].sort((a, b) => new Date(b.criadoEm || 0) - new Date(a.criadoEm || 0));
+  const anosDisponiveis = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 3 + i);
 
   const now = new Date();
   const anoAtual = now.getFullYear();
@@ -1594,9 +1633,9 @@ export default function App() {
       --card: #FFFFFF;
       --ink: #1C201D;
       --ink-soft: #6B7268;
-      --wine: #163B2E;
-      --wine-dark: #0E2A20;
-      --mustard: #B68A2E;
+      --wine: #143F35;
+      --wine-dark: #0B2A23;
+      --mustard: #4E9C7C;
       --line: #E2E4DE;
       font-family: 'Work Sans', sans-serif;
       color: var(--ink);
@@ -1788,13 +1827,75 @@ export default function App() {
     .diag-mini-card-sm .diag-mini-faixa { font-size: 11px; }
     .diag-mini-card-sm .diag-mini-linha { font-size: 11px; }
 
-    .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
-    .resultado-tile {
-      background: var(--wine); color: #fff; border-radius: 10px; padding: 12px 10px; display: flex;
-      flex-direction: column; gap: 4px; min-height: 66px; justify-content: center;
+    /* ---- DASHBOARD (Painel Comercial) ---- */
+    .dash-header {
+      display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      max-width: 1040px; margin: 0 auto; width: 100%; padding: 28px 24px 6px;
     }
-    .resultado-tile-valor { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; }
-    .resultado-tile-nome { font-size: 10.5px; opacity: 0.85; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .dash-ola { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mustard); }
+    .dash-titulo { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; margin: 4px 0 0; color: var(--ink); }
+    .dash-selectors { display: flex; gap: 8px; }
+    .dash-select {
+      border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 8px 10px; font-size: 12.5px;
+      color: var(--ink); font-family: 'Work Sans', sans-serif; cursor: pointer;
+    }
+
+    .dash-cards-row {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 1040px; margin: 18px auto 0; padding: 0 24px;
+    }
+    .dash-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+      box-shadow: 0 1px 3px rgba(20,63,53,0.05); display: flex; flex-direction: column; gap: 4px;
+    }
+    .dash-card-label { font-size: 11px; color: var(--ink-soft); }
+    .dash-card-valor { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; color: var(--ink); }
+    .dash-card-valor-verde { color: var(--wine); }
+
+    .dash-progress-wrap { max-width: 1040px; margin: 18px auto 0; padding: 0 24px; }
+    .dash-progress-top { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; }
+    .dash-progress-pct { color: var(--wine); font-weight: 600; }
+    .dash-progress-track { height: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+    .dash-progress-fill { height: 100%; background: var(--wine); border-radius: 999px; transition: width 0.4s; }
+
+    .dash-columns { display: grid; grid-template-columns: 1fr; gap: 26px; max-width: 1040px; margin: 26px auto 40px; padding: 0 24px; }
+    .dash-col-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
+
+    .dash-acoes-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
+    .dash-acao-card {
+      text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+      box-shadow: 0 1px 3px rgba(20,63,53,0.04); cursor: pointer; font-family: 'Work Sans', sans-serif;
+    }
+    .dash-acao-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .dash-acao-nome { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+    .dash-status { font-size: 10px; padding: 3px 9px; border-radius: 999px; font-weight: 500; flex-shrink: 0; }
+    .dash-status.andamento { background: #EAF0EC; color: var(--wine); }
+    .dash-status.concluida { background: var(--wine); color: #fff; }
+    .dash-acao-objetivo { font-size: 12px; color: var(--ink-soft); margin: 0 0 8px; }
+    .dash-acao-valores { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; }
+
+    .dash-timeline { display: flex; flex-direction: column; }
+    .dash-timeline-item { display: flex; align-items: baseline; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .dash-timeline-item:last-child { border-bottom: none; }
+    .dash-timeline-dia { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-soft); width: 52px; flex-shrink: 0; }
+    .dash-timeline-linha { display: flex; justify-content: space-between; flex: 1; gap: 10px; }
+    .dash-timeline-nome { font-size: 13px; color: var(--ink); }
+    .dash-timeline-valor { font-size: 13px; font-weight: 600; color: var(--wine); }
+
+    .dash-col-side { display: flex; flex-direction: column; gap: 14px; }
+    .dash-card-white { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(20,63,53,0.04); }
+    .dash-atalhos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .dash-atalho-btn {
+      display: flex; align-items: center; gap: 8px; justify-content: center; background: var(--card); border: 1px solid var(--line);
+      border-radius: 10px; padding: 12px 8px; font-size: 12px; color: var(--ink); cursor: pointer; font-family: 'Work Sans', sans-serif;
+    }
+    .dash-atalho-btn:hover { border-color: var(--wine); color: var(--wine); }
+    .dash-diag-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(20,63,53,0.04); }
+
+    @media (min-width: 860px) {
+      .dash-columns { grid-template-columns: 1.6fr 1fr; }
+      .dash-cards-row { grid-template-columns: repeat(4, 1fr); }
+    }
+
     .diag-mini-indice { display: flex; align-items: baseline; gap: 2px; color: var(--wine); flex-shrink: 0; }
     .diag-mini-info { display: flex; flex-direction: column; gap: 2px; }
     .diag-mini-faixa { font-size: 12px; color: var(--mustard); font-weight: 500; margin-bottom: 2px; }
@@ -2100,158 +2201,193 @@ export default function App() {
               />
             ) : tab === "inicio" ? (
               <div className="screen">
-                <div className="home-header">
-                  <span className="home-eyebrow">{perfil?.nome_loja ? `Olá, ${perfil.nome_loja}` : "O que vamos ativar hoje?"}</span>
-                  <h1 className="home-title">Gerador de Caixa</h1>
-                  <p className="home-sub">Uma seleção pronta pra movimentar a loja agora e construir vendas previsíveis.</p>
+                <div className="dash-header">
+                  <div>
+                    <span className="dash-ola">{perfil?.nome_loja ? `Olá, ${perfil.nome_loja}` : "Olá"}</span>
+                    <h1 className="dash-titulo">Painel Comercial</h1>
+                  </div>
+                  <div className="dash-selectors">
+                    <select className="dash-select" value={dashMes} onChange={(e) => setDashMes(Number(e.target.value))}>
+                      {MESES_COMPLETOS.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                    </select>
+                    <select className="dash-select" value={dashAno} onChange={(e) => setDashAno(Number(e.target.value))}>
+                      {anosDisponiveis.map((a) => <option key={a} value={a}>{a}</option>)}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="stats-row">
-                  <div className="stat-box"><div className="stat-num">{favs.size}</div><div className="stat-label">Favoritas</div></div>
-                  <div className="stat-box"><div className="stat-num">{historico.length}</div><div className="stat-label">Executadas</div></div>
-                  <div className="stat-box"><div className="stat-num">{ACTIONS.length}</div><div className="stat-label">No banco</div></div>
+                <div className="dash-cards-row">
+                  <div className="dash-card">
+                    <span className="dash-card-label">Meta do mês</span>
+                    <span className="dash-card-valor">{formatBRL(metaTotalMes)}</span>
+                  </div>
+                  <div className="dash-card">
+                    <span className="dash-card-label">Resultado gerado</span>
+                    <span className="dash-card-valor dash-card-valor-verde">{formatBRL(totalMes)}</span>
+                  </div>
+                  <div className="dash-card">
+                    <span className="dash-card-label">Percentual atingido</span>
+                    <span className="dash-card-valor">{pctMes}%</span>
+                  </div>
+                  <div className="dash-card">
+                    <span className="dash-card-label">Ações executadas</span>
+                    <span className="dash-card-valor">{historicoMes.length}</span>
+                  </div>
                 </div>
 
-                <div className="section-label">Meta do mês</div>
-                <div className="mes-nav">
-                  <button className="mes-nav-btn" onClick={() => shiftDash(-1)}><ChevronLeft size={16} /></button>
-                  <span className="mes-nav-label">{nomeMesAno}</span>
-                  <button className="mes-nav-btn" onClick={() => shiftDash(1)}><ChevronRight size={16} /></button>
+                <div className="dash-progress-wrap">
+                  <div className="dash-progress-top">
+                    <span>Meta do mês</span>
+                    <span className="dash-progress-pct">{pctMes}%</span>
+                  </div>
+                  <div className="dash-progress-track">
+                    <div className="dash-progress-fill" style={{ width: `${pctMes}%` }} />
+                  </div>
                 </div>
 
-                <div className="resultados-wrap">
-                  <div className="resultados-summary">
-                    <span className="stat-num">{formatBRL(totalMes)}</span>
-                    <span className="stat-label">gerados em {nomeMesAno}</span>
+                <div className="dash-columns">
+                  <div className="dash-col-main">
+                    <div className="dash-col-title">Ações em andamento</div>
+                    {metasDoMes.length === 0 ? (
+                      <div className="empty-state small">
+                        <BarChart3 size={24} />
+                        <p>Nenhuma meta definida em {nomeMesAno} ainda. Defina uma meta pra acompanhar o andamento aqui.</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="dash-acoes-grid">
+                          {metasDoMes.slice(0, 4).map((m) => (
+                            <button className="dash-acao-card" key={m.id} onClick={() => setOpenId(m.acaoId)}>
+                              <div className="dash-acao-top">
+                                <span className="dash-acao-nome">{m.nome}</span>
+                                <span className={`dash-status ${m.status === "Concluída" ? "concluida" : "andamento"}`}>{m.status}</span>
+                              </div>
+                              {m.objetivo && <p className="dash-acao-objetivo">{m.objetivo}</p>}
+                              <div className="meta-bar-track"><div className="meta-bar-fill" style={{ width: `${m.pct}%` }} /></div>
+                              <div className="dash-acao-valores">
+                                <span>{formatBRL(m.realizado)} de {formatBRL(m.valorMeta)}</span>
+                                <span className="meta-pct">{m.pct}%</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                        {metasDoMes.length > 4 && (
+                          <button className="btn-ghost-box" onClick={() => goto("historico")}>Ver todas</button>
+                        )}
+                      </>
+                    )}
+
+                    <div className="dash-col-title" style={{ marginTop: 26 }}>Histórico do mês</div>
+                    {historicoMesOrdenado.length === 0 ? (
+                      <div className="empty-state small">
+                        <Clock size={24} />
+                        <p>Nenhum resultado registrado em {nomeMesAno} ainda.</p>
+                      </div>
+                    ) : (
+                      <div className="dash-timeline">
+                        {historicoMesOrdenado.map((h, i) => {
+                          const a = ACTIONS.find((x) => x.id === h.id);
+                          return (
+                            <div className="dash-timeline-item" key={i}>
+                              <span className="dash-timeline-dia">{labelRelativo(h.criadoEm)}</span>
+                              <div className="dash-timeline-linha">
+                                <span className="dash-timeline-nome">{a?.nome || h.id}</span>
+                                <span className="dash-timeline-valor">{formatBRL(h.valor || 0)}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
-                  {metasDoMes.length > 0 && (
-                    <div className="metas-list">
-                      {metasDoMes.map((m) => (
-                        <div key={m.id} className="meta-row">
-                          <div className="meta-row-top">
-                            <span className="meta-nome">{m.nome}</span>
-                            <button className="meta-del" onClick={() => removeMeta(m.id)}><X size={13} /></button>
-                          </div>
-                          <div className="meta-bar-track">
-                            <div className="meta-bar-fill" style={{ width: `${m.pct}%` }} />
-                          </div>
-                          <div className="meta-row-bottom">
-                            <span>{formatBRL(m.realizado)} de {formatBRL(m.valorMeta)}</span>
-                            <span className="meta-pct">{m.pct}%</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {showMetaForm ? (
-                    <div className="meta-form">
-                      <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
-                        <option value="">Escolha a ação</option>
-                        {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-                      </select>
-                      <div className="valor-input" style={{ margin: "8px 0" }}>
-                        <span className="valor-prefix">R$</span>
-                        <input type="number" inputMode="decimal" placeholder="Meta do mês" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
-                      </div>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button className="btn-primary" onClick={addMeta}>Salvar meta</button>
-                        <button className="btn-ghost-box" onClick={() => setShowMetaForm(false)}>Cancelar</button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button className="btn-ghost-box" onClick={() => setShowMetaForm(true)}><Plus size={15} /> Definir meta para {nomeMesAno}</button>
-                  )}
-                </div>
-
-                <div className="section-label">Ações feitas em {nomeMesAno}</div>
-                <div className="resultados-wrap">
-                  {historicoMes.length === 0 ? (
-                    <div className="empty-state small">
-                      <BarChart3 size={24} />
-                      <p>Nenhuma ação registrada em {nomeMesAno} ainda. Registre uma ação executada pra começar a ver aqui.</p>
-                    </div>
-                  ) : (
-                    <div className="tile-grid">
-                      {chartMes.map((item) => (
-                        <div key={item.nome} className="resultado-tile">
-                          <span className="resultado-tile-valor">{formatBRL(item.valor)}</span>
-                          <span className="resultado-tile-nome">{item.nome}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="resultados-wrap" style={{ marginBottom: 4 }}>
-                  {showRegistrar ? (
-                    <div className="registrar-card">
-                      <span className="resumo-label" style={{ display: "block", marginBottom: 8 }}>Registrar resultado de uma ação</span>
+                  <div className="dash-col-side">
+                    <div className="dash-card-white">
+                      <span className="resumo-label" style={{ display: "block", marginBottom: 10 }}>Registrar resultado</span>
                       <select className="meta-select" value={registrarAcaoId} onChange={(e) => setRegistrarAcaoId(e.target.value)}>
-                        <option value="">Escolha a ação</option>
+                        <option value="">Selecionar ação</option>
                         {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
                       </select>
                       <div className="valor-input" style={{ margin: "8px 0" }}>
                         <span className="valor-prefix">R$</span>
-                        <input type="number" inputMode="decimal" placeholder="Quanto gerou" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
+                        <input type="number" inputMode="decimal" placeholder="Valor gerado" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
                       </div>
-                      <textarea
-                        placeholder="Observação (opcional)"
-                        value={doneNote}
-                        onChange={(e) => setDoneNote(e.target.value)}
-                        className="done-input"
-                        style={{ marginBottom: 8 }}
-                      />
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button className="btn-primary" onClick={registrarRapido}>Salvar</button>
-                        <button className="btn-ghost-box" onClick={() => { setShowRegistrar(false); setRegistrarAcaoId(""); setDoneValor(""); setDoneNote(""); }}>Cancelar</button>
-                      </div>
+                      <button className="btn-primary" onClick={registrarRapido}>Salvar</button>
                     </div>
-                  ) : (
-                    <button className="registrar-atalho" onClick={() => setShowRegistrar(true)}>
-                      <div className="registrar-atalho-icon"><DollarSign size={18} /></div>
-                      <div className="registrar-atalho-texto">
-                        <span className="registrar-atalho-titulo">Registrar resultado</span>
-                        <span className="registrar-atalho-sub">Aponte rapidinho quanto uma ação gerou, sem entrar no detalhe dela</span>
-                      </div>
-                      <ChevronRight size={18} color="#A9B0A4" />
-                    </button>
-                  )}
-                </div>
 
-                <div className="search-bar" onClick={() => goto("biblioteca", true)}>
-                  <Search size={16} color="#6B7268" />
-                  <input placeholder="Buscar ação por objetivo ou nome" readOnly />
-                </div>
+                    <div className="dash-atalhos">
+                      <button className="dash-atalho-btn" onClick={() => setShowMetaForm(true)}>
+                        <Plus size={16} /> Nova ação
+                      </button>
+                      <button className="dash-atalho-btn" onClick={() => goto("biblioteca", true)}>
+                        <BookOpen size={16} /> Biblioteca de ações
+                      </button>
+                      <button className="dash-atalho-btn" onClick={() => goto("biblioteca", true)}>
+                        <Search size={16} /> Pesquisar ação
+                      </button>
+                      <button className="dash-atalho-btn" onClick={() => goto("favoritos")}>
+                        <Heart size={16} /> Favoritos
+                      </button>
+                    </div>
 
-                <div className="home-cta-wrap">
-                  <button className="btn-primary" onClick={() => goto("biblioteca", true)}>Ver biblioteca de ações</button>
-                </div>
-
-                {meuDiagnostico && (
-                  <>
-                    <div className="section-label">Seu diagnóstico</div>
-                    <div className="resultados-wrap" style={{ marginBottom: 24 }}>
-                      <div className="diag-mini-card diag-mini-card-sm">
-                        <div className="diag-mini-indice">
-                          <span className="indice-num" style={{ fontSize: 22 }}>{meuDiagnostico.indice}</span>
-                          <span className="indice-max" style={{ fontSize: 11 }}>/100</span>
+                    {showMetaForm && (
+                      <div className="dash-card-white">
+                        <span className="resumo-label" style={{ display: "block", marginBottom: 10 }}>Definir meta para {nomeMesAno}</span>
+                        <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
+                          <option value="">Escolha a ação</option>
+                          {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                        </select>
+                        <div className="valor-input" style={{ margin: "8px 0" }}>
+                          <span className="valor-prefix">R$</span>
+                          <input type="number" inputMode="decimal" placeholder="Meta do mês" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
                         </div>
-                        <div className="diag-mini-info">
-                          <span className="diag-mini-faixa">{meuDiagnostico.faixa_indice}</span>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button className="btn-primary" onClick={addMeta}>Salvar meta</button>
+                          <button className="btn-ghost-box" onClick={() => setShowMetaForm(false)}>Cancelar</button>
+                        </div>
+                      </div>
+                    )}
+
+                    {meuDiagnostico && (
+                      <div className="dash-diag-card">
+                        <span className="resumo-label" style={{ display: "block", marginBottom: 10 }}>Diagnóstico da Loja</span>
+                        <div className="diag-mini-indice" style={{ marginBottom: 10 }}>
+                          <span className="indice-num" style={{ fontSize: 30 }}>{meuDiagnostico.indice}</span>
+                          <span className="indice-max" style={{ fontSize: 12 }}>/100</span>
+                        </div>
+                        <div className="diag-mini-info" style={{ marginBottom: 10 }}>
                           <span className="diag-mini-linha">Ponto forte: <b>{meuDiagnostico.ponto_forte}</b></span>
-                          <span className="diag-mini-linha">Trabalhar agora: <b>{meuDiagnostico.gargalo}</b></span>
+                          <span className="diag-mini-linha">Ponto de atenção: <b>{meuDiagnostico.gargalo}</b></span>
+                          <span className="diag-mini-linha">Próxima prioridade: <b>{meuDiagnostico.segunda_prioridade}</b></span>
                         </div>
+                        <button className="btn-ghost-box" style={{ marginBottom: showDiagCompleto ? 12 : 0 }} onClick={() => setShowDiagCompleto((s) => !s)}>
+                          {showDiagCompleto ? "Ocultar diagnóstico completo" : "Ver diagnóstico completo"}
+                        </button>
+                        {showDiagCompleto && (() => {
+                          const completo = computeDiagnostico(meuDiagnostico.respostas);
+                          return (
+                            <div className="pilares-wrap">
+                              {completo.pilares.map((p) => (
+                                <div key={p.nome} className="pilar-row">
+                                  <div className="pilar-row-top">
+                                    <span>{p.nome}</span>
+                                    <span className={`pilar-faixa faixa-${p.faixa.replace(/\s/g, "")}`}>{p.faixa}</span>
+                                  </div>
+                                  <div className="meta-bar-track"><div className="meta-bar-fill" style={{ width: `${(p.pontos / p.max) * 100}%` }} /></div>
+                                </div>
+                              ))}
+                              {completo.areas.length > 0 && (
+                                <div className="chiprow" style={{ marginTop: 10 }}>
+                                  {completo.areas.map((a) => <span key={a} className="chip">{a}</span>)}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </div>
-                      {meuDiagnostico.areas?.length > 0 && (
-                        <div className="chiprow" style={{ marginTop: 8 }}>
-                          {meuDiagnostico.areas.map((a) => <span key={a} className="chip">{a}</span>)}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
+                    )}
+                  </div>
+                </div>
               </div>
             ) : tab === "biblioteca" ? (
               <div className="screen">
@@ -2272,7 +2408,7 @@ export default function App() {
                 {bibShowMenu ? (
                   <div className="menu-wrap">
                     <div className="tutorial-placeholder">
-                      <Radio size={20} color="#163B2E" />
+                      <Radio size={20} color="#143F35" />
                       <div>
                         <span className="tutorial-titulo">Vídeo: como usar a biblioteca</span>
                         <span className="tutorial-sub">Em breve — um vídeo curto mostrando como encontrar e aplicar cada ação.</span>
