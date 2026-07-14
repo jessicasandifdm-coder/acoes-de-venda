@@ -952,120 +952,141 @@ function Accordion({ title, icon: Icon, defaultOpen, accent, children }) {
   );
 }
 
-function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote, setDoneNote, doneValor, setDoneValor, isDone }) {
+function DtlChecklistGroup({ itens, checked, onToggle }) {
+  return (
+    <div className="checklist">
+      {itens.map((it, i) => (
+        <label key={i} className="checkitem">
+          <input type="checkbox" checked={!!checked[i]} onChange={() => onToggle(i)} />
+          <span className={checked[i] ? "done" : ""}>{it}</span>
+        </label>
+      ))}
+    </div>
+  );
+}
+
+function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVerHistorico, onOpenRelacionada }) {
   const info = catInfo(action.cat);
   const Icon = info.icon;
   const [checkedPrep, setCheckedPrep] = useState({});
   const [checkedExec, setCheckedExec] = useState({});
+  const [checkedDiv, setCheckedDiv] = useState({});
   const relacionadas = action.relacionadas
     .map((id) => ACTIONS.find((a) => a.id === id))
     .filter(Boolean);
 
+  const totalDivulgacao = action.planoDivulgacao.reduce((s, m) => s + m.itens.length, 0);
+  const totalTarefas = action.checklist.length + action.checklistExecucao.length + totalDivulgacao;
+  const concluidas =
+    Object.values(checkedPrep).filter(Boolean).length +
+    Object.values(checkedExec).filter(Boolean).length +
+    Object.values(checkedDiv).filter(Boolean).length;
+  const pctExecucao = totalTarefas > 0 ? Math.round((concluidas / totalTarefas) * 100) : 0;
+
   return (
-    <div className="screen">
+    <div className="screen dtl-wrap">
       <div className="topbar">
         <button className="iconbtn" onClick={onBack}><ArrowLeft size={20} /></button>
-        <span className="topbar-title">Detalhe da ação</span>
+        <span className="topbar-title dtl-topbar-title">Detalhe da campanha</span>
         <button className="iconbtn" onClick={() => onToggleFav(action.id)}>
           <Heart size={20} fill={isFav ? "#143F35" : "none"} color={isFav ? "#143F35" : "#1C201D"} />
         </button>
       </div>
 
       <div className="scroll">
-        <div className="detail-header">
-          <h1 className="detail-nome">{action.nome}</h1>
-          <p className="detail-tipo">{action.tipo}</p>
-          <div className="detail-duracao-row">
-            <span className="resumo-label" style={{ marginBottom: 0 }}>Duração</span>
-            <span className="detail-duracao-valor">{action.duracao}</span>
+        <div className="dtl-header">
+          <h1 className="dtl-nome">{action.nome}</h1>
+          <p className="dtl-desc">{action.como}</p>
+          <div className="dtl-chips">
+            <span className="dtl-chip"><Clock size={13} /> {action.duracao}</span>
+            <span className="dtl-chip"><Target size={13} /> {action.objetivo[0]}</span>
+            <span className="dtl-chip"><Icon size={13} /> {info.label}</span>
           </div>
         </div>
 
-        <Accordion title="Objetivo, quando usar e quando evitar" defaultOpen>
-          <p className="acc-plain-text" style={{ marginBottom: 12 }}>{action.como}</p>
-          <div className="resumo-card" style={{ margin: 0 }}>
-            <div className="resumo-row">
-              <span className="resumo-label">Objetivo</span>
-              <ul className="bullet-list">{action.objetivo.map((o, i) => <li key={i}>{o}</li>)}</ul>
-            </div>
-            <div className="resumo-row">
-              <span className="resumo-label">Quando usar</span>
-              <ul className="bullet-list">{action.quandoUsar.map((o, i) => <li key={i}>{o}</li>)}</ul>
-            </div>
-            {action.quandoEvitar.length > 0 && (
-              <div className="resumo-row">
-                <span className="resumo-label">Quando evitar</span>
-                <ul className="bullet-list">{action.quandoEvitar.map((o, i) => <li key={i}>{o}</li>)}</ul>
-              </div>
-            )}
-            <div className="resumo-row">
-              <span className="resumo-label">Indicado para</span>
-              <div className="chiprow">
-                {(action.nichos && action.nichos[0] !== "Geral" ? action.nichos : ["Qualquer segmento"]).map((n) => <span key={n} className="chip">{n}</span>)}
-              </div>
-            </div>
-            {action.sugestoesNomes.length > 0 && (
-              <div className="resumo-row">
-                <span className="resumo-label">Sugestões de nome pra divulgar</span>
-                <div className="chiprow">
-                  {action.sugestoesNomes.map((n) => <span key={n} className="chip">{n}</span>)}
-                </div>
-              </div>
-            )}
+        <div className="dtl-checklist-card">
+          <div className="dtl-checklist-top">
+            <span className="dtl-checklist-titulo">Checklist de execução</span>
+            <span className="dtl-checklist-pct">{pctExecucao}% concluído</span>
           </div>
+          <div className="dash-progress-track" style={{ marginBottom: 4 }}>
+            <div className="dash-progress-fill" style={{ width: `${pctExecucao}%` }} />
+          </div>
+
+          <Accordion title="1 · Preparação" defaultOpen>
+            <DtlChecklistGroup itens={action.checklist} checked={checkedPrep} onToggle={(i) => setCheckedPrep((s) => ({ ...s, [i]: !s[i] }))} />
+          </Accordion>
+
+          {action.checklistExecucao.length > 0 && (
+            <Accordion title="2 · Execução">
+              <DtlChecklistGroup itens={action.checklistExecucao} checked={checkedExec} onToggle={(i) => setCheckedExec((s) => ({ ...s, [i]: !s[i] }))} />
+            </Accordion>
+          )}
+
+          {action.planoDivulgacao.length > 0 && (
+            <Accordion title="3 · Divulgação">
+              {action.planoDivulgacao.map((p, pi) => (
+                <div key={pi} className="dtl-marco">
+                  <span className="dtl-marco-titulo">{p.marco}</span>
+                  <div className="checklist">
+                    {p.itens.map((it, ii) => {
+                      const key = `${pi}-${ii}`;
+                      return (
+                        <label key={ii} className="checkitem">
+                          <input type="checkbox" checked={!!checkedDiv[key]} onChange={() => setCheckedDiv((s) => ({ ...s, [key]: !s[key] }))} />
+                          <span className={checkedDiv[key] ? "done" : ""}>{it}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </Accordion>
+          )}
+        </div>
+
+        <div className="dtl-guia-title">Guia da campanha</div>
+
+        <Accordion title="Objetivo" icon={Target}>
+          <ul className="bullet-list" style={{ marginBottom: 10 }}>{action.objetivo.map((o, i) => <li key={i}>{o}</li>)}</ul>
+          <div className="canal-row">
+            <span className="canal-row-label">Indicado para</span>
+            <div className="chiprow">
+              {(action.nichos && action.nichos[0] !== "Geral" ? action.nichos : ["Qualquer segmento"]).map((n) => <span key={n} className="chip">{n}</span>)}
+            </div>
+          </div>
+          {action.sugestoesNomes.length > 0 && (
+            <div className="canal-row" style={{ marginTop: 8 }}>
+              <span className="canal-row-label">Outros nomes</span>
+              <div className="chiprow">{action.sugestoesNomes.map((n) => <span key={n} className="chip">{n}</span>)}</div>
+            </div>
+          )}
         </Accordion>
 
-        <Accordion title="Canais">
+        <Accordion title="Quando usar" icon={Check}>
+          <ul className="bullet-list">{action.quandoUsar.map((o, i) => <li key={i}>{o}</li>)}</ul>
+        </Accordion>
+
+        {action.quandoEvitar.length > 0 && (
+          <Accordion title="Quando evitar" icon={AlertTriangle}>
+            <ul className="bullet-list">{action.quandoEvitar.map((o, i) => <li key={i}>{o}</li>)}</ul>
+          </Accordion>
+        )}
+
+        <Accordion title="Canais" icon={Radio}>
           <div className="canal-row">
-            <span className="canal-row-label">Canal principal</span>
+            <span className="canal-row-label">Principal</span>
             <CanalChip label={action.canalPrincipal} main />
           </div>
           {action.canaisApoio.length > 0 && (
             <div className="canal-row">
-              <span className="canal-row-label">Canais de apoio</span>
+              <span className="canal-row-label">De apoio</span>
               <div className="chiprow">{action.canaisApoio.map((c) => <CanalChip key={c} label={c} />)}</div>
             </div>
           )}
           <p className="canal-caption">O canal principal é onde a ação acontece de fato. Os demais só existem pra levar as clientes até ele.</p>
           {action.alternativaCanal && <p className="canal-alt-nota">{action.alternativaCanal}</p>}
         </Accordion>
-
-        <Accordion title="Etapa 1 · Preparação">
-          <div className="checklist">
-            {action.checklist.map((c, i) => (
-              <label key={i} className="checkitem">
-                <input type="checkbox" checked={!!checkedPrep[i]} onChange={() => setCheckedPrep((s) => ({ ...s, [i]: !s[i] }))} />
-                <span className={checkedPrep[i] ? "done" : ""}>{c}</span>
-              </label>
-            ))}
-          </div>
-        </Accordion>
-
-        {action.checklistExecucao.length > 0 && (
-          <Accordion title="Etapa 2 · Execução">
-            <div className="checklist">
-              {action.checklistExecucao.map((c, i) => (
-                <label key={i} className="checkitem">
-                  <input type="checkbox" checked={!!checkedExec[i]} onChange={() => setCheckedExec((s) => ({ ...s, [i]: !s[i] }))} />
-                  <span className={checkedExec[i] ? "done" : ""}>{c}</span>
-                </label>
-              ))}
-            </div>
-          </Accordion>
-        )}
-
-        {action.planoDivulgacao.length > 0 && (
-          <Accordion title="Etapa 3 · Divulgação">
-            {action.planoDivulgacao.map((p, pi) => (
-              <div key={pi} className="roteiro-sub">
-                <span className="roteiro-titulo">{p.marco}</span>
-                <ol className="steps">
-                  {p.itens.map((it, i) => <li key={i}>{it}</li>)}
-                </ol>
-              </div>
-            ))}
-          </Accordion>
-        )}
 
         {action.modelosMensagens.length > 0 && (
           <Accordion title="Modelos de mensagens" icon={MessageCircle}>
@@ -1081,7 +1102,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
         )}
 
         {action.ideiasStories.length > 0 && (
-          <Accordion title="Ideias de Stories / Reels" icon={Radio}>
+          <Accordion title="Ideias de Stories e Reels" icon={Radio}>
             <ul className="bullet-list">{action.ideiasStories.map((s, i) => <li key={i}>{s}</li>)}</ul>
           </Accordion>
         )}
@@ -1107,45 +1128,38 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, onMarkDone, doneNote
           </Accordion>
         )}
 
+        <div className="dtl-resultados-card">
+          <span className="dtl-resultados-titulo">Resultado desta campanha</span>
+          <div className="dtl-resultados-grid">
+            <div className="dtl-resultados-item">
+              <span className="dtl-resultados-label">Total gerado</span>
+              <span className="dtl-resultados-valor">{formatBRL(resultadosAcao.total)}</span>
+            </div>
+            <div className="dtl-resultados-item">
+              <span className="dtl-resultados-label">Último registro</span>
+              <span className="dtl-resultados-valor-sm">{resultadosAcao.ultimoRegistro || "—"}</span>
+            </div>
+            <div className="dtl-resultados-item">
+              <span className="dtl-resultados-label">Registros</span>
+              <span className="dtl-resultados-valor-sm">{resultadosAcao.qtd}</span>
+            </div>
+          </div>
+          <button className="btn-ghost-box" style={{ marginBottom: 0 }} onClick={onVerHistorico}>Ver histórico</button>
+        </div>
+
         {relacionadas.length > 0 && (
-          <Accordion title="Ações relacionadas">
-            <div className="chiprow">
+          <>
+            <div className="dtl-guia-title">Campanhas relacionadas</div>
+            <div className="dtl-relacionadas-grid">
               {relacionadas.map((r) => (
-                <span key={r.id} className="chip">{r.nome}</span>
+                <button key={r.id} className="dtl-relacionada-card" onClick={() => onOpenRelacionada(r.id)}>
+                  <span className="dtl-relacionada-nome">{r.nome}</span>
+                  <span className="dtl-relacionada-tipo">{r.tipo}</span>
+                </button>
               ))}
             </div>
-          </Accordion>
+          </>
         )}
-
-        <div className="done-box">
-          {isDone ? (
-            <div className="done-confirm"><Check size={16} /> Marcada como executada</div>
-          ) : (
-            <>
-              <span className="resumo-label" style={{ marginBottom: 8, display: "flex", alignItems: "center", gap: 5 }}><DollarSign size={12} /> Quanto essa ação gerou em vendas?</span>
-              <div className="valor-input">
-                <span className="valor-prefix">R$</span>
-                <input
-                  type="number"
-                  inputMode="decimal"
-                  placeholder="0"
-                  value={doneValor}
-                  onChange={(e) => setDoneValor(e.target.value)}
-                />
-              </div>
-              <p className="valor-nota">Valor de vendas geradas, sem precisar calcular lucro — só pra mapear de onde as vendas estão vindo.</p>
-              <textarea
-                placeholder="Observação sobre o resultado (opcional)"
-                value={doneNote}
-                onChange={(e) => setDoneNote(e.target.value)}
-                className="done-input"
-              />
-              <button className="btn-primary" onClick={() => onMarkDone(action.id)}>
-                Marcar como executada
-              </button>
-            </>
-          )}
-        </div>
       </div>
     </div>
   );
@@ -1585,6 +1599,16 @@ export default function App() {
   const metaTotalMes = metasDoMes.reduce((s, m) => s + (m.valorMeta || 0), 0);
   const pctMes = metaTotalMes > 0 ? Math.min(100, Math.round((totalMes / metaTotalMes) * 100)) : 0;
   const historicoMesOrdenado = [...historicoMes].sort((a, b) => new Date(b.criadoEm || 0) - new Date(a.criadoEm || 0));
+
+  const resultadosAcaoAtual = (() => {
+    if (!openId) return { total: 0, ultimoRegistro: null, qtd: 0 };
+    const registros = historico.filter((h) => h.id === openId).sort((a, b) => new Date(b.criadoEm || 0) - new Date(a.criadoEm || 0));
+    return {
+      total: registros.reduce((s, h) => s + (h.valor || 0), 0),
+      ultimoRegistro: registros.length > 0 ? labelRelativo(registros[0].criadoEm) || registros[0].data : null,
+      qtd: registros.length,
+    };
+  })();
   const anosDisponiveis = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 3 + i);
 
   const now = new Date();
@@ -1626,7 +1650,7 @@ export default function App() {
   };
 
   const baseStyles = `
-    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&family=Manrope:wght@500;600;700&display=swap');
     * { box-sizing: border-box; }
     .app-wrap {
       --paper: #FAFAF8;
@@ -2003,15 +2027,53 @@ export default function App() {
     .empty-state svg { margin-bottom: 10px; opacity: 0.5; }
     .empty-state p { font-size: 13px; line-height: 1.5; }
 
-    .detail-header { padding: 16px 0 4px; }
-    .detail-nome { font-family: 'Fraunces', serif; font-size: 25px; font-weight: 600; margin: 6px 0 2px; line-height: 1.15; }
-    .detail-tipo { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 10px; }
-    .detail-duracao-row {
-      display: flex; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line); margin-bottom: 12px;
+    .dtl-topbar-title { font-family: 'Manrope', sans-serif; text-transform: none; letter-spacing: 0; font-weight: 600; font-size: 13px; }
+
+    .dtl-header { padding: 18px 0 6px; }
+    .dtl-nome { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; margin: 0 0 6px; line-height: 1.15; color: var(--ink); }
+    .dtl-desc { font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); margin: 0 0 12px; }
+    .dtl-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dtl-chip {
+      display: inline-flex; align-items: center; gap: 6px; background: var(--paper); border: 1px solid var(--line);
+      border-radius: 999px; padding: 6px 12px; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 500; color: var(--ink);
     }
-    .detail-duracao-valor { font-size: 13px; font-weight: 500; color: var(--ink); }
-    .detail-oque { font-size: 13.5px; line-height: 1.55; color: var(--ink); margin: 0 0 6px; }
+    .dtl-chip svg { color: var(--wine); flex-shrink: 0; }
+
+    .dtl-checklist-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+      box-shadow: 0 2px 8px rgba(20,63,53,0.05); margin: 16px 0;
+    }
+    .dtl-checklist-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+    .dtl-checklist-titulo { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 15px; color: var(--ink); }
+    .dtl-checklist-pct { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 12.5px; color: var(--wine); }
+    .dtl-checklist-card .acc { border: none; border-bottom: 1px solid var(--line); border-radius: 0; margin-bottom: 0; background: none; }
+    .dtl-checklist-card .acc:last-child { border-bottom: none; }
+    .dtl-checklist-card .acc-header { padding: 12px 2px; }
+    .dtl-marco { padding: 8px 0 14px; }
+    .dtl-marco:last-child { padding-bottom: 0; }
+    .dtl-marco-titulo { display: block; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--mustard); margin-bottom: 8px; }
+
+    .dtl-guia-title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 13px; color: var(--ink); margin: 22px 2px 10px; }
+
+    .dtl-resultados-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+      box-shadow: 0 2px 8px rgba(20,63,53,0.05); margin: 20px 0;
+    }
+    .dtl-resultados-titulo { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 14px; }
+    .dtl-resultados-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .dtl-resultados-item { display: flex; flex-direction: column; gap: 3px; }
+    .dtl-resultados-label { font-size: 10.5px; color: var(--ink-soft); }
+    .dtl-resultados-valor { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; color: var(--wine); }
+    .dtl-resultados-valor-sm { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 600; color: var(--ink); }
+
+    .dtl-relacionadas-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 20px; }
+    .dtl-relacionada-card {
+      text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+      cursor: pointer; font-family: 'Manrope', sans-serif; display: flex; flex-direction: column; gap: 2px;
+    }
+    .dtl-relacionada-card:hover { border-color: var(--wine); }
+    .dtl-relacionada-nome { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .dtl-relacionada-tipo { font-size: 11px; color: var(--ink-soft); }
 
     .acc { border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; background: var(--card); overflow: hidden; }
     .acc-header {
@@ -2022,9 +2084,13 @@ export default function App() {
       display: flex; align-items: center; gap: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 11px;
       letter-spacing: 0.05em; text-transform: uppercase; color: var(--wine);
     }
-    .acc-chevron { color: var(--ink-soft); transition: transform 0.2s; flex-shrink: 0; }
+    .dtl-wrap .acc-header-left {
+      font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: 0; text-transform: none;
+    }
+    .acc-chevron { color: var(--ink-soft); transition: transform 0.25s ease; flex-shrink: 0; }
     .acc-chevron.open { transform: rotate(90deg); }
-    .acc-body { padding: 0 14px 14px; }
+    .acc-body { padding: 0 14px 14px; animation: dtlFadeIn 0.2s ease; }
+    @keyframes dtlFadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
     .acc-plain-text { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--ink); }
     .acc.acc-gold { border-left: 3px solid var(--mustard); }
     .acc.acc-gold .acc-header-left { color: var(--mustard); }
@@ -2103,7 +2169,7 @@ export default function App() {
     .checklist { display: flex; flex-direction: column; gap: 8px; }
     .checkitem { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
     .checkitem input { accent-color: var(--wine); width: 15px; height: 15px; }
-    .checkitem .done { text-decoration: line-through; color: var(--ink-soft); }
+    .checkitem .done { text-decoration: line-through; color: var(--ink-soft); transition: color 0.2s ease; }
 
     .chiprow { display: flex; flex-wrap: wrap; gap: 6px; }
     .chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; font-size: 11.5px; color: var(--ink-soft); }
@@ -2192,12 +2258,9 @@ export default function App() {
                 isFav={favs.has(openAction.id)}
                 onToggleFav={toggleFav}
                 onBack={() => setOpenId(null)}
-                onMarkDone={markDone}
-                doneNote={doneNote}
-                setDoneNote={setDoneNote}
-                doneValor={doneValor}
-                setDoneValor={setDoneValor}
-                isDone={isDoneAlready}
+                resultadosAcao={resultadosAcaoAtual}
+                onVerHistorico={() => goto("historico")}
+                onOpenRelacionada={(id) => setOpenId(id)}
               />
             ) : tab === "inicio" ? (
               <div className="screen">
