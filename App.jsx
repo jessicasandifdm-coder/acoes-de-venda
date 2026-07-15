@@ -5,7 +5,7 @@ import {
   Star, Target, Sparkles, Check, ChevronRight, X, Store, Crown,
   Megaphone, UserMinus, UserPlus, Globe, Radio, LogOut, Mail, KeyRound,
   Lightbulb, AlertTriangle, TrendingUp, DollarSign, BarChart3,
-  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle, Shirt, Video, Film, LayoutGrid
+  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle, Shirt, Video, Film, LayoutGrid, Play
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
@@ -1815,6 +1815,7 @@ export default function App() {
   const [meuDiagnostico, setMeuDiagnostico] = useState(null);
   const [showDiagCompleto, setShowDiagCompleto] = useState(false);
   const [searchFocado, setSearchFocado] = useState(false);
+  const [showVideoInicio, setShowVideoInicio] = useState(false);
 
   const isAdmin = session?.email === ADMIN_EMAIL;
   const navItems = isAdmin ? [...NAV, { id: "admin", label: "Admin", icon: Shield }] : NAV;
@@ -2275,6 +2276,22 @@ export default function App() {
     .dash-progress-track { height: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
     .dash-progress-fill { height: 100%; background: var(--wine); border-radius: 999px; transition: width 0.4s; }
 
+    .dash-video-wrap { max-width: 1040px; margin: 12px auto 0; padding: 0 24px; }
+    .dash-video-btn {
+      display: inline-flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 999px; padding: 9px 16px; font-size: 12.5px; font-weight: 500; color: var(--wine);
+      cursor: pointer; font-family: 'Work Sans', sans-serif;
+    }
+    .dash-video-btn:hover { border-color: var(--wine); background: var(--paper); }
+
+    .dash-meta-registro {
+      max-width: 1040px; margin: 18px auto 0; padding: 18px 24px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; box-shadow: 0 1px 3px rgba(20,63,53,0.05);
+    }
+    .dash-meta-registro-title { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14.5px; color: var(--ink); margin-bottom: 4px; }
+    .dash-meta-registro-sub { font-size: 12px; color: var(--ink-soft); line-height: 1.5; margin: 0 0 12px; max-width: 560px; }
+
+
     .dash-columns { display: grid; grid-template-columns: 1fr; gap: 26px; max-width: 1040px; margin: 26px auto 40px; padding: 0 24px; }
     .dash-col-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
 
@@ -2710,6 +2727,23 @@ export default function App() {
                   </div>
                 </div>
 
+                <div className="dash-video-wrap">
+                  <button className="dash-video-btn" onClick={() => setShowVideoInicio((s) => !s)}>
+                    <Play size={14} /> Como usar a ferramenta — assista o vídeo
+                  </button>
+                  {showVideoInicio && (
+                    <div className="bib-video-embed" style={{ marginTop: 10 }}>
+                      <iframe
+                        src="https://www.youtube.com/embed/kUry5SeSTYc"
+                        title="Como usar a ferramenta"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  )}
+                </div>
+
                 <div className="dash-cards-row">
                   <div className="dash-card">
                     <span className="dash-card-label">Meta do mês</span>
@@ -2737,6 +2771,20 @@ export default function App() {
                   <div className="dash-progress-track">
                     <div className="dash-progress-fill" style={{ width: `${pctMes}%` }} />
                   </div>
+                </div>
+
+                <div className="dash-meta-registro">
+                  <span className="dash-meta-registro-title">Registre aqui a meta da ação deste mês</span>
+                  <p className="dash-meta-registro-sub">Isso não é uma meta de faturamento geral da loja — é quanto você quer gerar com a ação que vai aplicar neste mês. Você pode ir adicionando outras ações e metas conforme for testando.</p>
+                  <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
+                    <option value="">Escolha a ação</option>
+                    {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                  </select>
+                  <div className="valor-input" style={{ margin: "8px 0" }}>
+                    <span className="valor-prefix">R$</span>
+                    <input type="number" inputMode="decimal" placeholder="Quanto você quer gerar com essa ação neste mês" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
+                  </div>
+                  <button className="btn-primary" onClick={addMeta}>Registrar meta</button>
                 </div>
 
                 <div className="dash-columns">
@@ -2810,9 +2858,6 @@ export default function App() {
                     </div>
 
                     <div className="dash-atalhos">
-                      <button className="dash-atalho-btn" onClick={() => setShowMetaForm(true)}>
-                        <Plus size={16} /> Nova ação
-                      </button>
                       <button className="dash-atalho-btn" onClick={() => goto("biblioteca", true)}>
                         <BookOpen size={16} /> Biblioteca de ações
                       </button>
@@ -2823,24 +2868,6 @@ export default function App() {
                         <Heart size={16} /> Favoritos
                       </button>
                     </div>
-
-                    {showMetaForm && (
-                      <div className="dash-card-white">
-                        <span className="resumo-label" style={{ display: "block", marginBottom: 10 }}>Definir meta para {nomeMesAno}</span>
-                        <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
-                          <option value="">Escolha a ação</option>
-                          {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-                        </select>
-                        <div className="valor-input" style={{ margin: "8px 0" }}>
-                          <span className="valor-prefix">R$</span>
-                          <input type="number" inputMode="decimal" placeholder="Meta do mês" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
-                        </div>
-                        <div style={{ display: "flex", gap: 8 }}>
-                          <button className="btn-primary" onClick={addMeta}>Salvar meta</button>
-                          <button className="btn-ghost-box" onClick={() => setShowMetaForm(false)}>Cancelar</button>
-                        </div>
-                      </div>
-                    )}
 
                     {meuDiagnostico && (
                       <div className="dash-diag-card">
