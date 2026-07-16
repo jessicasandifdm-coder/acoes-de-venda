@@ -190,119 +190,146 @@ async function supaDeleteWhere(table, accessToken, filters) {
   return true;
 }
 
-const ESCALA_PADRAO = [
-  { l: "Sempre", p: 4 }, { l: "Na maioria das vezes", p: 3 }, { l: "Às vezes", p: 2 }, { l: "Quase nunca", p: 1 },
-];
-
-const CONTEXTO_QS = [
-  { id: "segmento", texto: "Qual é o segmento da sua loja?", opcoes: ["Moda Feminina", "Moda Masculina", "Infantil", "Calçados", "Acessórios", "Casa", "Outro"].map((l) => ({ l, p: null })) },
-  { id: "tempo", texto: "Há quanto tempo sua loja existe?", opcoes: ["Menos de 1 ano", "1 a 3 anos", "3 a 5 anos", "Mais de 5 anos"].map((l) => ({ l, p: null })) },
-  { id: "faturamento", texto: "Qual o faturamento médio mensal?", opcoes: ["Até R$20 mil", "R$20–50 mil", "R$50–100 mil", "Acima de R$100 mil"].map((l) => ({ l, p: null })) },
-  { id: "equipe", texto: "Quantas pessoas trabalham na empresa?", opcoes: ["Só eu", "2–4", "5–10", "Mais de 10"].map((l) => ({ l, p: null })) },
-  { id: "seguidores", texto: "Quantos seguidores possui?", opcoes: ["Até 2 mil", "2–5 mil", "5–10 mil", "10–30 mil", "Mais de 30 mil"].map((l) => ({ l, p: null })) },
-];
-
-const PILAR_POSICIONAMENTO = [
-  { id: "P1", texto: "Hoje você sente que seu Instagram atrai o cliente certo?", opcoes: ESCALA_PADRAO },
-  { id: "P2", texto: "Seu perfil deixa claro o que você vende, para quem vende e por que comprar da sua loja?", opcoes: [{ l: "Totalmente", p: 4 }, { l: "Em parte", p: 3 }, { l: "Pouco", p: 2 }, { l: "Não", p: 1 }] },
-  { id: "P3", texto: "Você sente que atrai pessoas que realmente compram?", opcoes: [{ l: "Sim", p: 4 }, { l: "Frequentemente", p: 3 }, { l: "Poucas vezes", p: 2 }, { l: "Quase nunca", p: 1 }] },
-  { id: "P4", texto: "Hoje novos clientes chegam à sua loja:", opcoes: [{ l: "Todos os dias", p: 4 }, { l: "Toda semana", p: 3 }, { l: "Algumas vezes no mês", p: 2 }, { l: "Quase nunca", p: 1 }] },
-  { id: "P5", texto: "Hoje você depende de postar para conseguir vender?", opcoes: [{ l: "Não", p: 4 }, { l: "Um pouco", p: 3 }, { l: "Bastante", p: 2 }, { l: "Totalmente", p: 1 }] },
-];
-
-const PILAR_ESTRATEGIA = [
-  { id: "E1", texto: "Você planeja suas campanhas com antecedência?", opcoes: ESCALA_PADRAO },
-  { id: "E2", texto: "Você possui um calendário comercial organizado?", opcoes: ESCALA_PADRAO },
-  { id: "E3", texto: "Você sabe quais ações trazem mais resultado?", opcoes: ESCALA_PADRAO },
-  { id: "E4", texto: "Você acompanha indicadores da loja?", opcoes: ESCALA_PADRAO },
-  { id: "E5", texto: "Sua loja possui uma estratégia definida para cada mês?", opcoes: ESCALA_PADRAO },
-];
-
-const PILAR_VENDAS = [
-  { id: "V1", texto: "Sua equipe segue um processo de atendimento?", opcoes: ESCALA_PADRAO },
-  { id: "V2", texto: "Você realiza ações de fidelização?", opcoes: ESCALA_PADRAO },
-  { id: "V3", texto: "Você realiza ações para atrair novos clientes?", opcoes: ESCALA_PADRAO },
-  { id: "V4", texto: "Você realiza ações para aumentar o ticket médio?", opcoes: ESCALA_PADRAO },
-  { id: "V5", texto: "Você acompanha sua taxa de conversão?", opcoes: ESCALA_PADRAO },
-  { id: "V6", texto: "Você possui um processo de pós-venda?", opcoes: ESCALA_PADRAO },
-];
+// --- Configuração da Sessão Estratégica (ajustar aqui quando precisar) ---
+const INDICE_MINIMO_QUALIFICACAO = 40; // índice mínimo pra desbloquear o convite
+const SESSAO_WHATSAPP_NUMERO = "5551999999999"; // TROCAR pelo número real da Jessica (com DDI+DDD, só números)
+const SESSAO_WHATSAPP_MENSAGEM = "Olá! Fiz o diagnóstico no Gerador de Caixa e quero agendar minha Sessão Estratégica.";
 
 const DIAG_PERGUNTAS = [
-  ...CONTEXTO_QS.map((q) => ({ ...q, pilar: null })),
-  ...PILAR_POSICIONAMENTO.map((q) => ({ ...q, pilar: "Posicionamento" })),
-  ...PILAR_ESTRATEGIA.map((q) => ({ ...q, pilar: "Estratégia" })),
-  ...PILAR_VENDAS.map((q) => ({ ...q, pilar: "Vendas" })),
+  {
+    id: "q1", texto: "Hoje sua loja possui um calendário de ações comerciais?",
+    opcoes: [
+      { l: "Sim, organizado", p: 4 },
+      { l: "Tenho parcialmente", p: 3 },
+      { l: "Faço algumas ações", p: 2 },
+      { l: "Faço tudo no improviso", p: 1 },
+    ],
+  },
+  {
+    id: "q2", texto: "Com que frequência sua loja realiza ações de vendas?",
+    opcoes: [
+      { l: "Toda semana", p: 4 },
+      { l: "Quinzenalmente", p: 3 },
+      { l: "Uma vez por mês", p: 2 },
+      { l: "Apenas quando as vendas caem", p: 1 },
+    ],
+  },
+  {
+    id: "q3", texto: "Quando você faz uma ação de vendas, como normalmente decide qual ação realizar?",
+    opcoes: [
+      { l: "Tenho um planejamento definido", p: 4 },
+      { l: "Escolho de acordo com o momento da loja", p: 3 },
+      { l: "Faço igual ao que vejo outras lojas fazendo", p: 2 },
+      { l: "Normalmente faço quando percebo que as vendas caíram", p: 1 },
+    ],
+  },
+  {
+    id: "q4", multipla: true, texto: "Quais estratégias sua loja costuma utilizar para vender mais?",
+    opcoes: [
+      "Descontos ou promoções", "Frete grátis", "Brindes", "Combos ou kits",
+      "Campanhas para clientes antigos", "Lista de transmissão / WhatsApp", "Stories com ofertas",
+      "Live de vendas", "Grupo VIP", "Campanhas sazonais", "Lançamento de coleção",
+      "Não costumo fazer ações específicas",
+    ].map((l) => ({ l })),
+  },
+  {
+    id: "q5", texto: "Hoje você faz ações específicas para clientes que já compraram?",
+    opcoes: [
+      { l: "Sempre", p: 4 },
+      { l: "Às vezes", p: 3 },
+      { l: "Raramente", p: 2 },
+      { l: "Nunca", p: 1 },
+    ],
+  },
+  {
+    id: "q6", texto: "Você sente que suas vendas são previsíveis?",
+    opcoes: [
+      { l: "Sim", p: 4 },
+      { l: "Na maior parte do tempo", p: 3 },
+      { l: "Oscilam bastante", p: 2 },
+      { l: "Nunca sei como será o próximo mês", p: 1 },
+    ],
+  },
+  {
+    id: "q7", texto: "Qual é o faturamento médio mensal da sua loja?",
+    opcoes: [
+      { l: "Até R$ 5 mil", p: 1 },
+      { l: "De R$ 5 mil a R$ 10 mil", p: 2 },
+      { l: "De R$ 10 mil a R$ 20 mil", p: 2 },
+      { l: "De R$ 20 mil a R$ 50 mil", p: 3 },
+      { l: "Acima de R$ 50 mil", p: 4 },
+    ],
+  },
+  {
+    id: "q8", texto: "Quantas pessoas trabalham na operação?",
+    opcoes: [
+      { l: "Só eu", p: 1 },
+      { l: "2 a 4 pessoas", p: 2 },
+      { l: "5 a 10 pessoas", p: 3 },
+      { l: "Mais de 10 pessoas", p: 4 },
+    ],
+  },
+  {
+    id: "q9", texto: "Hoje suas vendas acontecem principalmente por onde?",
+    opcoes: [
+      { l: "Loja física", p: 2 },
+      { l: "Instagram", p: 2 },
+      { l: "WhatsApp", p: 2 },
+      { l: "Site", p: 3 },
+      { l: "Marketplace", p: 2 },
+      { l: "Mais de um canal", p: 4 },
+    ],
+  },
 ];
 
-const TEXTO_PILAR_FORTE = {
-  "Posicionamento": "Seu posicionamento já demonstra uma boa base. Sua comunicação transmite valor e atrai clientes com potencial de compra. Agora, o próximo passo é transformar essa percepção em uma estratégia comercial consistente.",
-  "Estratégia": "Sua loja já possui uma boa capacidade de planejamento. Com pequenos ajustes na execução, existe um grande potencial para tornar as vendas mais previsíveis.",
-  "Vendas": "Sua operação comercial já apresenta boas práticas de vendas. Fortalecer posicionamento e estratégia tende a potencializar ainda mais os resultados.",
-};
-
-const RECOMENDACAO_GARGALO = {
-  "Posicionamento": "Antes de pensar em vender mais, fortaleça a forma como sua loja é percebida. Um posicionamento claro aumenta a qualidade dos clientes que chegam até você e melhora o resultado de todas as ações comerciais.",
-  "Estratégia": "Sua maior oportunidade está na organização. Criar uma rotina comercial, planejar campanhas e acompanhar indicadores torna as vendas muito mais previsíveis.",
-  "Vendas": "Sua prioridade deve ser aumentar a frequência das ações comerciais. Atrair novos clientes, estimular recompra, elevar o ticket médio e manter um processo de vendas estruturado são passos fundamentais para gerar resultados consistentes.",
-};
-
-function faixaPilar(nome, pontos) {
-  if (nome === "Vendas") {
-    if (pontos <= 12) return "Crítica";
-    if (pontos <= 18) return "Em desenvolvimento";
-    return "Consistente";
-  }
-  if (pontos <= 10) return "Crítico";
-  if (pontos <= 15) return "Em desenvolvimento";
-  return "Consistente";
-}
+const DIAG_MAX_PONTOS = 36; // soma dos pontos máximos de q1..q9 (4 cada)
 
 function faixaGeral(indice) {
-  if (indice <= 39) return "Operação no improviso";
-  if (indice <= 59) return "Vendas instáveis";
-  if (indice <= 79) return "Estrutura em construção";
-  if (indice <= 90) return "Loja em crescimento previsível";
-  return "Loja previsível";
+  if (indice <= 30) return {
+    curta: "Muito no improviso",
+    texto: "Sua loja ainda depende muito do improviso e as vendas tendem a oscilar. Criar uma rotina comercial será um dos principais fatores para gerar mais previsibilidade.",
+  };
+  if (indice <= 60) return {
+    curta: "Pouco estruturada",
+    texto: "Sua loja já realiza algumas ações de vendas, mas elas ainda acontecem de forma pouco estruturada. Organizar um calendário comercial e manter consistência nas ações tende a aumentar seus resultados.",
+  };
+  if (indice <= 80) return {
+    curta: "Boa base comercial",
+    texto: "Sua loja possui uma boa base comercial. O próximo passo é transformar as ações em um processo previsível, acompanhando resultados e repetindo aquilo que funciona.",
+  };
+  return {
+    curta: "Alta previsibilidade",
+    texto: "Sua loja demonstra um bom nível de organização comercial e possui potencial para crescer com ainda mais previsibilidade através de uma estratégia consistente.",
+  };
 }
 
-function computeDiagnostico(respostas) {
-  const soma = (ids) => ids.reduce((s, id) => s + (respostas[id]?.p || 0), 0);
-  const pontosPos = soma(["P1", "P2", "P3", "P4", "P5"]);
-  const pontosEst = soma(["E1", "E2", "E3", "E4", "E5"]);
-  const pontosVendas = soma(["V1", "V2", "V3", "V4", "V5", "V6"]);
-  const total = pontosPos + pontosEst + pontosVendas;
-  const indice = Math.round((total / 64) * 100);
+const ESTRATEGIAS_PRECO = ["Descontos ou promoções", "Frete grátis", "Brindes"];
 
-  const pilares = [
-    { nome: "Posicionamento", pontos: pontosPos, max: 20 },
-    { nome: "Estratégia", pontos: pontosEst, max: 20 },
-    { nome: "Vendas", pontos: pontosVendas, max: 24 },
-  ];
-  const ordenado = [...pilares].sort((a, b) => a.pontos - b.pontos);
-  const gargalo = ordenado[0].nome;
-  const segundaPrioridade = ordenado[1].nome;
-  const pontoForte = ordenado[2].nome;
+function computeDiagnostico(respostas) {
+  const somaSimples = (ids) => ids.reduce((s, id) => s + (respostas[id]?.p || 0), 0);
+  const selecionadasQ4 = respostas.q4?.selecionadas || [];
+  const pontosQ4 = respostas.q4?.p || 0;
+
+  const total = somaSimples(["q1", "q2", "q3", "q5", "q6", "q7", "q8", "q9"]) + pontosQ4;
+  const indice = Math.round((total / DIAG_MAX_PONTOS) * 100);
+  const faixa = faixaGeral(indice);
 
   const alertas = [];
-  const areas = new Set();
-  if (respostas.P4?.l === "Quase nunca") { alertas.push({ titulo: "Aquisição de clientes em risco", texto: "Sua loja está com dificuldade para atrair novos clientes. Antes de aumentar as vendas, é importante fortalecer ações de alcance e geração de demanda." }); areas.add("Aquisição"); }
-  if (respostas.P5?.l === "Totalmente") { alertas.push({ titulo: "Dependência do Instagram", texto: "Hoje suas vendas dependem muito da sua presença diária. Isso torna o faturamento pouco previsível e dificulta o crescimento." }); areas.add("Posicionamento"); }
-  if (respostas.E2?.p === 1) { alertas.push({ titulo: "Falta de planejamento", texto: "Sua loja tende a reagir às oportunidades, em vez de construir campanhas com antecedência." }); areas.add("Planejamento"); }
-  if (respostas.E4?.p === 1) { alertas.push({ titulo: "Gestão sem indicadores", texto: "Sem acompanhar indicadores, fica difícil identificar o que realmente gera resultado e tomar decisões mais estratégicas." }); areas.add("Planejamento"); }
-  if (respostas.V2?.p === 1) { alertas.push({ titulo: "Baixa fidelização", texto: "Você pode estar deixando dinheiro na mesa ao não desenvolver ações para vender novamente aos clientes que já compraram." }); areas.add("Fidelização"); }
-  if (respostas.V3?.p === 1) { alertas.push({ titulo: "Pouca geração de demanda", texto: "Sua loja realiza poucas ações para atrair novos clientes, o que pode limitar o crescimento do faturamento." }); areas.add("Aquisição"); }
-  if (respostas.V4?.p === 1) { alertas.push({ titulo: "Ticket médio baixo", texto: "Sua loja pode estar perdendo oportunidades de aumentar o valor das vendas com ações simples de incremento de ticket." }); areas.add("Conversão"); }
-  if (respostas.V6?.p === 1) { alertas.push({ titulo: "Ausência de pós-venda", texto: "Sem um processo de pós-venda, sua loja reduz as chances de recompra e indicação." }); areas.add("Fidelização"); }
+  const naoFazNada = selecionadasQ4.includes("Não costumo fazer ações específicas");
+  if (selecionadasQ4.length > 0 && selecionadasQ4.every((s) => ESTRATEGIAS_PRECO.includes(s))) {
+    alertas.push("Atenção: hoje sua loja parece depender principalmente de incentivos de preço para vender. Existem outras estratégias capazes de aumentar as vendas sem reduzir sua margem.");
+  }
+  if (naoFazNada) {
+    alertas.push("Hoje suas vendas parecem depender muito do movimento natural da loja. Criar uma rotina de ações comerciais aumenta a previsibilidade dos resultados.");
+  }
+  if (!naoFazNada && !selecionadasQ4.includes("Campanhas para clientes antigos")) {
+    alertas.push("Você pode estar deixando de faturar com clientes que já compraram da sua loja. Trabalhar a recompra costuma ser uma das formas mais rápidas de aumentar o faturamento.");
+  }
 
-  return {
-    pontosPos, pontosEst, pontosVendas, total, indice,
-    faixaIndice: faixaGeral(indice),
-    pilares: pilares.map((p) => ({ ...p, faixa: faixaPilar(p.nome, p.pontos) })),
-    pontoForte, gargalo, segundaPrioridade,
-    alertas, areas: Array.from(areas),
-    textoForte: TEXTO_PILAR_FORTE[pontoForte],
-    recomendacao: RECOMENDACAO_GARGALO[gargalo],
-  };
+  const faturamentoLabel = respostas.q7?.l || "";
+  const qualificado = faturamentoLabel !== "" && faturamentoLabel !== "Até R$ 5 mil" && indice >= INDICE_MINIMO_QUALIFICACAO;
+
+  return { indice, faixaCurta: faixa.curta, faixaTexto: faixa.texto, alertas, qualificado, faturamentoLabel };
 }
 
 const catInfo = (id) => CATS.find((c) => c.id === id) || CATS[0];
@@ -1589,101 +1616,102 @@ function DiagnosticoResultadoBody({ resultado }) {
       <div className="indice-hero">
         <span className="indice-num">{resultado.indice}</span>
         <span className="indice-max">/100</span>
-        <span className="indice-faixa">{resultado.faixaIndice}</span>
+        <span className="indice-faixa">{resultado.faixaCurta}</span>
       </div>
 
-      <div className="pilares-wrap">
-        {resultado.pilares.map((p) => (
-          <div key={p.nome} className="pilar-row">
-            <div className="pilar-row-top">
-              <span>{p.nome}</span>
-              <span className={`pilar-faixa faixa-${p.faixa.replace(/\s/g, "")}`}>{p.faixa}</span>
-            </div>
-            <div className="meta-bar-track"><div className="meta-bar-fill" style={{ width: `${(p.pontos / p.max) * 100}%` }} /></div>
-          </div>
-        ))}
-      </div>
-
-      <div className="resumo-card" style={{ margin: "16px 0" }}>
-        <div className="resumo-row"><span className="resumo-label">Ponto forte</span><p>{resultado.pontoForte}</p></div>
-        <div className="resumo-row"><span className="resumo-label">Principal gargalo</span><p>{resultado.gargalo}</p></div>
-        <div className="resumo-row"><span className="resumo-label">Segunda prioridade</span><p>{resultado.segundaPrioridade}</p></div>
-      </div>
-
-      <p className="auth-sub" style={{ textAlign: "left" }}>{resultado.textoForte}</p>
+      <p className="auth-sub" style={{ textAlign: "left", marginTop: 14 }}>{resultado.faixaTexto}</p>
 
       {resultado.alertas.length > 0 && (
         <div style={{ margin: "14px 0" }}>
-          {resultado.alertas.map((a, i) => (
-            <Callout key={i} icon={AlertTriangle} title={a.titulo} tone="outline">{a.texto}</Callout>
+          {resultado.alertas.map((texto, i) => (
+            <Callout key={i} icon={AlertTriangle} title="Atenção" tone="outline">{texto}</Callout>
           ))}
         </div>
       )}
-
-      {resultado.areas.length > 0 && (
-        <div style={{ margin: "10px 0 16px" }}>
-          <span className="resumo-label" style={{ display: "block", marginBottom: 8 }}>Áreas de oportunidade identificadas</span>
-          <div className="chiprow">
-            {resultado.areas.map((a) => <span key={a} className="chip">{a}</span>)}
-          </div>
-        </div>
-      )}
-
-      <Callout icon={TrendingUp} title="Recomendação" tone="solid">{resultado.recomendacao}</Callout>
     </>
   );
 }
 
-function DiagnosticoModal({ resultado, onClose }) {
+function SessaoModal({ onClose }) {
+  const linkWhatsapp = `https://wa.me/${SESSAO_WHATSAPP_NUMERO}?text=${encodeURIComponent(SESSAO_WHATSAPP_MENSAGEM)}`;
   return (
     <div className="auth-wrap modal-overlay">
-      <div className="auth-card resultado-card">
-        <div className="modal-close-row">
-          <span className="auth-eyebrow">Diagnóstico da loja</span>
-          <button className="iconbtn" onClick={onClose}><X size={20} /></button>
-        </div>
-        <DiagnosticoResultadoBody resultado={resultado} />
-        <button className="btn-primary" style={{ marginTop: 16 }} onClick={onClose}>Fechar</button>
+      <div className="auth-card sessao-modal-card">
+        <span className="sessao-modal-emoji">🎉</span>
+        <h1 className="auth-title" style={{ fontSize: 21 }}>Você desbloqueou uma Sessão Estratégica Individual</h1>
+        <p className="auth-sub" style={{ textAlign: "left" }}>
+          Analisando suas respostas, identificamos oportunidades que podem gerar impacto nos resultados da sua loja.
+        </p>
+        <p className="auth-sub" style={{ textAlign: "left" }}>
+          Por isso, você recebeu uma Sessão Estratégica Individual de aproximadamente 30 minutos. Durante esse encontro vamos analisar o seu diagnóstico e indicar quais ações comerciais fazem mais sentido para o momento da sua loja.
+        </p>
+        <a className="btn-primary sessao-modal-btn" href={linkWhatsapp} target="_blank" rel="noopener noreferrer">
+          Agendar minha Sessão Estratégica
+        </a>
+        <button className="btn-ghost" onClick={onClose}>Continuar para o app</button>
       </div>
     </div>
   );
 }
 
 function DiagnosticoScreen({ onContinue, session }) {
+  const [iniciou, setIniciou] = useState(false);
   const [idx, setIdx] = useState(0);
   const [respostas, setRespostas] = useState({});
+  const [selecaoMultipla, setSelecaoMultipla] = useState([]);
   const [resultado, setResultado] = useState(null);
   const [salvo, setSalvo] = useState(false);
+  const [mostrarModalSessao, setMostrarModalSessao] = useState(false);
 
   const perguntaAtual = DIAG_PERGUNTAS[idx];
   const totalPerguntas = DIAG_PERGUNTAS.length;
+
+  const finalizar = (novasRespostas) => {
+    const r = computeDiagnostico(novasRespostas);
+    setResultado(r);
+    if (r.qualificado) setMostrarModalSessao(true);
+    if (session) {
+      (async () => {
+        try {
+          await supaInsert("av_diagnosticos", session.accessToken, {
+            user_id: session.userId,
+            respostas: novasRespostas,
+            indice: r.indice,
+            faixa_indice: r.faixaCurta,
+            alertas: r.alertas,
+            qualificado: r.qualificado,
+          });
+          setSalvo(true);
+        } catch (e) { console.error("Erro ao salvar diagnóstico:", e); }
+      })();
+    }
+  };
 
   const escolher = (opt) => {
     const novasRespostas = { ...respostas, [perguntaAtual.id]: opt };
     setRespostas(novasRespostas);
     if (idx < totalPerguntas - 1) {
       setIdx(idx + 1);
+      setSelecaoMultipla([]);
     } else {
-      const r = computeDiagnostico(novasRespostas);
-      setResultado(r);
-      if (session) {
-        (async () => {
-          try {
-            await supaInsert("av_diagnosticos", session.accessToken, {
-              user_id: session.userId,
-              respostas: novasRespostas,
-              indice: r.indice,
-              faixa_indice: r.faixaIndice,
-              ponto_forte: r.pontoForte,
-              gargalo: r.gargalo,
-              segunda_prioridade: r.segundaPrioridade,
-              alertas: r.alertas,
-              areas: r.areas,
-            });
-            setSalvo(true);
-          } catch (e) { console.error("Erro ao salvar diagnóstico:", e); }
-        })();
-      }
+      finalizar(novasRespostas);
+    }
+  };
+
+  const toggleMultipla = (label) => {
+    setSelecaoMultipla((prev) => prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]);
+  };
+
+  const confirmarMultipla = () => {
+    const pontos = Math.min(4, selecaoMultipla.filter((l) => l !== "Não costumo fazer ações específicas").length);
+    const opt = { selecionadas: selecaoMultipla, p: selecaoMultipla.includes("Não costumo fazer ações específicas") ? 0 : pontos };
+    const novasRespostas = { ...respostas, [perguntaAtual.id]: opt };
+    setRespostas(novasRespostas);
+    if (idx < totalPerguntas - 1) {
+      setIdx(idx + 1);
+      setSelecaoMultipla([]);
+    } else {
+      finalizar(novasRespostas);
     }
   };
 
@@ -1693,10 +1721,23 @@ function DiagnosticoScreen({ onContinue, session }) {
     return (
       <div className="auth-wrap">
         <div className="auth-card resultado-card">
-          <span className="auth-eyebrow">Resultado do diagnóstico</span>
+          <span className="auth-eyebrow">Seu Diagnóstico Comercial</span>
           <DiagnosticoResultadoBody resultado={resultado} />
           <button className="btn-primary" style={{ marginTop: 16 }} onClick={onContinue}>Continuar para o app</button>
-          <p className="auth-nota">Espaço reservado para o link da Mentoria — encaixa aqui, logo abaixo da recomendação.</p>
+        </div>
+        {mostrarModalSessao && <SessaoModal onClose={() => setMostrarModalSessao(false)} />}
+      </div>
+    );
+  }
+
+  if (!iniciou) {
+    return (
+      <div className="auth-wrap">
+        <div className="auth-card">
+          <span className="auth-eyebrow">Seu Diagnóstico Comercial</span>
+          <h1 className="auth-title" style={{ fontSize: 22 }}>Antes de começar a usar a ferramenta</h1>
+          <p className="auth-sub">Você vai receber um diagnóstico rápido sobre a maturidade comercial da sua loja. Responda com sinceridade — são só {totalPerguntas} perguntas simples, leva menos de 2 minutos.</p>
+          <button className="btn-primary" onClick={() => setIniciou(true)}>Começar o diagnóstico</button>
         </div>
       </div>
     );
@@ -1706,14 +1747,29 @@ function DiagnosticoScreen({ onContinue, session }) {
     <div className="auth-wrap">
       <div className="auth-card intro-card">
         <div className="quiz-progress-track"><div className="quiz-progress-fill" style={{ width: `${((idx) / totalPerguntas) * 100}%` }} /></div>
-        <span className="auth-eyebrow">{perguntaAtual.pilar ? `Pilar · ${perguntaAtual.pilar}` : "Sobre sua loja"} · {idx + 1}/{totalPerguntas}</span>
+        <span className="auth-eyebrow">Pergunta {idx + 1}/{totalPerguntas}</span>
         <h1 className="auth-title" style={{ fontSize: 19, lineHeight: 1.3 }}>{perguntaAtual.texto}</h1>
 
-        <div className="quiz-opcoes">
-          {perguntaAtual.opcoes.map((opt, i) => (
-            <button key={i} className="quiz-opcao" onClick={() => escolher(opt)}>{opt.l}</button>
-          ))}
-        </div>
+        {perguntaAtual.multipla ? (
+          <>
+            <p className="auth-nota" style={{ textAlign: "left", margin: "6px 0 12px" }}>Pode marcar mais de uma opção.</p>
+            <div className="quiz-opcoes">
+              {perguntaAtual.opcoes.map((opt, i) => (
+                <label key={i} className={`quiz-opcao quiz-opcao-check ${selecaoMultipla.includes(opt.l) ? "selecionada" : ""}`}>
+                  <input type="checkbox" checked={selecaoMultipla.includes(opt.l)} onChange={() => toggleMultipla(opt.l)} />
+                  {opt.l}
+                </label>
+              ))}
+            </div>
+            <button className="btn-primary" style={{ marginTop: 14 }} onClick={confirmarMultipla} disabled={selecaoMultipla.length === 0}>Continuar</button>
+          </>
+        ) : (
+          <div className="quiz-opcoes">
+            {perguntaAtual.opcoes.map((opt, i) => (
+              <button key={i} className="quiz-opcao" onClick={() => escolher(opt)}>{opt.l}</button>
+            ))}
+          </div>
+        )}
 
         {idx > 0 && <button className="btn-ghost" onClick={voltar}>Voltar</button>}
       </div>
@@ -1812,6 +1868,7 @@ export default function App() {
   const [adminPerfis, setAdminPerfis] = useState([]);
   const [adminLoading, setAdminLoading] = useState(false);
   const [perfil, setPerfil] = useState(null);
+  const [precisaDiagnostico, setPrecisaDiagnostico] = useState(true);
   const [meuDiagnostico, setMeuDiagnostico] = useState(null);
   const [showDiagCompleto, setShowDiagCompleto] = useState(false);
   const [searchFocado, setSearchFocado] = useState(false);
@@ -2064,6 +2121,17 @@ export default function App() {
       font-family: 'Work Sans', sans-serif; font-size: 13.5px; color: var(--ink); cursor: pointer;
     }
     .quiz-opcao:hover { border-color: var(--wine); background: var(--paper); }
+    .quiz-opcao-check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .quiz-opcao-check input { accent-color: var(--wine); width: 16px; height: 16px; flex-shrink: 0; }
+    .quiz-opcao-check.selecionada { border-color: var(--wine); background: var(--paper); }
+
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(20,63,53,0.55);
+      z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .sessao-modal-card { max-width: 420px; text-align: center; }
+    .sessao-modal-emoji { font-size: 40px; display: block; margin-bottom: 8px; }
+    .sessao-modal-btn { display: block; text-decoration: none; text-align: center; margin-top: 6px; }
 
     .resultado-card { max-width: 440px; }
     .indice-hero {
@@ -2683,21 +2751,22 @@ export default function App() {
             supaSelect("av_diagnosticos", s.accessToken, s.userId),
             supaSelect("av_perfis", s.accessToken, s.userId),
           ]);
-          if (diags.length === 0) setStage("diagnostico");
-          else if (perfis.length === 0) setStage("perfil");
+          setPrecisaDiagnostico(diags.length === 0);
+          if (perfis.length === 0) setStage("perfil");
+          else if (diags.length === 0) setStage("diagnostico");
           else setStage("app");
         } catch (e) {
           console.error("Erro ao verificar cadastro existente:", e);
-          setStage("diagnostico");
+          setStage("perfil");
         }
       })();
     }} /></div>
   );
-  if (stage === "diagnostico") return (
-    <div className="app-wrap"><style>{baseStyles}</style><DiagnosticoScreen session={session} onContinue={() => setStage("perfil")} /></div>
-  );
   if (stage === "perfil") return (
-    <div className="app-wrap"><style>{baseStyles}</style><PerfilScreen session={session} onContinue={(p) => { setPerfil(p); setStage("app"); }} /></div>
+    <div className="app-wrap"><style>{baseStyles}</style><PerfilScreen session={session} onContinue={(p) => { setPerfil(p); setStage(precisaDiagnostico ? "diagnostico" : "app"); }} /></div>
+  );
+  if (stage === "diagnostico") return (
+    <div className="app-wrap"><style>{baseStyles}</style><DiagnosticoScreen session={session} onContinue={() => setStage("app")} /></div>
   );
 
   return (
@@ -2901,34 +2970,24 @@ export default function App() {
                           <span className="indice-max" style={{ fontSize: 12 }}>/100</span>
                         </div>
                         <div className="diag-mini-info" style={{ marginBottom: 10 }}>
-                          <span className="diag-mini-linha">Ponto forte: <b>{meuDiagnostico.ponto_forte}</b></span>
-                          <span className="diag-mini-linha">Ponto de atenção: <b>{meuDiagnostico.gargalo}</b></span>
-                          <span className="diag-mini-linha">Próxima prioridade: <b>{meuDiagnostico.segunda_prioridade}</b></span>
+                          <span className="diag-mini-faixa">{meuDiagnostico.faixa_indice}</span>
+                          {meuDiagnostico.qualificado && <span className="diag-mini-linha">⭐ Qualificada pra Sessão Estratégica</span>}
                         </div>
                         <button className="btn-ghost-box" style={{ marginBottom: showDiagCompleto ? 12 : 0 }} onClick={() => setShowDiagCompleto((s) => !s)}>
                           {showDiagCompleto ? "Ocultar diagnóstico completo" : "Ver diagnóstico completo"}
                         </button>
-                        {showDiagCompleto && (() => {
-                          const completo = computeDiagnostico(meuDiagnostico.respostas);
-                          return (
-                            <div className="pilares-wrap">
-                              {completo.pilares.map((p) => (
-                                <div key={p.nome} className="pilar-row">
-                                  <div className="pilar-row-top">
-                                    <span>{p.nome}</span>
-                                    <span className={`pilar-faixa faixa-${p.faixa.replace(/\s/g, "")}`}>{p.faixa}</span>
-                                  </div>
-                                  <div className="meta-bar-track"><div className="meta-bar-fill" style={{ width: `${(p.pontos / p.max) * 100}%` }} /></div>
-                                </div>
-                              ))}
-                              {completo.areas.length > 0 && (
-                                <div className="chiprow" style={{ marginTop: 10 }}>
-                                  {completo.areas.map((a) => <span key={a} className="chip">{a}</span>)}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })()}
+                        {showDiagCompleto && (
+                          <div className="pilares-wrap">
+                            <p className="acc-plain-text">{faixaGeral(meuDiagnostico.indice).texto}</p>
+                            {meuDiagnostico.alertas?.length > 0 && (
+                              <div style={{ marginTop: 10 }}>
+                                {meuDiagnostico.alertas.map((texto, i) => (
+                                  <Callout key={i} icon={AlertTriangle} title="Atenção" tone="outline">{texto}</Callout>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -3162,12 +3221,13 @@ export default function App() {
 
                             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0" }}>
                               <span className="canal-pill sm">Índice {d.indice} · {d.faixa_indice}</span>
-                              <span className="canal-pill sm">Forte: {d.ponto_forte}</span>
-                              <span className="canal-pill sm">Gargalo: {d.gargalo}</span>
+                              {d.qualificado && <span className="canal-pill sm">⭐ Qualificada pra Sessão Estratégica</span>}
                             </div>
-                            {d.areas?.length > 0 && (
-                              <div className="chiprow" style={{ marginBottom: 10 }}>
-                                {d.areas.map((a) => <span key={a} className="chip">{a}</span>)}
+                            {d.alertas?.length > 0 && (
+                              <div style={{ marginBottom: 10 }}>
+                                {d.alertas.map((texto, i) => (
+                                  <p key={i} className="canal-caption" style={{ margin: "2px 0" }}>⚠ {texto}</p>
+                                ))}
                               </div>
                             )}
 
@@ -3176,7 +3236,9 @@ export default function App() {
                                 {DIAG_PERGUNTAS.map((q) => (
                                   <div className="admin-resposta-item" key={q.id}>
                                     <span className="admin-resposta-pergunta">{q.texto}</span>
-                                    <span className="admin-resposta-valor">{d.respostas?.[q.id]?.l || "—"}</span>
+                                    <span className="admin-resposta-valor">
+                                      {q.multipla ? (d.respostas?.[q.id]?.selecionadas || []).join(", ") || "—" : d.respostas?.[q.id]?.l || "—"}
+                                    </span>
                                   </div>
                                 ))}
                               </div>
