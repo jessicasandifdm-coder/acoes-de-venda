@@ -2295,6 +2295,13 @@ export default function App() {
     .dash-columns { display: grid; grid-template-columns: 1fr; gap: 26px; max-width: 1040px; margin: 26px auto 40px; padding: 0 24px; }
     .dash-col-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
 
+    /* Ordem mobile: ações em andamento -> registrar resultado -> histórico -> atalhos -> diagnóstico */
+    .dash-block-acoes { order: 1; }
+    .dash-block-registro { order: 2; }
+    .dash-block-historico { order: 3; }
+    .dash-block-atalhos { order: 4; }
+    .dash-block-diagnostico { order: 5; }
+
     .dash-acoes-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
     .dash-acao-card {
       text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
@@ -2316,7 +2323,6 @@ export default function App() {
     .dash-timeline-nome { font-size: 13px; color: var(--ink); }
     .dash-timeline-valor { font-size: 13px; font-weight: 600; color: var(--wine); }
 
-    .dash-col-side { display: flex; flex-direction: column; gap: 14px; }
     .dash-card-white { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(20,63,53,0.04); }
     .dash-atalhos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .dash-atalho-btn {
@@ -2326,9 +2332,21 @@ export default function App() {
     .dash-atalho-btn:hover { border-color: var(--wine); color: var(--wine); }
     .dash-diag-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(20,63,53,0.04); }
 
+    /* Só some no mobile — no desktop a explicação continua visível */
+    .dash-meta-registro-sub { display: none; }
+
     @media (min-width: 860px) {
       .dash-columns { grid-template-columns: 1.6fr 1fr; }
       .dash-cards-row { grid-template-columns: repeat(4, 1fr); }
+
+      /* Ordem desktop original: coluna 1 = ações + histórico / coluna 2 = registro + atalhos + diagnóstico */
+      .dash-block-acoes { grid-column: 1; order: 1; }
+      .dash-block-historico { grid-column: 1; order: 2; }
+      .dash-block-registro { grid-column: 2; order: 1; }
+      .dash-block-atalhos { grid-column: 2; order: 2; }
+      .dash-block-diagnostico { grid-column: 2; order: 3; }
+
+      .dash-meta-registro-sub { display: block; }
     }
 
     .diag-mini-indice { display: flex; align-items: baseline; gap: 2px; color: var(--wine); flex-shrink: 0; }
@@ -2788,7 +2806,7 @@ export default function App() {
                 </div>
 
                 <div className="dash-columns">
-                  <div className="dash-col-main">
+                  <div className="dash-block-acoes">
                     <div className="dash-col-title">Ações em andamento</div>
                     {metasDoMes.length === 0 ? (
                       <div className="empty-state small">
@@ -2818,8 +2836,25 @@ export default function App() {
                         )}
                       </>
                     )}
+                  </div>
 
-                    <div className="dash-col-title" style={{ marginTop: 26 }}>Histórico do mês</div>
+                  <div className="dash-block-registro">
+                    <div className="dash-card-white">
+                      <span className="resumo-label" style={{ display: "block", marginBottom: 10 }}>Registrar resultado</span>
+                      <select className="meta-select" value={registrarAcaoId} onChange={(e) => setRegistrarAcaoId(e.target.value)}>
+                        <option value="">Selecionar ação</option>
+                        {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                      </select>
+                      <div className="valor-input" style={{ margin: "8px 0" }}>
+                        <span className="valor-prefix">R$</span>
+                        <input type="number" inputMode="decimal" placeholder="Valor gerado" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
+                      </div>
+                      <button className="btn-primary" onClick={registrarRapido}>Salvar</button>
+                    </div>
+                  </div>
+
+                  <div className="dash-block-historico">
+                    <div className="dash-col-title">Histórico do mês</div>
                     {historicoMesOrdenado.length === 0 ? (
                       <div className="empty-state small">
                         <Clock size={24} />
@@ -2843,20 +2878,7 @@ export default function App() {
                     )}
                   </div>
 
-                  <div className="dash-col-side">
-                    <div className="dash-card-white">
-                      <span className="resumo-label" style={{ display: "block", marginBottom: 10 }}>Registrar resultado</span>
-                      <select className="meta-select" value={registrarAcaoId} onChange={(e) => setRegistrarAcaoId(e.target.value)}>
-                        <option value="">Selecionar ação</option>
-                        {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-                      </select>
-                      <div className="valor-input" style={{ margin: "8px 0" }}>
-                        <span className="valor-prefix">R$</span>
-                        <input type="number" inputMode="decimal" placeholder="Valor gerado" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
-                      </div>
-                      <button className="btn-primary" onClick={registrarRapido}>Salvar</button>
-                    </div>
-
+                  <div className="dash-block-atalhos">
                     <div className="dash-atalhos">
                       <button className="dash-atalho-btn" onClick={() => goto("biblioteca", true)}>
                         <BookOpen size={16} /> Biblioteca de ações
@@ -2868,8 +2890,10 @@ export default function App() {
                         <Heart size={16} /> Favoritos
                       </button>
                     </div>
+                  </div>
 
-                    {meuDiagnostico && (
+                  {meuDiagnostico && (
+                    <div className="dash-block-diagnostico">
                       <div className="dash-diag-card">
                         <span className="resumo-label" style={{ display: "block", marginBottom: 10 }}>Diagnóstico da Loja</span>
                         <div className="diag-mini-indice" style={{ marginBottom: 10 }}>
@@ -2906,8 +2930,8 @@ export default function App() {
                           );
                         })()}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : tab === "biblioteca" ? (
