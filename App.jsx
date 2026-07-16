@@ -192,7 +192,7 @@ async function supaDeleteWhere(table, accessToken, filters) {
 
 // --- Configuração da Sessão Estratégica (ajustar aqui quando precisar) ---
 const INDICE_MINIMO_QUALIFICACAO = 40; // índice mínimo pra desbloquear o convite
-const SESSAO_WHATSAPP_NUMERO = "5551999999999"; // TROCAR pelo número real da Jessica (com DDI+DDD, só números)
+const SESSAO_WHATSAPP_NUMERO = "5551997411360";
 const SESSAO_WHATSAPP_MENSAGEM = "Olá! Fiz o diagnóstico no Gerador de Caixa e quero agendar minha Sessão Estratégica.";
 
 const DIAG_PERGUNTAS = [
@@ -283,6 +283,11 @@ const DIAG_PERGUNTAS = [
 ];
 
 const DIAG_MAX_PONTOS = 36; // soma dos pontos máximos de q1..q9 (4 cada)
+
+function normalizarAlertas(lista) {
+  if (!Array.isArray(lista)) return [];
+  return lista.map((a) => (typeof a === "string" ? a : a?.texto || "")).filter(Boolean);
+}
 
 function faixaGeral(indice) {
   if (indice <= 30) return {
@@ -1661,7 +1666,6 @@ function DiagnosticoScreen({ onContinue, session }) {
   const [selecaoMultipla, setSelecaoMultipla] = useState([]);
   const [resultado, setResultado] = useState(null);
   const [salvo, setSalvo] = useState(false);
-  const [mostrarModalSessao, setMostrarModalSessao] = useState(false);
 
   const perguntaAtual = DIAG_PERGUNTAS[idx];
   const totalPerguntas = DIAG_PERGUNTAS.length;
@@ -1669,7 +1673,6 @@ function DiagnosticoScreen({ onContinue, session }) {
   const finalizar = (novasRespostas) => {
     const r = computeDiagnostico(novasRespostas);
     setResultado(r);
-    if (r.qualificado) setMostrarModalSessao(true);
     if (session) {
       (async () => {
         try {
@@ -1725,7 +1728,6 @@ function DiagnosticoScreen({ onContinue, session }) {
           <DiagnosticoResultadoBody resultado={resultado} />
           <button className="btn-primary" style={{ marginTop: 16 }} onClick={onContinue}>Continuar para o app</button>
         </div>
-        {mostrarModalSessao && <SessaoModal onClose={() => setMostrarModalSessao(false)} />}
       </div>
     );
   }
@@ -2979,9 +2981,9 @@ export default function App() {
                         {showDiagCompleto && (
                           <div className="pilares-wrap">
                             <p className="acc-plain-text">{faixaGeral(meuDiagnostico.indice).texto}</p>
-                            {meuDiagnostico.alertas?.length > 0 && (
+                            {normalizarAlertas(meuDiagnostico.alertas).length > 0 && (
                               <div style={{ marginTop: 10 }}>
-                                {meuDiagnostico.alertas.map((texto, i) => (
+                                {normalizarAlertas(meuDiagnostico.alertas).map((texto, i) => (
                                   <Callout key={i} icon={AlertTriangle} title="Atenção" tone="outline">{texto}</Callout>
                                 ))}
                               </div>
@@ -3223,9 +3225,9 @@ export default function App() {
                               <span className="canal-pill sm">Índice {d.indice} · {d.faixa_indice}</span>
                               {d.qualificado && <span className="canal-pill sm">⭐ Qualificada pra Sessão Estratégica</span>}
                             </div>
-                            {d.alertas?.length > 0 && (
+                            {normalizarAlertas(d.alertas).length > 0 && (
                               <div style={{ marginBottom: 10 }}>
-                                {d.alertas.map((texto, i) => (
+                                {normalizarAlertas(d.alertas).map((texto, i) => (
                                   <p key={i} className="canal-caption" style={{ margin: "2px 0" }}>⚠ {texto}</p>
                                 ))}
                               </div>
