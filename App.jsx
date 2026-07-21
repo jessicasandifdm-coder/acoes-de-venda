@@ -1942,6 +1942,7 @@ const NAV = [
   { id: "biblioteca", label: "Biblioteca", icon: BookOpen },
   { id: "favoritos", label: "Favoritos", icon: Heart },
   { id: "historico", label: "Histórico", icon: Clock },
+  { id: "simulador", label: "Simulador", icon: Calculator },
 ];
 
 export default function App() {
@@ -2889,7 +2890,11 @@ export default function App() {
           <div className="sidebar-logo">Gerador de Caixa</div>
           <nav className="sidebar-nav">
             {navItems.map((n) => (
-              <button key={n.id} className={`sidebar-link ${tab === n.id && !openAction && !showSimulador ? "active" : ""}`} onClick={() => { setShowSimulador(false); goto(n.id, true); }}>
+              <button
+                key={n.id}
+                className={`sidebar-link ${(n.id === "simulador" ? showSimulador : tab === n.id && !openAction && !showSimulador) ? "active" : ""}`}
+                onClick={() => { if (n.id === "simulador") { setOpenId(null); setShowSimulador(true); } else { setShowSimulador(false); goto(n.id, true); } }}
+              >
                 <n.icon size={16} /> {n.label}
               </button>
             ))}
@@ -3160,15 +3165,6 @@ export default function App() {
 
                 {bibShowMenu ? (
                   <div className="menu-wrap">
-                    <button className="bib-simulador-card" onClick={() => setShowSimulador(true)}>
-                      <div className="bib-simulador-icon"><Calculator size={20} /></div>
-                      <div className="bib-simulador-texto">
-                        <span className="bib-simulador-titulo">Simulador de Brindes</span>
-                        <span className="bib-simulador-sub">Descubra se vale a pena aquele brinde antes de criar a campanha</span>
-                      </div>
-                      <ChevronRight size={18} color="rgba(255,255,255,0.6)" />
-                    </button>
-
                     <div className="bib-section-title">Explorar por objetivo</div>
                     <div className="menu-list">
                       {CATS.map((c) => {
@@ -3383,7 +3379,11 @@ export default function App() {
           {!openAction && !showSimulador && (
             <div className="tabbar">
               {navItems.map((n) => (
-                <button key={n.id} className={`tabbtn ${tab === n.id ? "active" : ""}`} onClick={() => { setShowSimulador(false); goto(n.id, true); }}>
+                <button
+                  key={n.id}
+                  className={`tabbtn ${(n.id === "simulador" ? showSimulador : tab === n.id && !showSimulador) ? "active" : ""}`}
+                  onClick={() => { if (n.id === "simulador") { setOpenId(null); setShowSimulador(true); } else { setShowSimulador(false); goto(n.id, true); } }}
+                >
                   <n.icon size={19} /><span>{n.label}</span>
                 </button>
               ))}
