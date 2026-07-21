@@ -5,7 +5,7 @@ import {
   Star, Target, Sparkles, Check, ChevronRight, X, Store, Crown,
   Megaphone, UserMinus, UserPlus, Globe, Radio, LogOut, Mail, KeyRound,
   Lightbulb, AlertTriangle, TrendingUp, DollarSign, BarChart3,
-  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle, Shirt, Video, Film, LayoutGrid, Play
+  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle, Shirt, Video, Film, LayoutGrid, Play, Calculator
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
@@ -283,6 +283,13 @@ const DIAG_PERGUNTAS = [
 ];
 
 const DIAG_MAX_PONTOS = 36; // soma dos pontos máximos de q1..q9 (4 cada)
+
+function classificarBrinde(pct) {
+  if (pct <= 5) return { nivel: "Excelente estratégia", tom: "green" };
+  if (pct <= 7) return { nivel: "Estratégia saudável", tom: "green" };
+  if (pct <= 10) return { nivel: "Atenção. Avalie se o aumento do ticket compensa.", tom: "gold" };
+  return { nivel: "O custo do brinde está alto para esse valor de compra. Considere aumentar o valor mínimo para ganhar o brinde ou escolher um brinde de menor custo.", tom: "gold" };
+}
 
 function normalizarAlertas(lista) {
   if (!Array.isArray(lista)) return [];
@@ -1229,39 +1236,23 @@ function CanalChip({ label, small, main }) {
   );
 }
 
-function TagCard({ action, isFav, onToggleFav, onOpen, alt }) {
+function TagCard({ action, isFav, onToggleFav, onOpen }) {
   const info = catInfo(action.cat);
   const Icon = info.icon;
   return (
-    <div className={`tagcard ${alt ? "tagcard-alt" : ""}`} onClick={() => onOpen(action.id)}>
-      <div className="tagcard-hole" />
-      <div className="tagcard-body">
-        <div className="tagcard-top">
-          <span className="tagcard-cat">
-            <Icon size={12} strokeWidth={2} /> {info.label}
-          </span>
-          <button
-            className="tagcard-fav"
-            onClick={(e) => { e.stopPropagation(); onToggleFav(action.id); }}
-            aria-label="Favoritar"
-          >
-            <Heart size={16} fill={isFav ? "#143F35" : "none"} color={isFav ? "#143F35" : "#A9B0A4"} />
-          </button>
-        </div>
-        <h3 className="tagcard-nome">{action.nome}</h3>
-        <p className="tagcard-como">{action.como}</p>
-        <div className="tagcard-canais">
-          <CanalChip label={action.canalPrincipal} small main />
-          {action.canaisApoio.length > 0 && <span className="canal-pill sm">+{action.canaisApoio.length} apoio</span>}
-        </div>
-        <div className="tagcard-foot">
-          <span className="tagcard-duracao">
-            <Clock size={11} /> {action.duracao}
-            {action.nichos && action.nichos[0] !== "Geral" && <span className="nicho-tag"> · {action.nichos.join(", ")}</span>}
-          </span>
-          <ChevronRight size={16} color="#A9B0A4" />
-        </div>
+    <div className="tagcard-v2" onClick={() => onOpen(action.id)}>
+      <div className="tagcard-v2-top">
+        <div className="tagcard-v2-badge"><Icon size={20} /></div>
+        <button
+          className="tagcard-v2-fav"
+          onClick={(e) => { e.stopPropagation(); onToggleFav(action.id); }}
+          aria-label="Favoritar"
+        >
+          <Heart size={17} fill={isFav ? "#D9C48A" : "none"} color={isFav ? "#D9C48A" : "rgba(255,255,255,0.6)"} />
+        </button>
       </div>
+      <h3 className="tagcard-v2-nome">{action.nome}</h3>
+      <span className="tagcard-v2-cat">{info.label}</span>
     </div>
   );
 }
@@ -1313,7 +1304,104 @@ function DtlChecklistGroup({ itens, checked, onToggle }) {
   );
 }
 
-function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVerHistorico, onOpenRelacionada }) {
+function SimuladorBrindes({ onBack }) {
+  const [ticketMedio, setTicketMedio] = useState("");
+  const [custoBrinde, setCustoBrinde] = useState("");
+  const [valorMinimo, setValorMinimo] = useState("");
+
+  const ticket = Number(ticketMedio) || 0;
+  const custo = Number(custoBrinde) || 0;
+  const minimo = Number(valorMinimo) || 0;
+  const pronto = ticket > 0 && custo > 0 && minimo > 0;
+
+  const pct = pronto ? (custo / minimo) * 100 : 0;
+  const aumento = minimo - ticket;
+  const classificacao = pronto ? classificarBrinde(pct) : null;
+  const pctFormatado = pct.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+
+  return (
+    <div className="screen dtl-wrap">
+      <div className="topbar">
+        <button className="iconbtn" onClick={onBack}><ArrowLeft size={20} /></button>
+        <span className="topbar-title dtl-topbar-title">Simulador de Brindes</span>
+        <span style={{ width: 20 }} />
+      </div>
+
+      <div className="scroll">
+        <div className="dtl-header">
+          <h1 className="dtl-nome">Vale a pena esse brinde?</h1>
+          <p className="dtl-desc">Descubra se a sua campanha de "Compre e Ganhe" está saudável antes de colocar no ar — sem precisar saber margem, markup ou nenhum número financeiro complicado.</p>
+        </div>
+
+        <div className="dtl-section-card">
+          <div className="dtl-section-title">Preencha os valores</div>
+
+          <label className="auth-label">Ticket médio atual da loja</label>
+          <div className="valor-input">
+            <span className="valor-prefix">R$</span>
+            <input type="number" inputMode="decimal" placeholder="Ex: 180" value={ticketMedio} onChange={(e) => setTicketMedio(e.target.value)} />
+          </div>
+
+          <label className="auth-label">Custo do brinde para a loja</label>
+          <div className="valor-input">
+            <span className="valor-prefix">R$</span>
+            <input type="number" inputMode="decimal" placeholder="Ex: 15" value={custoBrinde} onChange={(e) => setCustoBrinde(e.target.value)} />
+          </div>
+
+          <label className="auth-label">Valor mínimo que o cliente deverá comprar para ganhar o brinde</label>
+          <div className="valor-input" style={{ marginBottom: 0 }}>
+            <span className="valor-prefix">R$</span>
+            <input type="number" inputMode="decimal" placeholder="Ex: 300" value={valorMinimo} onChange={(e) => setValorMinimo(e.target.value)} />
+          </div>
+        </div>
+
+        {pronto && (
+          <>
+            <div className="dtl-section-card">
+              <div className="dtl-section-title">Resultado</div>
+              <div className="resumo-card" style={{ margin: 0 }}>
+                <div className="resumo-row">
+                  <span className="resumo-label">Esse brinde representa da venda</span>
+                  <p style={{ fontSize: 20, fontWeight: 600, color: "var(--wine)" }}>{pctFormatado}%</p>
+                </div>
+                <div className="resumo-row">
+                  <span className="resumo-label">Aumento de ticket necessário</span>
+                  <p>{aumento > 0 ? `Seu cliente precisará aumentar aproximadamente ${formatBRL(aumento)} na compra para desbloquear o brinde.` : "Seu ticket médio atual já atinge o valor mínimo — o brinde pode ser conquistado sem precisar aumentar a compra."}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className={`dtl-dica-block ${classificacao.tom === "gold" ? "sim-classificacao-atencao" : ""}`}>
+              <div className="dtl-dica-titulo"><Calculator size={15} /> Classificação da estratégia</div>
+              <p className="dtl-dica-texto">{classificacao.nivel}</p>
+            </div>
+
+            <div className="dtl-section-card">
+              <div className="dtl-section-title">Análise da sua estratégia</div>
+              <p className="acc-plain-text" style={{ marginBottom: 8 }}>Seu ticket médio atual é de {formatBRL(ticket)}.</p>
+              <p className="acc-plain-text" style={{ marginBottom: 8 }}>
+                Para ganhar esse brinde, seu cliente deverá realizar uma compra de pelo menos {formatBRL(minimo)}
+                {aumento > 0 ? `, ou seja, aumentar aproximadamente ${formatBRL(aumento)} no valor da compra.` : "."}
+              </p>
+              <p className="acc-plain-text">
+                O custo desse brinde representa {pctFormatado}% dessa venda, {pct <= 7 ? "o que torna essa estratégia financeiramente saudável." : pct <= 10 ? "um valor que já pede atenção — vale avaliar se o aumento de ticket compensa." : "um valor alto para esse patamar de compra."} Ao invés de oferecer um desconto direto, você incentiva o cliente a comprar mais para conquistar um benefício percebido como um presente. Isso aumenta o ticket médio sem reduzir o valor percebido dos seus produtos.
+              </p>
+            </div>
+          </>
+        )}
+
+        <div className="dtl-resultado-block">
+          <div className="dtl-resultado-titulo"><Lightbulb size={15} /> Por que um brinde costuma ser melhor do que dar desconto?</div>
+          <p className="acc-plain-text">
+            Porque o cliente percebe que está ganhando algo extra, enquanto o desconto reduz o valor percebido dos produtos. Além disso, um brinde pode criar uma experiência positiva, fortalecer a marca e incentivar compras maiores para atingir o valor necessário. Quando bem planejada, essa estratégia aumenta o ticket médio preservando a rentabilidade da loja.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVerHistorico, onOpenRelacionada, onAbrirSimulador }) {
   const info = catInfo(action.cat);
   const Icon = info.icon;
   const [checkedPrep, setCheckedPrep] = useState({});
@@ -1406,6 +1494,9 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
                 </div>
               )}
               <p className="canal-caption" style={{ marginTop: 10 }}>{action.comoEscolherBrinde.perguntaChave}</p>
+              <button className="btn-ghost-box" style={{ marginTop: 10, marginBottom: 0 }} onClick={onAbrirSimulador}>
+                <Calculator size={15} /> Calcular se esse brinde vale a pena
+              </button>
             </Accordion>
           )}
         </div>
@@ -1873,6 +1964,7 @@ export default function App() {
   const [precisaDiagnostico, setPrecisaDiagnostico] = useState(true);
   const [meuDiagnostico, setMeuDiagnostico] = useState(null);
   const [showDiagCompleto, setShowDiagCompleto] = useState(false);
+  const [showSimulador, setShowSimulador] = useState(false);
   const [searchFocado, setSearchFocado] = useState(false);
   const [showVideoInicio, setShowVideoInicio] = useState(false);
 
@@ -2245,7 +2337,6 @@ export default function App() {
     }
     .bib-sugestao-chip:hover { background: var(--wine); color: #fff; border-color: var(--wine); }
 
-    .tagcard.tagcard-alt { background: #EEF6F1; }
 
     .filter-block { max-width: 720px; margin: 0 auto; width: 100%; }
     .filter-title { font-size: 10.5px; color: var(--ink-soft); padding: 6px 20px 2px; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'IBM Plex Mono', monospace; }
@@ -2489,26 +2580,22 @@ export default function App() {
     .list-wrap { padding: 4px 16px 40px; display: flex; flex-direction: column; gap: 10px; max-width: 720px; margin: 0 auto; }
     .list-grid-desktop { display: grid; grid-template-columns: 1fr; gap: 10px; }
 
-    .tagcard {
-      position: relative; background: var(--card); border: 1px solid var(--line);
-      border-radius: 4px 12px 12px 4px; padding: 12px 14px 12px 22px; cursor: pointer;
+    .tagcard-v2 {
+      position: relative; background: var(--wine); border-radius: 16px; padding: 18px;
+      cursor: pointer; box-shadow: 0 6px 16px rgba(20,63,53,0.18); transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .tagcard-hole {
-      position: absolute; left: -6px; top: 22px; width: 12px; height: 12px; border-radius: 50%;
-      background: var(--paper); border: 1.5px solid var(--line);
+    .tagcard-v2:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(20,63,53,0.24); }
+    .tagcard-v2-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+    .tagcard-v2-badge {
+      width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.14);
+      display: flex; align-items: center; justify-content: center; color: #fff;
     }
-    .tagcard-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-    .tagcard-cat {
-      font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.04em;
-      text-transform: uppercase; color: var(--mustard); display: flex; align-items: center; gap: 4px;
+    .tagcard-v2-fav { background: none; border: none; cursor: pointer; padding: 2px; }
+    .tagcard-v2-nome { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: #fff; margin: 0 0 6px; line-height: 1.25; }
+    .tagcard-v2-cat {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
     }
-    .tagcard-fav { background: none; border: none; cursor: pointer; padding: 2px; }
-    .tagcard-nome { font-family: 'Fraunces', serif; font-size: 16.5px; font-weight: 600; margin: 2px 0 3px; }
-    .tagcard-como { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 8px; line-height: 1.4; }
-    .tagcard-canais { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
-    .tagcard-foot { display: flex; align-items: center; justify-content: space-between; }
-    .tagcard-duracao { font-size: 11px; color: var(--ink-soft); display: flex; align-items: center; gap: 4px; }
-    .nicho-tag { color: var(--mustard); font-weight: 500; }
 
     .nicho-examples { display: flex; flex-direction: column; gap: 10px; }
     .nicho-example-item { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
@@ -2576,6 +2663,7 @@ export default function App() {
       background: var(--mustard); color: #fff; border-radius: 14px; padding: 18px; margin: 16px 0;
       box-shadow: 0 2px 8px rgba(20,63,53,0.06);
     }
+    .dtl-dica-block.sim-classificacao-atencao { background: #B8912F; }
     .dtl-dica-titulo {
       display: flex; align-items: center; gap: 7px; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12.5px;
       text-transform: uppercase; letter-spacing: 0.04em; color: rgba(255,255,255,0.85); margin-bottom: 8px;
@@ -2779,7 +2867,7 @@ export default function App() {
           <div className="sidebar-logo">Gerador de Caixa</div>
           <nav className="sidebar-nav">
             {navItems.map((n) => (
-              <button key={n.id} className={`sidebar-link ${tab === n.id && !openAction ? "active" : ""}`} onClick={() => goto(n.id, true)}>
+              <button key={n.id} className={`sidebar-link ${tab === n.id && !openAction && !showSimulador ? "active" : ""}`} onClick={() => { setShowSimulador(false); goto(n.id, true); }}>
                 <n.icon size={16} /> {n.label}
               </button>
             ))}
@@ -2789,7 +2877,9 @@ export default function App() {
 
         <div className="main">
           <div className="main-content">
-            {openAction ? (
+            {showSimulador ? (
+              <SimuladorBrindes onBack={() => setShowSimulador(false)} />
+            ) : openAction ? (
               <DetailScreen
                 action={openAction}
                 isFav={favs.has(openAction.id)}
@@ -2798,6 +2888,7 @@ export default function App() {
                 resultadosAcao={resultadosAcaoAtual}
                 onVerHistorico={() => goto("historico")}
                 onOpenRelacionada={(id) => setOpenId(id)}
+                onAbrirSimulador={() => setShowSimulador(true)}
               />
             ) : tab === "inicio" ? (
               <div className="screen">
@@ -2959,6 +3050,9 @@ export default function App() {
                       </button>
                       <button className="dash-atalho-btn" onClick={() => goto("favoritos")}>
                         <Heart size={16} /> Favoritos
+                      </button>
+                      <button className="dash-atalho-btn" onClick={() => setShowSimulador(true)}>
+                        <Calculator size={16} /> Simulador de Brindes
                       </button>
                     </div>
                   </div>
@@ -3130,7 +3224,7 @@ export default function App() {
                         </div>
                       ) : (
                         filtered.map((a, i) => (
-                          <TagCard key={a.id} action={a} isFav={favs.has(a.id)} onToggleFav={toggleFav} onOpen={(id) => setOpenId(id)} alt={i % 2 === 1} />
+                          <TagCard key={a.id} action={a} isFav={favs.has(a.id)} onToggleFav={toggleFav} onOpen={(id) => setOpenId(id)} />
                         ))
                       )}
                     </div>
@@ -3255,10 +3349,10 @@ export default function App() {
             )}
           </div>
 
-          {!openAction && (
+          {!openAction && !showSimulador && (
             <div className="tabbar">
               {navItems.map((n) => (
-                <button key={n.id} className={`tabbtn ${tab === n.id ? "active" : ""}`} onClick={() => goto(n.id, true)}>
+                <button key={n.id} className={`tabbtn ${tab === n.id ? "active" : ""}`} onClick={() => { setShowSimulador(false); goto(n.id, true); }}>
                   <n.icon size={19} /><span>{n.label}</span>
                 </button>
               ))}
