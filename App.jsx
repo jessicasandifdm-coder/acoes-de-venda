@@ -1040,6 +1040,7 @@ const ACTIONS = [
   {
     id: "story-batalha", nome: "Story Interativo — Batalha de Estilos", cat: "engajamento", nichos: ["Geral"],
     tipo: "Enquete de 4 opções",
+    templateVisual: { label: "Modelo pronto no Canva", url: "https://canva.link/pk7hu5wbrrx8lhl" },
     sugestoesNomes: [], alternativaCanal: null,
     como: "Enquete com 4 fotos (looks, produtos ou modelos) perguntando qual a cliente prefere; quem vota entra numa lista para abordagem personalizada no Direct.",
     duracao: "1 dia (sequência de 3 stories)",
@@ -1076,6 +1077,7 @@ const ACTIONS = [
   {
     id: "story-presente", nome: "Story Interativo — Escolha seu Presente", cat: "engajamento", nichos: ["Geral"],
     tipo: "Jogo de emojis ou números",
+    templateVisual: { label: "Modelo pronto no Canva", url: "https://canva.link/pk7hu5wbrrx8lhl" },
     sugestoesNomes: [], alternativaCanal: null,
     como: "A cliente escolhe uma entre 3 caixas (emoji ou número) e manda a escolha por mensagem; cada caixa esconde um benefício diferente.",
     duracao: "1 dia",
@@ -1101,6 +1103,7 @@ const ACTIONS = [
   {
     id: "story-caca-palavras", nome: "Story Interativo — Caça-Palavras", cat: "engajamento", nichos: ["Geral"],
     tipo: "Desafio de atenção",
+    templateVisual: { label: "Modelo pronto no Canva", url: "https://canva.link/pk7hu5wbrrx8lhl" },
     sugestoesNomes: [], alternativaCanal: null,
     como: "Um caça-palavras simples esconde uma palavra do nicho; quem encontra e responde o story ganha um cupom ou benefício.",
     duracao: "1 dia",
@@ -1542,9 +1545,15 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
           )}
         </div>
 
-        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData || action.materiaisNecessarios) && (
+        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData || action.materiaisNecessarios || action.templateVisual) && (
           <div className="dtl-section-card">
             <div className="dtl-section-title">Materiais de apoio</div>
+
+            {action.templateVisual && (
+              <a className="btn-ghost-box" style={{ marginBottom: 12, textDecoration: "none" }} href={action.templateVisual.url} target="_blank" rel="noopener noreferrer">
+                <Sparkles size={15} /> {action.templateVisual.label}
+              </a>
+            )}
 
             {action.modelosMensagens.length > 0 && (
               <Accordion title="Modelos de mensagens" icon={MessageCircle} defaultOpen>
@@ -2306,6 +2315,19 @@ export default function App() {
       padding: 7px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; color: var(--wine); font-weight: 500;
     }
     .catchip.active { background: var(--wine); border-color: var(--wine); color: #fff; }
+
+    .bib-simulador-card {
+      width: calc(100% - 40px); margin: 4px 20px 18px; display: flex; align-items: center; gap: 12px;
+      background: var(--wine); border: none; border-radius: 14px; padding: 16px; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(20,63,53,0.16); text-align: left; font-family: 'Work Sans', sans-serif;
+    }
+    .bib-simulador-icon {
+      width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.16); color: #fff;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .bib-simulador-texto { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+    .bib-simulador-titulo { font-size: 14px; font-weight: 600; color: #fff; }
+    .bib-simulador-sub { font-size: 11.5px; color: rgba(255,255,255,0.75); line-height: 1.4; }
 
     .bib-section-title {
       display: inline-block; background: var(--wine); color: #fff; font-family: 'IBM Plex Mono', monospace;
@@ -3138,6 +3160,15 @@ export default function App() {
 
                 {bibShowMenu ? (
                   <div className="menu-wrap">
+                    <button className="bib-simulador-card" onClick={() => setShowSimulador(true)}>
+                      <div className="bib-simulador-icon"><Calculator size={20} /></div>
+                      <div className="bib-simulador-texto">
+                        <span className="bib-simulador-titulo">Simulador de Brindes</span>
+                        <span className="bib-simulador-sub">Descubra se vale a pena aquele brinde antes de criar a campanha</span>
+                      </div>
+                      <ChevronRight size={18} color="rgba(255,255,255,0.6)" />
+                    </button>
+
                     <div className="bib-section-title">Explorar por objetivo</div>
                     <div className="menu-list">
                       {CATS.map((c) => {
