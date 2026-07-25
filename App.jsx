@@ -611,6 +611,13 @@ const ACTIONS = [
       "Story 7: faça uma última chamada — 'Ainda dá tempo de garantir o seu kit antes do encerramento da campanha.'",
     ],
     materiaisNecessarios: ["Brindes organizados por nível", "Comunicação visual da campanha", "Cartaz ou tabela mostrando os níveis", "Celular para produção dos conteúdos", "Embalagens para os kits"],
+    exemplosReais: [
+      {
+        titulo: "Vídeo de antecipação — Semana do Cliente",
+        descricao: "Reels mostrando o pedido sendo montado ao vivo, peça por peça, antes de revelar que é de graça: 'Vem fechar esse pedido comigo' → escolhe a necessaire (R$49,90) → escolhe a regata da coleção nova (R$59,90) → escolhe o gloss da marca → soma o total na tela (R$144,90) → só no final revela: 'Se eu te disser que você pode ganhar esse presente totalmente de graça na Semana do Cliente...' e chama pra ler a legenda pra participar. Gera desejo pelos produtos antes de contar que é brinde — funciona pra qualquer data, não só Semana do Cliente.",
+        url: "https://www.instagram.com/p/DOvvyc0gLsw/",
+      },
+    ],
     dicas: "O segredo dessa campanha não está apenas nos brindes, mas em mostrar ao cliente que ele está muito próximo de conquistar um benefício ainda melhor. Durante o atendimento, utilize frases como: 'Faltam apenas R$40 para você desbloquear o próximo presente' ou 'Com mais uma peça você leva um kit completo.' Esse tipo de abordagem aumenta naturalmente o ticket médio sem que o cliente tenha a sensação de estar sendo pressionado.",
     resultado: ["Aumento do ticket médio.", "Mais produtos por venda.", "Maior percepção de valor.", "Aumento do faturamento durante a campanha.", "Maior engajamento nos canais da loja."],
     relacionadas: ["comprou-ganhou", "comprou-ganhou-stories", "comprou-ganhou-vip", "combo-inteligente", "leve-mais-pague-menos", "cashback-inteligente"],
@@ -1545,7 +1552,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
           )}
         </div>
 
-        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData || action.materiaisNecessarios || action.templateVisual) && (
+        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData || action.materiaisNecessarios || action.templateVisual || action.exemplosReais) && (
           <div className="dtl-section-card">
             <div className="dtl-section-title">Materiais de apoio</div>
 
@@ -1571,6 +1578,22 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
             {action.ideiasStories.length > 0 && (
               <Accordion title="Ideias de Stories e Reels" icon={Radio}>
                 <ul className="bullet-list">{action.ideiasStories.map((s, i) => <li key={i}>{s}</li>)}</ul>
+              </Accordion>
+            )}
+
+            {action.exemplosReais && (
+              <Accordion title="Exemplos reais de divulgação" icon={Video} defaultOpen>
+                <div className="exemplo-real-list">
+                  {action.exemplosReais.map((ex, i) => (
+                    <div key={i} className="exemplo-real-item">
+                      <span className="exemplo-real-titulo">{ex.titulo}</span>
+                      <p className="exemplo-real-desc">{ex.descricao}</p>
+                      <a className="btn-ghost-box" style={{ marginBottom: 0, textDecoration: "none", display: "inline-flex" }} href={ex.url} target="_blank" rel="noopener noreferrer">
+                        <Video size={14} /> Ver vídeo no Instagram
+                      </a>
+                    </div>
+                  ))}
+                </div>
               </Accordion>
             )}
 
@@ -2624,6 +2647,11 @@ export default function App() {
     .nicho-example-item { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
     .nicho-example-label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--wine); margin-bottom: 3px; }
     .nicho-example-text { font-size: 12.5px; color: var(--ink); line-height: 1.4; }
+
+    .exemplo-real-list { display: flex; flex-direction: column; gap: 14px; }
+    .exemplo-real-item { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+    .exemplo-real-titulo { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--wine); margin-bottom: 6px; }
+    .exemplo-real-desc { font-size: 12.5px; color: var(--ink); line-height: 1.55; margin: 0 0 10px; }
 
     .canal-pill {
       display: inline-flex; align-items: center; gap: 3px; background: var(--paper); border: 1px solid var(--line);
