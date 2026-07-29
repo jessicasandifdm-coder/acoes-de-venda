@@ -1962,7 +1962,7 @@ function PerfilScreen({ onContinue, session }) {
 
 const NAV = [
   { id: "inicio", label: "Início", icon: Home },
-  { id: "biblioteca", label: "Biblioteca", icon: BookOpen },
+  { id: "biblioteca", label: "Ações Comerciais", icon: BookOpen },
   { id: "favoritos", label: "Favoritos", icon: Heart },
   { id: "historico", label: "Histórico", icon: Clock },
   { id: "simulador", label: "Simulador", icon: Calculator },
@@ -2456,34 +2456,45 @@ export default function App() {
     /* ---- DASHBOARD (Painel Comercial) ---- */
     .dash-header {
       display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-      max-width: 1040px; margin: 0 auto; width: 100%; padding: 28px 24px 6px;
+      max-width: 1040px; margin: 0 auto; width: 100%; padding: 32px 24px 8px;
     }
     .dash-ola { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mustard); }
-    .dash-titulo { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; margin: 4px 0 0; color: var(--ink); }
+    .dash-titulo { font-family: 'Fraunces', serif; font-size: 27px; font-weight: 600; margin: 4px 0 0; color: var(--ink); }
     .dash-selectors { display: flex; gap: 8px; }
     .dash-select {
-      border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 8px 10px; font-size: 12.5px;
-      color: var(--ink); font-family: 'Work Sans', sans-serif; cursor: pointer;
+      border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 8px 12px; font-size: 12.5px;
+      color: var(--ink); font-family: 'Work Sans', sans-serif; cursor: pointer; box-shadow: 0 1px 2px rgba(20,63,53,0.04);
     }
 
     .dash-cards-row {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 1040px; margin: 18px auto 0; padding: 0 24px;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 1040px; margin: 20px auto 0; padding: 0 24px;
     }
     .dash-card {
-      background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
-      box-shadow: 0 1px 3px rgba(20,63,53,0.05); display: flex; flex-direction: column; gap: 4px;
+      position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px;
+      box-shadow: 0 2px 10px rgba(20,63,53,0.06); display: flex; flex-direction: column; gap: 6px;
+      transition: box-shadow 0.15s ease, transform 0.15s ease;
     }
-    .dash-card-label { font-size: 11px; color: var(--ink-soft); }
-    .dash-card-valor { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; color: var(--ink); }
+    .dash-card:hover { box-shadow: 0 6px 16px rgba(20,63,53,0.1); transform: translateY(-1px); }
+    .dash-card-icon {
+      width: 30px; height: 30px; border-radius: 10px; background: #EAF0EC; color: var(--wine);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 2px;
+    }
+    .dash-card-icon-verde { background: var(--wine); color: #fff; }
+    .dash-card-label { font-size: 11px; color: var(--ink-soft); letter-spacing: 0.01em; }
+    .dash-card-valor { font-family: 'Fraunces', serif; font-size: 23px; font-weight: 600; color: var(--ink); }
     .dash-card-valor-verde { color: var(--wine); }
 
-    .dash-progress-wrap { max-width: 1040px; margin: 18px auto 0; padding: 0 24px; }
-    .dash-progress-top { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; }
-    .dash-progress-pct { color: var(--wine); font-weight: 600; }
-    .dash-progress-track { height: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
-    .dash-progress-fill { height: 100%; background: var(--wine); border-radius: 999px; transition: width 0.4s; }
+    .dash-progress-wrap {
+      max-width: 1040px; margin: 22px auto 0; padding: 18px 24px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; box-shadow: 0 2px 10px rgba(20,63,53,0.06); margin-left: 24px; margin-right: 24px;
+    }
+    .dash-progress-top { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 8px; font-weight: 500; }
+    .dash-progress-pct { color: var(--wine); font-weight: 700; }
+    .dash-progress-track { height: 12px; background: var(--paper); border-radius: 999px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(20,63,53,0.08); }
+    .dash-progress-fill { height: 100%; background: linear-gradient(90deg, var(--wine-dark), var(--wine)); border-radius: 999px; transition: width 0.5s ease; }
+    .dash-progress-falta { font-size: 11.5px; color: var(--ink-soft); margin: 8px 0 0; }
 
-    .dash-video-wrap { max-width: 1040px; margin: 12px auto 0; padding: 0 24px; }
+    .dash-video-wrap { max-width: 1040px; margin: 14px auto 0; padding: 0 24px; }
     .dash-video-btn {
       display: inline-flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--line);
       border-radius: 999px; padding: 9px 16px; font-size: 12.5px; font-weight: 500; color: var(--wine);
@@ -2492,11 +2503,14 @@ export default function App() {
     .dash-video-btn:hover { border-color: var(--wine); background: var(--paper); }
 
     .dash-meta-registro {
-      max-width: 1040px; margin: 18px auto 0; padding: 18px 24px; background: var(--card); border: 1px solid var(--line);
-      border-radius: 14px; box-shadow: 0 1px 3px rgba(20,63,53,0.05);
+      max-width: 1040px; margin: 22px auto 0; padding: 18px 22px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; box-shadow: 0 2px 10px rgba(20,63,53,0.06);
     }
-    .dash-meta-registro-title { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14.5px; color: var(--ink); margin-bottom: 4px; }
-    .dash-meta-registro-sub { font-size: 12px; color: var(--ink-soft); line-height: 1.5; margin: 0 0 12px; max-width: 560px; }
+    .dash-meta-registro-title { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 4px; }
+    .dash-meta-registro-sub { font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; margin: 0 0 12px; max-width: 560px; }
+    .dash-meta-registro-linha { display: flex; flex-direction: column; gap: 8px; }
+    .dash-meta-registro-valor { margin: 0 !important; }
+    .dash-meta-registro-btn { white-space: nowrap; }
 
 
     .dash-columns { display: grid; grid-template-columns: 1fr; gap: 26px; max-width: 1040px; margin: 26px auto 40px; padding: 0 24px; }
@@ -2554,6 +2568,10 @@ export default function App() {
       .dash-block-diagnostico { grid-column: 2; order: 3; }
 
       .dash-meta-registro-sub { display: block; }
+      .dash-meta-registro-linha { flex-direction: row; align-items: center; }
+      .dash-meta-registro-linha .meta-select { flex: 1.2; }
+      .dash-meta-registro-valor { flex: 1; }
+      .dash-meta-registro-btn { flex-shrink: 0; width: auto; padding-left: 22px; padding-right: 22px; }
     }
 
     .diag-mini-indice { display: flex; align-items: baseline; gap: 2px; color: var(--wine); flex-shrink: 0; }
@@ -2981,18 +2999,22 @@ export default function App() {
 
                 <div className="dash-cards-row">
                   <div className="dash-card">
+                    <div className="dash-card-icon"><Target size={16} /></div>
                     <span className="dash-card-label">Meta do mês</span>
                     <span className="dash-card-valor">{formatBRL(metaTotalMes)}</span>
                   </div>
                   <div className="dash-card">
+                    <div className="dash-card-icon dash-card-icon-verde"><DollarSign size={16} /></div>
                     <span className="dash-card-label">Resultado gerado</span>
                     <span className="dash-card-valor dash-card-valor-verde">{formatBRL(totalMes)}</span>
                   </div>
                   <div className="dash-card">
+                    <div className="dash-card-icon"><TrendingUp size={16} /></div>
                     <span className="dash-card-label">Percentual atingido</span>
                     <span className="dash-card-valor">{pctMes}%</span>
                   </div>
                   <div className="dash-card">
+                    <div className="dash-card-icon"><Check size={16} /></div>
                     <span className="dash-card-label">Ações executadas</span>
                     <span className="dash-card-valor">{historicoMes.length}</span>
                   </div>
@@ -3004,22 +3026,31 @@ export default function App() {
                     <span className="dash-progress-pct">{pctMes}%</span>
                   </div>
                   <div className="dash-progress-track">
-                    <div className="dash-progress-fill" style={{ width: `${pctMes}%` }} />
+                    <div className="dash-progress-fill" style={{ width: `${Math.min(pctMes, 100)}%` }} />
                   </div>
+                  <p className="dash-progress-falta">
+                    {metaTotalMes === 0
+                      ? "Defina uma meta abaixo pra começar a acompanhar."
+                      : totalMes >= metaTotalMes
+                      ? "Meta batida! 🎉"
+                      : `Faltam ${formatBRL(metaTotalMes - totalMes)} pra bater a meta do mês.`}
+                  </p>
                 </div>
 
                 <div className="dash-meta-registro">
                   <span className="dash-meta-registro-title">Registre aqui a meta da ação deste mês</span>
                   <p className="dash-meta-registro-sub">Isso não é uma meta de faturamento geral da loja — é quanto você quer gerar com a ação que vai aplicar neste mês. Você pode ir adicionando outras ações e metas conforme for testando.</p>
-                  <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
-                    <option value="">Escolha a ação</option>
-                    {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-                  </select>
-                  <div className="valor-input" style={{ margin: "8px 0" }}>
-                    <span className="valor-prefix">R$</span>
-                    <input type="number" inputMode="decimal" placeholder="Quanto você quer gerar com essa ação neste mês" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
+                  <div className="dash-meta-registro-linha">
+                    <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
+                      <option value="">Escolha a ação</option>
+                      {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                    </select>
+                    <div className="valor-input dash-meta-registro-valor">
+                      <span className="valor-prefix">R$</span>
+                      <input type="number" inputMode="decimal" placeholder="Quanto quer gerar" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
+                    </div>
+                    <button className="btn-primary dash-meta-registro-btn" onClick={addMeta}>Registrar meta</button>
                   </div>
-                  <button className="btn-primary" onClick={addMeta}>Registrar meta</button>
                 </div>
 
                 <div className="dash-columns">
@@ -3098,7 +3129,7 @@ export default function App() {
                   <div className="dash-block-atalhos">
                     <div className="dash-atalhos">
                       <button className="dash-atalho-btn" onClick={() => goto("biblioteca", true)}>
-                        <BookOpen size={16} /> Biblioteca de ações
+                        <BookOpen size={16} /> Ações Comerciais
                       </button>
                       <button className="dash-atalho-btn" onClick={() => goto("biblioteca", true)}>
                         <Search size={16} /> Pesquisar ação
@@ -3150,7 +3181,7 @@ export default function App() {
                   {!bibShowMenu && (
                     <button className="iconbtn" onClick={clearBibFilters}><ArrowLeft size={20} /></button>
                   )}
-                  <span className="topbar-title">{bibShowMenu ? "Biblioteca de ações" : "Resultados"}</span>
+                  <span className="topbar-title">{bibShowMenu ? "Ações Comerciais" : "Resultados"}</span>
                   <span style={{ width: 20 }} />
                 </div>
 
@@ -3159,7 +3190,7 @@ export default function App() {
                     <div className="bib-video-embed">
                       <iframe
                         src="https://www.youtube.com/embed/kUry5SeSTYc"
-                        title="Como usar a Biblioteca de Ações"
+                        title="Como usar a Biblioteca de Ações Comerciais"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
