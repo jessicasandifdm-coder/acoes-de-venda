@@ -5,7 +5,8 @@ import {
   Star, Target, Sparkles, Check, ChevronRight, X, Store, Crown,
   Megaphone, UserMinus, UserPlus, Globe, Radio, LogOut, Mail, KeyRound,
   Lightbulb, AlertTriangle, TrendingUp, DollarSign, BarChart3,
-  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle, Shirt, Video, Film, LayoutGrid, Play, Calculator
+  ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle, Shirt, Video, Film, LayoutGrid, Play, Calculator,
+  MapPin, Bell, List, Flag
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
@@ -190,6 +191,18 @@ async function supaDeleteWhere(table, accessToken, filters) {
   return true;
 }
 
+async function supaUpdateWhere(table, accessToken, filters, patch) {
+  const qs = Object.entries(filters).map(([k, v]) => `${k}=eq.${v}`).join("&");
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${qs}`, {
+    method: "PATCH",
+    headers: { ...supaHeaders(accessToken), Prefer: "return=representation" },
+    body: JSON.stringify(patch),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Erro ao atualizar.");
+  return data;
+}
+
 // --- Configuração da Sessão Estratégica (ajustar aqui quando precisar) ---
 const INDICE_MINIMO_QUALIFICACAO = 40; // índice mínimo pra desbloquear o convite
 const SESSAO_WHATSAPP_NUMERO = "5551997411360";
@@ -346,6 +359,88 @@ function computeDiagnostico(respostas) {
 
 const catInfo = (id) => CATS.find((c) => c.id === id) || CATS[0];
 const canalInfo = (label) => CANAIS.find((c) => c.label === label) || CANAIS[0];
+
+// --- Radar de Oportunidades ---
+const UFS_BR = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
+  "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+];
+
+const CATEGORIAS_RADAR = [
+  { id: "nacional", label: "Data nacional", icon: Flag },
+  { id: "estadual", label: "Data estadual", icon: MapPin },
+  { id: "municipal", label: "Data municipal", icon: Home },
+  { id: "comercial", label: "Data comercial", icon: TrendingUp },
+];
+
+function nthWeekday(ano, mes, diaSemana, n) {
+  const primeiro = new Date(ano, mes, 1);
+  const offset = (diaSemana - primeiro.getDay() + 7) % 7;
+  return 1 + offset + (n - 1) * 7;
+}
+function lastWeekday(ano, mes, diaSemana) {
+  const ultimoDia = new Date(ano, mes + 1, 0).getDate();
+  const ultimo = new Date(ano, mes, ultimoDia);
+  const offset = (ultimo.getDay() - diaSemana + 7) % 7;
+  return ultimoDia - offset;
+}
+function getDataOportunidade(op, ano) {
+  let dia;
+  if (op.regra === "nthWeekday") dia = nthWeekday(ano, op.mes, op.diaSemana, op.n);
+  else if (op.regra === "lastWeekday") dia = lastWeekday(ano, op.mes, op.diaSemana);
+  else dia = op.dia;
+  return new Date(ano, op.mes, dia);
+}
+function matchesLocalizacao(op, estado, cidade) {
+  if (op.cidade) return op.cidade === cidade;
+  if (op.estado) return op.estado === estado;
+  return true;
+}
+
+function proximasOportunidades(hoje, estado, cidade, limite) {
+  const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  const candidatos = [];
+  [hoje.getFullYear(), hoje.getFullYear() + 1].forEach((ano) => {
+    OPORTUNIDADES.forEach((op) => {
+      if (!matchesLocalizacao(op, estado, cidade)) return;
+      const data = getDataOportunidade(op, ano);
+      if (data >= hojeSemHora) candidatos.push({ op, data });
+    });
+  });
+  candidatos.sort((a, b) => a.data - b.data);
+  const vistos = new Set();
+  const resultado = [];
+  for (const c of candidatos) {
+    if (vistos.has(c.op.id)) continue;
+    vistos.add(c.op.id);
+    resultado.push({ ...c, dias: Math.round((c.data - hojeSemHora) / 86400000) });
+    if (resultado.length >= limite) break;
+  }
+  return resultado;
+}
+
+const OPORTUNIDADES = [
+  { id: "ano-novo", titulo: "Ano Novo", categoria: "nacional", mes: 0, dia: 1, descricao: "Início do ano é o momento em que a cliente troca o guarda-roupa e busca novidade — ótima janela pra lançamento de coleção.", comoAproveitar: ["Criar campanha de 'Ano novo, guarda-roupa novo'", "Lançar peças da coleção nova", "Campanha Compre e Ganhe pra girar o estoque do ano anterior"], palavrasChave: "lançamento coleção" },
+  { id: "dia-mulher", titulo: "Dia Internacional da Mulher", categoria: "nacional", mes: 2, dia: 8, descricao: "Data emocional forte, ótima pra campanhas de autoestima e conexão com a cliente.", comoAproveitar: ["Campanha emocional (Semana do Merecimento)", "Brinde exclusivo pra quem comprar no dia", "Conteúdo de valorização antes da data, não só no dia"], palavrasChave: "campanha emocional" },
+  { id: "dia-consumidor", titulo: "Dia do Consumidor", categoria: "comercial", mes: 2, dia: 15, descricao: "Data comercial forte no varejo, com clientes já esperando promoções.", comoAproveitar: ["Cashback ou desconto progressivo", "Frete grátis por tempo limitado", "Ação relâmpago de 1 dia"], palavrasChave: "promoção desconto" },
+  { id: "dia-maes", titulo: "Dia das Mães", categoria: "nacional", mes: 4, regra: "nthWeekday", diaSemana: 0, n: 2, descricao: "Uma das datas de maior faturamento do varejo de moda no ano.", comoAproveitar: ["Kits presente prontos", "Campanha Compre e Ganhe", "Embalagem de presente gratuita", "Parcelamento facilitado pra ticket mais alto"], palavrasChave: "brindes combo" },
+  { id: "namorados", titulo: "Dia dos Namorados", categoria: "nacional", mes: 5, dia: 12, descricao: "Boa oportunidade pra combos e presentes em dupla.", comoAproveitar: ["Combo pra casal", "Vale-presente", "Indicação premiada (leve sua amiga/namorado)"], palavrasChave: "combo indicação" },
+  { id: "dia-pais", titulo: "Dia dos Pais", categoria: "nacional", mes: 7, regra: "nthWeekday", diaSemana: 0, n: 2, descricao: "Data forte de presentes pro público masculino — excelente oportunidade para campanhas promocionais.", comoAproveitar: ["Criar kits presente", "Fazer campanha Compre e Ganhe", "Criar indicação premiada", "Embalagem presente gratuita", "Campanha pra aumentar ticket médio"], palavrasChave: "brindes combo ticket médio" },
+  { id: "dia-cliente", titulo: "Dia do Cliente", categoria: "comercial", mes: 8, dia: 15, descricao: "Criada pelo varejo pra gerar um 'segundo Natal' fora de época — ótima pra fidelizar quem já compra.", comoAproveitar: ["Cashback exclusivo pra clientes antigas", "Sacola Premiada", "Grupo VIP com condição especial"], palavrasChave: "fidelização cashback clientes antigos" },
+  { id: "independencia", titulo: "Independência do Brasil", categoria: "nacional", mes: 8, dia: 7, descricao: "Feriado nacional, bom pra ação relâmpago de feriado prolongado.", comoAproveitar: ["Frete grátis relâmpago", "Ação de 1 dia nos Stories"], palavrasChave: "frete grátis" },
+  { id: "dia-criancas", titulo: "Dia das Crianças", categoria: "nacional", mes: 9, dia: 12, descricao: "Forte pro nicho infantil e pra quem vende presentes.", comoAproveitar: ["Clube Presente (lista de aniversário/presente)", "Sacola Premiada temática", "Combo kit infantil"], palavrasChave: "sacola premiada brindes" },
+  { id: "black-friday", titulo: "Black Friday", categoria: "comercial", mes: 10, regra: "lastWeekday", diaSemana: 5, descricao: "Maior pico de vendas do varejo online e físico no ano.", comoAproveitar: ["Frete grátis relâmpago", "Desbloqueando Brindes por faixa de valor", "Grupo VIP com acesso antecipado"], palavrasChave: "frete grátis brindes" },
+  { id: "natal", titulo: "Natal", categoria: "nacional", mes: 11, dia: 25, descricao: "Principal data de presentes do ano.", comoAproveitar: ["Kits presente prontos", "Embalagem de presente gratuita", "Comprou Ganhou com brinde temático"], palavrasChave: "combo brindes" },
+  { id: "liquidacao-verao", titulo: "Liquidação de Verão", categoria: "comercial", mes: 0, dia: 15, descricao: "Momento de girar o estoque da coleção de verão antes da troca.", comoAproveitar: ["Operação Cabide Livre", "Giro de estoque", "Pague 2 Leve 3 em peças paradas"], palavrasChave: "girar estoque" },
+  { id: "volta-aulas", titulo: "Volta às Aulas", categoria: "comercial", mes: 1, dia: 1, descricao: "Movimenta categorias como papelaria, calçados e acessórios.", comoAproveitar: ["Combo de itens escolares", "Cashback pra recompra no ano letivo"], palavrasChave: "combo cashback" },
+  { id: "troca-outono-inverno", titulo: "Troca de Coleção Outono/Inverno", categoria: "comercial", mes: 2, dia: 1, descricao: "Início da temporada de frio, hora de lançar a coleção nova e girar o que sobrou do verão.", comoAproveitar: ["Lançamento com Grupo VIP (preview)", "Operação Cabide Livre nas peças de verão"], palavrasChave: "lançamento giro estoque" },
+  { id: "liquidacao-inverno", titulo: "Liquidação de Inverno", categoria: "comercial", mes: 6, dia: 15, descricao: "Fim do inverno é quando o estoque de frio precisa girar rápido.", comoAproveitar: ["Missão Estoque Zero", "Desconto progressivo por quantidade"], palavrasChave: "girar estoque desconto" },
+  { id: "troca-primavera-verao", titulo: "Troca de Coleção Primavera/Verão", categoria: "comercial", mes: 8, dia: 1, descricao: "Início da temporada quente, momento de lançamento.", comoAproveitar: ["Preview da Nova Coleção pro Grupo VIP", "Story Interativo anunciando a chegada da coleção"], palavrasChave: "lançamento coleção" },
+  { id: "ferias-verao", titulo: "Férias Escolares de Verão", categoria: "comercial", mes: 11, dia: 20, descricao: "Mais gente em casa e viajando — bom momento pra ações de lazer/presente.", comoAproveitar: ["Campanha de viagem/lazer temática", "Sacola Premiada"], palavrasChave: "brindes sacola" },
+  { id: "farroupilha", titulo: "Revolução Farroupilha", categoria: "estadual", mes: 8, dia: 20, estado: "RS", descricao: "Semana Farroupilha movimenta o Rio Grande do Sul inteiro, com forte apelo de tradição gaúcha.", comoAproveitar: ["Vitrine e Stories temáticos com identidade gaúcha", "Combo temático (ex: produtos pra churrasco, chimarrão)", "Ação de indicação na semana"], palavrasChave: "combo indicação" },
+  { id: "expointer", titulo: "Expointer", categoria: "estadual", mes: 7, dia: 29, estado: "RS", descricao: "A Expointer, em Esteio/RS, é a maior feira do agronegócio da América Latina e atrai milhares de consumidores pra região — excelente oportunidade pra campanhas promocionais em toda a região metropolitana.", comoAproveitar: ["Frete grátis ou condição especial pra quem vem de fora", "Campanha Compre e Ganhe na semana da feira", "Divulgação nos Stories pra quem estiver na região"], palavrasChave: "promoção frete grátis" },
+  { id: "aniversario-sao-leopoldo", titulo: "Aniversário de São Leopoldo", categoria: "municipal", mes: 6, dia: 25, estado: "RS", cidade: "São Leopoldo", descricao: "Feriado municipal — bom momento pra uma ação com identidade local.", comoAproveitar: ["Ação especial 'Aniversário da cidade'", "Desconto ou brinde temático com a data", "Divulgação na loja física e Stories"], palavrasChave: "promoção brindes" },
+];
 
 const ACTIONS = [
   {
@@ -1314,6 +1409,227 @@ function DtlChecklistGroup({ itens, checked, onToggle }) {
   );
 }
 
+function RadarLocalizacaoForm({ onSalvar }) {
+  const [estado, setEstado] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [erro, setErro] = useState("");
+  const [salvando, setSalvando] = useState(false);
+
+  const salvar = async () => {
+    if (!estado || !cidade.trim()) { setErro("Escolha o estado e informe a cidade."); return; }
+    setErro(""); setSalvando(true);
+    await onSalvar({ pais: "Brasil", estado, cidade: cidade.trim() });
+    setSalvando(false);
+  };
+
+  return (
+    <div className="dtl-section-card" style={{ maxWidth: 440, margin: "24px auto" }}>
+      <div className="dtl-section-title">Onde fica a sua loja?</div>
+      <p className="acc-plain-text" style={{ marginBottom: 14 }}>Só precisamos saber uma vez — assim o Radar já mostra as datas certas pra sua região sempre que você entrar.</p>
+      <label className="auth-label">País</label>
+      <div className="auth-input"><span style={{ fontSize: 13, color: "var(--ink)" }}>Brasil</span></div>
+      <label className="auth-label">Estado</label>
+      <select className="meta-select" value={estado} onChange={(e) => setEstado(e.target.value)}>
+        <option value="">Selecione o estado</option>
+        {UFS_BR.map((uf) => <option key={uf} value={uf}>{uf}</option>)}
+      </select>
+      <label className="auth-label">Cidade</label>
+      <div className="auth-input">
+        <input placeholder="Ex: São Leopoldo" value={cidade} onChange={(e) => setCidade(e.target.value)} />
+      </div>
+      {erro && <p className="auth-erro">{erro}</p>}
+      <button className="btn-primary" style={{ marginTop: 12 }} onClick={salvar} disabled={salvando}>
+        {salvando ? "Salvando…" : "Salvar e continuar"}
+      </button>
+    </div>
+  );
+}
+
+function RadarCard({ op, favorito, onToggleFavorito, onDefinirLembrete, onVerAcoes }) {
+  const [aberto, setAberto] = useState(false);
+  const info = CATEGORIAS_RADAR.find((c) => c.id === op.categoria) || CATEGORIAS_RADAR[0];
+  const Icon = info.icon;
+  const dataFmt = op.data.toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
+  const localTexto = op.cidade ? `${op.cidade}/${op.estado}` : op.estado ? op.estado : "Nacional";
+
+  return (
+    <div className="radar-card">
+      <div className="radar-card-top">
+        <span className="radar-card-cat"><Icon size={12} /> {info.label}</span>
+        <button className="tagcard-v2-fav" onClick={() => onToggleFavorito(op.id)} aria-label="Favoritar">
+          <Heart size={17} fill={favorito ? "#D9C48A" : "none"} color={favorito ? "#D9C48A" : "#A9B0A4"} />
+        </button>
+      </div>
+      <h3 className="radar-card-titulo">{op.titulo}</h3>
+      <span className="radar-card-data"><Calendar size={12} /> {dataFmt} · {localTexto}</span>
+      <p className="radar-card-desc">{op.descricao}</p>
+
+      {favorito && (
+        <select
+          className="radar-lembrete-select"
+          value={favorito.lembrete || ""}
+          onChange={(e) => onDefinirLembrete(op.id, e.target.value)}
+        >
+          <option value="">Sem lembrete</option>
+          <option value="7">🔔 Lembrar 7 dias antes</option>
+          <option value="15">🔔 Lembrar 15 dias antes</option>
+          <option value="30">🔔 Lembrar 30 dias antes</option>
+        </select>
+      )}
+
+      <button className="btn-ghost-box" onClick={() => setAberto((s) => !s)}>
+        {aberto ? "Ocultar como aproveitar" : "Como aproveitar essa oportunidade"}
+      </button>
+      {aberto && (
+        <ul className="bullet-list" style={{ margin: "4px 0 10px" }}>
+          {op.comoAproveitar.map((c, i) => <li key={i}>{c}</li>)}
+        </ul>
+      )}
+
+      <button className="btn-primary" style={{ marginBottom: 0 }} onClick={() => onVerAcoes(op.palavrasChave)}>
+        Ver ações comerciais
+      </button>
+    </div>
+  );
+}
+
+function RadarOportunidades({ perfil, onSalvarLocalizacao, favoritos, onToggleFavorito, onDefinirLembrete, onVerAcoes }) {
+  const hoje = new Date();
+  const [radarMes, setRadarMes] = useState(hoje.getMonth());
+  const [radarAno, setRadarAno] = useState(hoje.getFullYear());
+  const [view, setView] = useState("lista");
+  const [search, setSearch] = useState("");
+  const [somenteFavoritos, setSomenteFavoritos] = useState(false);
+  const [diaSelecionado, setDiaSelecionado] = useState(null);
+  const [editandoLocal, setEditandoLocal] = useState(false);
+
+  if (!perfil?.estado || !perfil?.cidade) {
+    return <RadarLocalizacaoForm onSalvar={onSalvarLocalizacao} />;
+  }
+
+  if (editandoLocal) {
+    return (
+      <RadarLocalizacaoForm
+        onSalvar={async (dados) => { await onSalvarLocalizacao(dados); setEditandoLocal(false); }}
+      />
+    );
+  }
+
+  const anosDisponiveis = Array.from({ length: 3 }, (_, i) => hoje.getFullYear() + i);
+
+  const oportunidadesDoMes = OPORTUNIDADES
+    .filter((op) => matchesLocalizacao(op, perfil.estado, perfil.cidade))
+    .map((op) => ({ ...op, data: getDataOportunidade(op, radarAno) }))
+    .filter((op) => op.data.getMonth() === radarMes)
+    .filter((op) => !somenteFavoritos || favoritos.some((f) => f.oportunidade_id === op.id))
+    .filter((op) => {
+      if (diaSelecionado && op.data.getDate() !== diaSelecionado) return false;
+      const q = search.trim().toLowerCase();
+      if (!q) return true;
+      return op.titulo.toLowerCase().includes(q) || (op.cidade || "").toLowerCase().includes(q) ||
+        (op.estado || "").toLowerCase().includes(q) || op.categoria.includes(q);
+    })
+    .sort((a, b) => a.data - b.data);
+
+  const insights = proximasOportunidades(hoje, perfil.estado, perfil.cidade, 4);
+  const diasComOportunidade = new Set(
+    OPORTUNIDADES.filter((op) => matchesLocalizacao(op, perfil.estado, perfil.cidade))
+      .map((op) => getDataOportunidade(op, radarAno))
+      .filter((d) => d.getMonth() === radarMes)
+      .map((d) => d.getDate())
+  );
+  const diasNoMes = new Date(radarAno, radarMes + 1, 0).getDate();
+  const primeiroDiaSemana = new Date(radarAno, radarMes, 1).getDay();
+
+  return (
+    <div className="screen">
+      <div className="dash-header">
+        <div>
+          <span className="dash-ola">📍 {perfil.cidade} • {perfil.estado}</span>
+          <h1 className="dash-titulo">Radar de Oportunidades</h1>
+        </div>
+        <button className="btn-ghost-box" style={{ marginBottom: 0 }} onClick={() => setEditandoLocal(true)}>
+          <MapPin size={14} /> Alterar localização
+        </button>
+      </div>
+
+      {insights.length > 0 && (
+        <div className="radar-insights">
+          {insights.map((ins, i) => (
+            <p key={i} className="radar-insight-item">
+              🎯 {ins.dias === 0 ? "É hoje:" : ins.dias === 1 ? "Falta 1 dia para" : `Faltam ${ins.dias} dias para`} <b>{ins.op.titulo}</b>{ins.dias > 0 ? "." : "!"}
+            </p>
+          ))}
+        </div>
+      )}
+
+      <div className="radar-filtros">
+        <select className="dash-select" value={radarMes} onChange={(e) => { setRadarMes(Number(e.target.value)); setDiaSelecionado(null); }}>
+          {MESES_COMPLETOS.map((m, i) => <option key={i} value={i}>{m}</option>)}
+        </select>
+        <select className="dash-select" value={radarAno} onChange={(e) => { setRadarAno(Number(e.target.value)); setDiaSelecionado(null); }}>
+          {anosDisponiveis.map((a) => <option key={a} value={a}>{a}</option>)}
+        </select>
+        <div className="radar-view-toggle">
+          <button className={`radar-view-btn ${view === "lista" ? "active" : ""}`} onClick={() => setView("lista")}><List size={14} /> Lista</button>
+          <button className={`radar-view-btn ${view === "calendario" ? "active" : ""}`} onClick={() => setView("calendario")}><Calendar size={14} /> Calendário</button>
+        </div>
+      </div>
+
+      <div className="search-bar" style={{ margin: "0 auto 8px" }}>
+        <Search size={16} color="#6B7268" />
+        <input placeholder="Buscar por nome, cidade, evento..." value={search} onChange={(e) => setSearch(e.target.value)} />
+      </div>
+
+      <div className="radar-filtros" style={{ marginTop: 0 }}>
+        <button className={`catchip ${!somenteFavoritos ? "active" : ""}`} onClick={() => setSomenteFavoritos(false)}>Todas</button>
+        <button className={`catchip ${somenteFavoritos ? "active" : ""}`} onClick={() => setSomenteFavoritos(true)}><Heart size={12} /> Favoritos</button>
+      </div>
+
+      {view === "calendario" && (
+        <div className="radar-cal-wrap">
+          <div className="radar-cal-grid">
+            {["D", "S", "T", "Q", "Q", "S", "S"].map((d, i) => <span key={i} className="radar-cal-dow">{d}</span>)}
+            {Array.from({ length: primeiroDiaSemana }).map((_, i) => <span key={`b${i}`} />)}
+            {Array.from({ length: diasNoMes }).map((_, i) => {
+              const dia = i + 1;
+              return (
+                <button
+                  key={dia}
+                  className={`radar-cal-dia ${diasComOportunidade.has(dia) ? "tem-op" : ""} ${diaSelecionado === dia ? "selecionado" : ""}`}
+                  onClick={() => setDiaSelecionado(diaSelecionado === dia ? null : dia)}
+                >
+                  {dia}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="list-wrap" style={{ paddingTop: 4 }}>
+        {oportunidadesDoMes.length === 0 ? (
+          <div className="empty-state">
+            <Calendar size={28} />
+            <p>Nenhuma oportunidade encontrada com esse filtro pra {MESES_COMPLETOS[radarMes]}.</p>
+          </div>
+        ) : (
+          oportunidadesDoMes.map((op) => (
+            <RadarCard
+              key={op.id}
+              op={op}
+              favorito={favoritos.find((f) => f.oportunidade_id === op.id)}
+              onToggleFavorito={onToggleFavorito}
+              onDefinirLembrete={onDefinirLembrete}
+              onVerAcoes={onVerAcoes}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SimuladorBrindes({ onBack }) {
   const [ticketMedio, setTicketMedio] = useState("");
   const [custoBrinde, setCustoBrinde] = useState("");
@@ -1963,6 +2279,7 @@ function PerfilScreen({ onContinue, session }) {
 const NAV = [
   { id: "inicio", label: "Início", icon: Home },
   { id: "biblioteca", label: "Ações Comerciais", icon: BookOpen },
+  { id: "radar", label: "Radar", icon: Calendar },
   { id: "favoritos", label: "Favoritos", icon: Heart },
   { id: "historico", label: "Histórico", icon: Clock },
   { id: "simulador", label: "Simulador", icon: Calculator },
@@ -1994,6 +2311,7 @@ export default function App() {
   const [adminPerfis, setAdminPerfis] = useState([]);
   const [adminLoading, setAdminLoading] = useState(false);
   const [perfil, setPerfil] = useState(null);
+  const [radarFavoritos, setRadarFavoritos] = useState([]);
   const [precisaDiagnostico, setPrecisaDiagnostico] = useState(true);
   const [meuDiagnostico, setMeuDiagnostico] = useState(null);
   const [showDiagCompleto, setShowDiagCompleto] = useState(false);
@@ -2008,12 +2326,13 @@ export default function App() {
     if (stage !== "app" || !session) return;
     (async () => {
       try {
-        const [h, m, f, meusDiag, meuPerfil] = await Promise.all([
+        const [h, m, f, meusDiag, meuPerfil, radarFav] = await Promise.all([
           supaSelect("av_historico", session.accessToken, session.userId),
           supaSelect("av_metas", session.accessToken, session.userId),
           supaSelect("av_favoritos", session.accessToken, session.userId),
           supaSelect("av_diagnosticos", session.accessToken, session.userId),
           supaSelect("av_perfis", session.accessToken, session.userId),
+          supaSelect("av_radar_favoritos", session.accessToken, session.userId),
         ]);
         setHistorico(h.map((row) => ({
           id: row.acao_id, rowId: row.id, nota: row.nota, valor: Number(row.valor) || 0,
@@ -2024,6 +2343,7 @@ export default function App() {
         setFavs(new Set(f.map((row) => row.acao_id)));
         if (meusDiag.length > 0) setMeuDiagnostico(meusDiag[0]);
         if (meuPerfil.length > 0) setPerfil(meuPerfil[0]);
+        setRadarFavoritos(radarFav.map((row) => ({ oportunidade_id: row.oportunidade_id, lembrete: row.lembrete })));
       } catch (e) { console.error("Erro ao carregar dados do Supabase:", e); }
     })();
   }, [stage, session]);
@@ -2077,6 +2397,37 @@ export default function App() {
     markDone(registrarAcaoId);
     setRegistrarAcaoId("");
     setShowRegistrar(false);
+  };
+
+  const salvarLocalizacaoRadar = async (dados) => {
+    setPerfil((prev) => ({ ...(prev || {}), ...dados }));
+    if (session) {
+      try {
+        await supaUpdateWhere("av_perfis", session.accessToken, { user_id: session.userId }, dados);
+      } catch (e) { console.error("Erro ao salvar localização:", e); }
+    }
+  };
+
+  const toggleFavoritoOportunidade = (oportunidadeId) => {
+    setRadarFavoritos((prev) => {
+      const existe = prev.find((f) => f.oportunidade_id === oportunidadeId);
+      if (existe) {
+        if (session) supaDeleteWhere("av_radar_favoritos", session.accessToken, { user_id: session.userId, oportunidade_id: oportunidadeId }).catch(console.error);
+        return prev.filter((f) => f.oportunidade_id !== oportunidadeId);
+      }
+      if (session) supaInsert("av_radar_favoritos", session.accessToken, { user_id: session.userId, oportunidade_id: oportunidadeId }).catch(console.error);
+      return [...prev, { oportunidade_id: oportunidadeId, lembrete: null }];
+    });
+  };
+
+  const definirLembreteOportunidade = (oportunidadeId, lembrete) => {
+    setRadarFavoritos((prev) => prev.map((f) => (f.oportunidade_id === oportunidadeId ? { ...f, lembrete: lembrete || null } : f)));
+    if (session) supaUpdateWhere("av_radar_favoritos", session.accessToken, { user_id: session.userId, oportunidade_id: oportunidadeId }, { lembrete: lembrete || null }).catch(console.error);
+  };
+
+  const verAcoesDoRadar = (palavrasChave) => {
+    goto("biblioteca", true);
+    setSearch(palavrasChave);
   };
 
   const shiftDash = (delta) => {
@@ -2670,6 +3021,44 @@ export default function App() {
     .exemplo-real-item { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
     .exemplo-real-titulo { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--wine); margin-bottom: 6px; }
     .exemplo-real-desc { font-size: 12.5px; color: var(--ink); line-height: 1.55; margin: 0 0 10px; }
+
+    .radar-insights { max-width: 1040px; margin: 14px auto 0; padding: 14px 20px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 2px 8px rgba(20,63,53,0.05); }
+    .radar-insight-item { font-size: 12.5px; color: var(--ink); line-height: 1.6; margin: 0; }
+    .radar-insight-item b { color: var(--wine); }
+
+    .radar-filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; max-width: 1040px; margin: 16px auto 10px; padding: 0 20px; }
+    .radar-view-toggle { display: flex; gap: 6px; margin-left: auto; }
+    .radar-view-btn {
+      display: flex; align-items: center; gap: 5px; background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+      padding: 7px 12px; font-size: 12px; color: var(--ink-soft); cursor: pointer; font-family: 'Work Sans', sans-serif;
+    }
+    .radar-view-btn.active { background: var(--wine); border-color: var(--wine); color: #fff; }
+
+    .radar-cal-wrap { max-width: 1040px; margin: 0 auto 14px; padding: 0 20px; }
+    .radar-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(20,63,53,0.05); }
+    .radar-cal-dow { text-align: center; font-size: 10.5px; color: var(--ink-soft); font-weight: 600; padding-bottom: 4px; }
+    .radar-cal-dia {
+      aspect-ratio: 1; border: none; background: var(--paper); border-radius: 8px; font-size: 12px; color: var(--ink);
+      cursor: pointer; position: relative; font-family: 'Work Sans', sans-serif;
+    }
+    .radar-cal-dia.tem-op { background: #EAF0EC; font-weight: 600; color: var(--wine); }
+    .radar-cal-dia.tem-op::after { content: ""; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--wine); }
+    .radar-cal-dia.selecionado { background: var(--wine); color: #fff; }
+    .radar-cal-dia.selecionado::after { background: #fff; }
+
+    .radar-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: 0 2px 8px rgba(20,63,53,0.05); }
+    .radar-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .radar-card-cat {
+      font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--mustard); display: flex; align-items: center; gap: 4px;
+    }
+    .radar-card-titulo { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; margin: 0 0 4px; color: var(--ink); }
+    .radar-card-data { display: flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--ink-soft); margin-bottom: 8px; }
+    .radar-card-desc { font-size: 13px; color: var(--ink); line-height: 1.5; margin: 0 0 10px; }
+    .radar-lembrete-select {
+      width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font-size: 12px; color: var(--ink);
+      background: var(--paper); margin-bottom: 10px; font-family: 'Work Sans', sans-serif;
+    }
 
     .canal-pill {
       display: inline-flex; align-items: center; gap: 3px; background: var(--paper); border: 1px solid var(--line);
@@ -3317,6 +3706,15 @@ export default function App() {
                   </>
                 )}
               </div>
+            ) : tab === "radar" ? (
+              <RadarOportunidades
+                perfil={perfil}
+                onSalvarLocalizacao={salvarLocalizacaoRadar}
+                favoritos={radarFavoritos}
+                onToggleFavorito={toggleFavoritoOportunidade}
+                onDefinirLembrete={definirLembreteOportunidade}
+                onVerAcoes={verAcoesDoRadar}
+              />
             ) : tab === "favoritos" ? (
               <div className="screen">
                 <div className="topbar"><span className="topbar-title">Favoritos</span><span /></div>
