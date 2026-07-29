@@ -2858,21 +2858,31 @@ export default function App() {
       border-radius: 16px; box-shadow: 0 2px 10px rgba(20,63,53,0.06);
     }
     .dash-meta-registro-title { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 4px; }
-    .dash-meta-registro-sub { font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; margin: 0 0 12px; max-width: 560px; }
+    .dash-meta-registro-sub { display: block; font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; margin: 0 0 12px; max-width: 560px; }
     .dash-meta-registro-linha { display: flex; flex-direction: column; gap: 8px; }
+    .dash-meta-registro-linha > * { min-width: 0; }
     .dash-meta-registro-valor { margin: 0 !important; }
     .dash-meta-registro-btn { white-space: nowrap; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
+    .dash-fique-de-olho {
+      max-width: 1040px; margin: 18px auto 0; padding: 18px 22px; background: var(--card); border: 1px solid var(--line);
+      border-left: 3px solid var(--mustard); border-radius: 16px; box-shadow: 0 2px 10px rgba(20,63,53,0.06);
+    }
+    .dash-fique-titulo { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 8px; }
+    .dash-fique-texto { font-size: 13.5px; color: var(--ink); margin: 0 0 4px; }
+    .dash-fique-texto b { color: var(--wine); }
+    .dash-fique-dica { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 12px; }
+    .dash-fique-botoes { display: flex; gap: 8px; flex-wrap: wrap; }
+    .dash-fique-botoes button { flex: 1; min-width: 140px; }
 
     .dash-columns { display: grid; grid-template-columns: 1fr; gap: 26px; max-width: 1040px; margin: 26px auto 40px; padding: 0 24px; }
     .dash-col-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
 
-    /* Ordem mobile: ações em andamento -> registrar resultado -> histórico -> atalhos -> diagnóstico */
+    /* Ordem mobile: ações em andamento -> registrar resultado -> diagnóstico */
     .dash-block-acoes { order: 1; }
     .dash-block-registro { order: 2; }
-    .dash-block-historico { order: 3; }
-    .dash-block-atalhos { order: 4; }
-    .dash-block-diagnostico { order: 5; }
+    .dash-block-diagnostico { order: 3; }
 
     .dash-acoes-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
     .dash-acao-card {
@@ -2896,29 +2906,17 @@ export default function App() {
     .dash-timeline-valor { font-size: 13px; font-weight: 600; color: var(--wine); }
 
     .dash-card-white { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(20,63,53,0.04); }
-    .dash-atalhos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .dash-atalho-btn {
-      display: flex; align-items: center; gap: 8px; justify-content: center; background: var(--card); border: 1px solid var(--line);
-      border-radius: 10px; padding: 12px 8px; font-size: 12px; color: var(--ink); cursor: pointer; font-family: 'Work Sans', sans-serif;
-    }
-    .dash-atalho-btn:hover { border-color: var(--wine); color: var(--wine); }
     .dash-diag-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(20,63,53,0.04); }
-
-    /* Só some no mobile — no desktop a explicação continua visível */
-    .dash-meta-registro-sub { display: none; }
 
     @media (min-width: 860px) {
       .dash-columns { grid-template-columns: 1.6fr 1fr; }
       .dash-cards-row { grid-template-columns: repeat(4, 1fr); }
 
-      /* Ordem desktop original: coluna 1 = ações + histórico / coluna 2 = registro + atalhos + diagnóstico */
+      /* Ordem desktop: coluna 1 = ações em andamento / coluna 2 = registro + diagnóstico */
       .dash-block-acoes { grid-column: 1; order: 1; }
-      .dash-block-historico { grid-column: 1; order: 2; }
       .dash-block-registro { grid-column: 2; order: 1; }
-      .dash-block-atalhos { grid-column: 2; order: 2; }
-      .dash-block-diagnostico { grid-column: 2; order: 3; }
+      .dash-block-diagnostico { grid-column: 2; order: 2; }
 
-      .dash-meta-registro-sub { display: block; }
       .dash-meta-registro-linha { flex-direction: row; align-items: center; }
       .dash-meta-registro-linha .meta-select { flex: 1.2; }
       .dash-meta-registro-valor { flex: 1; }
@@ -3369,8 +3367,24 @@ export default function App() {
                   </div>
                 </div>
 
+                <div className="dash-meta-registro">
+                  <span className="dash-meta-registro-title">Qual ação você vai executar este mês?</span>
+                  <p className="dash-meta-registro-sub dash-meta-registro-sub-sempre">Escolha a estratégia comercial que deseja aplicar e defina quanto pretende gerar com ela.</p>
+                  <div className="dash-meta-registro-linha">
+                    <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
+                      <option value="">Escolha a ação</option>
+                      {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                    </select>
+                    <div className="valor-input dash-meta-registro-valor">
+                      <span className="valor-prefix">R$</span>
+                      <input type="number" inputMode="decimal" placeholder="Quanto quer gerar" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
+                    </div>
+                    <button type="button" className="btn-primary dash-meta-registro-btn" onClick={addMeta} disabled={!novaMetaAcao || !novaMetaValor}>Registrar ação</button>
+                  </div>
+                </div>
+
                 <div className="dash-video-wrap">
-                  <button className="dash-video-btn" onClick={() => setShowVideoInicio((s) => !s)}>
+                  <button type="button" className="dash-video-btn" onClick={() => setShowVideoInicio((s) => !s)}>
                     <Play size={14} /> Como usar a ferramenta — assista o vídeo
                   </button>
                   {showVideoInicio && (
@@ -3419,28 +3433,31 @@ export default function App() {
                   </div>
                   <p className="dash-progress-falta">
                     {metaTotalMes === 0
-                      ? "Defina uma meta abaixo pra começar a acompanhar."
+                      ? "Defina uma ação acima pra começar a acompanhar."
                       : totalMes >= metaTotalMes
                       ? "Meta batida! 🎉"
                       : `Faltam ${formatBRL(metaTotalMes - totalMes)} pra bater a meta do mês.`}
                   </p>
                 </div>
 
-                <div className="dash-meta-registro">
-                  <span className="dash-meta-registro-title">Registre aqui a meta da ação deste mês</span>
-                  <p className="dash-meta-registro-sub">Isso não é uma meta de faturamento geral da loja — é quanto você quer gerar com a ação que vai aplicar neste mês. Você pode ir adicionando outras ações e metas conforme for testando.</p>
-                  <div className="dash-meta-registro-linha">
-                    <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
-                      <option value="">Escolha a ação</option>
-                      {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-                    </select>
-                    <div className="valor-input dash-meta-registro-valor">
-                      <span className="valor-prefix">R$</span>
-                      <input type="number" inputMode="decimal" placeholder="Quanto quer gerar" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
+                {(() => {
+                  const hoje = new Date();
+                  const prox = proximasOportunidades(hoje, perfil?.estado, perfil?.cidade, 1)[0];
+                  if (!prox || prox.dias > 30) return null;
+                  return (
+                    <div className="dash-fique-de-olho">
+                      <span className="dash-fique-titulo">👀 Fique de olho</span>
+                      <p className="dash-fique-texto">
+                        {prox.dias === 0 ? "É hoje:" : prox.dias === 1 ? "Falta 1 dia para" : `Faltam ${prox.dias} dias para`} <b>{prox.op.titulo}</b>{prox.dias > 0 ? "." : "!"}
+                      </p>
+                      <p className="dash-fique-dica">Quem planeja campanhas com antecedência costuma vender mais.</p>
+                      <div className="dash-fique-botoes">
+                        <button type="button" className="btn-ghost-box" style={{ marginBottom: 0 }} onClick={() => goto("radar")}>Ver oportunidade</button>
+                        <button type="button" className="btn-primary" style={{ marginBottom: 0 }} onClick={() => verAcoesDoRadar(prox.op.palavrasChave)}>Ver ações comerciais</button>
+                      </div>
                     </div>
-                    <button className="btn-primary dash-meta-registro-btn" onClick={addMeta}>Registrar meta</button>
-                  </div>
-                </div>
+                  );
+                })()}
 
                 <div className="dash-columns">
                   <div className="dash-block-acoes">
@@ -3448,7 +3465,7 @@ export default function App() {
                     {metasDoMes.length === 0 ? (
                       <div className="empty-state small">
                         <BarChart3 size={24} />
-                        <p>Nenhuma meta definida em {nomeMesAno} ainda. Defina uma meta pra acompanhar o andamento aqui.</p>
+                        <p>Nenhuma ação em andamento em {nomeMesAno} ainda. Registre a ação que vai executar lá em cima pra acompanhar aqui.</p>
                       </div>
                     ) : (
                       <>
@@ -3486,49 +3503,7 @@ export default function App() {
                         <span className="valor-prefix">R$</span>
                         <input type="number" inputMode="decimal" placeholder="Valor gerado" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
                       </div>
-                      <button className="btn-primary" onClick={registrarRapido}>Salvar</button>
-                    </div>
-                  </div>
-
-                  <div className="dash-block-historico">
-                    <div className="dash-col-title">Histórico do mês</div>
-                    {historicoMesOrdenado.length === 0 ? (
-                      <div className="empty-state small">
-                        <Clock size={24} />
-                        <p>Nenhum resultado registrado em {nomeMesAno} ainda.</p>
-                      </div>
-                    ) : (
-                      <div className="dash-timeline">
-                        {historicoMesOrdenado.map((h, i) => {
-                          const a = ACTIONS.find((x) => x.id === h.id);
-                          return (
-                            <div className="dash-timeline-item" key={i}>
-                              <span className="dash-timeline-dia">{labelRelativo(h.criadoEm)}</span>
-                              <div className="dash-timeline-linha">
-                                <span className="dash-timeline-nome">{a?.nome || h.id}</span>
-                                <span className="dash-timeline-valor">{formatBRL(h.valor || 0)}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="dash-block-atalhos">
-                    <div className="dash-atalhos">
-                      <button className="dash-atalho-btn" onClick={() => goto("biblioteca", true)}>
-                        <BookOpen size={16} /> Ações Comerciais
-                      </button>
-                      <button className="dash-atalho-btn" onClick={() => goto("biblioteca", true)}>
-                        <Search size={16} /> Pesquisar ação
-                      </button>
-                      <button className="dash-atalho-btn" onClick={() => goto("favoritos")}>
-                        <Heart size={16} /> Favoritos
-                      </button>
-                      <button className="dash-atalho-btn" onClick={() => setShowSimulador(true)}>
-                        <Calculator size={16} /> Simulador de Brindes
-                      </button>
+                      <button type="button" className="btn-primary" onClick={registrarRapido} disabled={!registrarAcaoId || !doneValor}>Salvar</button>
                     </div>
                   </div>
 
@@ -3544,7 +3519,7 @@ export default function App() {
                           <span className="diag-mini-faixa">{meuDiagnostico.faixa_indice}</span>
                           {meuDiagnostico.qualificado && <span className="diag-mini-linha">⭐ Qualificada pra Sessão Estratégica</span>}
                         </div>
-                        <button className="btn-ghost-box" style={{ marginBottom: showDiagCompleto ? 12 : 0 }} onClick={() => setShowDiagCompleto((s) => !s)}>
+                        <button type="button" className="btn-ghost-box" style={{ marginBottom: showDiagCompleto ? 12 : 0 }} onClick={() => setShowDiagCompleto((s) => !s)}>
                           {showDiagCompleto ? "Ocultar diagnóstico completo" : "Ver diagnóstico completo"}
                         </button>
                         {showDiagCompleto && (
