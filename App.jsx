@@ -2859,10 +2859,13 @@ export default function App() {
     }
     .dash-meta-registro-title { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 4px; }
     .dash-meta-registro-sub { display: block; font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; margin: 0 0 12px; max-width: 560px; }
-    .dash-meta-registro-linha { display: flex; flex-direction: column; gap: 8px; }
-    .dash-meta-registro-linha > * { min-width: 0; }
-    .dash-meta-registro-valor { margin: 0 !important; }
-    .dash-meta-registro-btn { white-space: nowrap; }
+    .dash-registrar-acao-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: var(--wine);
+      color: #fff; border: none; border-radius: 12px; padding: 14px 18px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: 'Manrope', sans-serif; margin-top: 4px;
+    }
+    .dash-registrar-acao-btn:hover { background: var(--wine-dark); }
+    .dash-meta-registro-expandido { margin-top: 10px; }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .dash-fique-de-olho {
@@ -2916,11 +2919,6 @@ export default function App() {
       .dash-block-acoes { grid-column: 1; order: 1; }
       .dash-block-registro { grid-column: 2; order: 1; }
       .dash-block-diagnostico { grid-column: 2; order: 2; }
-
-      .dash-meta-registro-linha { flex-direction: row; align-items: center; }
-      .dash-meta-registro-linha .meta-select { flex: 1.2; }
-      .dash-meta-registro-valor { flex: 1; }
-      .dash-meta-registro-btn { flex-shrink: 0; width: auto; padding-left: 22px; padding-right: 22px; }
     }
 
     .diag-mini-indice { display: flex; align-items: baseline; gap: 2px; color: var(--wine); flex-shrink: 0; }
@@ -3367,22 +3365,6 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="dash-meta-registro">
-                  <span className="dash-meta-registro-title">Qual ação você vai executar este mês?</span>
-                  <p className="dash-meta-registro-sub dash-meta-registro-sub-sempre">Escolha a estratégia comercial que deseja aplicar e defina quanto pretende gerar com ela.</p>
-                  <div className="dash-meta-registro-linha">
-                    <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
-                      <option value="">Escolha a ação</option>
-                      {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-                    </select>
-                    <div className="valor-input dash-meta-registro-valor">
-                      <span className="valor-prefix">R$</span>
-                      <input type="number" inputMode="decimal" placeholder="Quanto quer gerar" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
-                    </div>
-                    <button type="button" className="btn-primary dash-meta-registro-btn" onClick={addMeta} disabled={!novaMetaAcao || !novaMetaValor}>Registrar ação</button>
-                  </div>
-                </div>
-
                 <div className="dash-video-wrap">
                   <button type="button" className="dash-video-btn" onClick={() => setShowVideoInicio((s) => !s)}>
                     <Play size={14} /> Como usar a ferramenta — assista o vídeo
@@ -3396,6 +3378,31 @@ export default function App() {
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                       />
+                    </div>
+                  )}
+                </div>
+
+                <div className="dash-meta-registro">
+                  <span className="dash-meta-registro-title">🚀 Qual ação você vai executar?</span>
+                  {!showMetaForm ? (
+                    <button type="button" className="dash-registrar-acao-btn" onClick={() => setShowMetaForm(true)}>
+                      <Plus size={16} /> Registrar nova ação
+                    </button>
+                  ) : (
+                    <div className="dash-meta-registro-expandido">
+                      <p className="dash-meta-registro-sub">Escolha a estratégia comercial que deseja aplicar e defina quanto pretende gerar com ela.</p>
+                      <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
+                        <option value="">Escolha a ação</option>
+                        {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                      </select>
+                      <div className="valor-input" style={{ margin: "8px 0" }}>
+                        <span className="valor-prefix">R$</span>
+                        <input type="number" inputMode="decimal" placeholder="Quanto quer gerar" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
+                      </div>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button type="button" className="btn-primary" style={{ marginBottom: 0 }} onClick={addMeta} disabled={!novaMetaAcao || !novaMetaValor}>Registrar ação</button>
+                        <button type="button" className="btn-ghost-box" style={{ marginBottom: 0 }} onClick={() => { setShowMetaForm(false); setNovaMetaAcao(""); setNovaMetaValor(""); }}>Cancelar</button>
+                      </div>
                     </div>
                   )}
                 </div>
