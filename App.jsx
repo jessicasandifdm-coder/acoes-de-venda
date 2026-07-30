@@ -2022,9 +2022,29 @@ function LoginScreen({ onAuthed }) {
 
   return (
     <div className="auth-wrap">
+      <div className="auth-backdrop" aria-hidden="true" />
       <div className="auth-card">
+        <div className="auth-mark"><Wallet size={20} /></div>
         <span className="auth-eyebrow">Gerador de Caixa</span>
-        <h1 className="auth-title">{modo === "criar" ? "Criar conta" : "Acesso da lojista"}</h1>
+
+        <div className="auth-toggle" role="tablist" aria-label="Entrar ou criar conta">
+          <button
+            type="button" role="tab" aria-selected={modo === "entrar"}
+            className={`auth-toggle-btn ${modo === "entrar" ? "active" : ""}`}
+            onClick={() => { setModo("entrar"); setErro(""); setMsg(""); }}
+          >
+            Entrar
+          </button>
+          <button
+            type="button" role="tab" aria-selected={modo === "criar"}
+            className={`auth-toggle-btn ${modo === "criar" ? "active" : ""}`}
+            onClick={() => { setModo("criar"); setErro(""); setMsg(""); }}
+          >
+            Criar conta
+          </button>
+        </div>
+
+        <h1 className="auth-title">{modo === "criar" ? "Crie sua conta" : "Acesso da lojista"}</h1>
         <p className="auth-sub">{modo === "criar" ? "Crie sua conta pra começar a usar o banco de ações." : "Entre para acessar o banco de ações e organizar sua rotina comercial."}</p>
 
         <label className="auth-label">E-mail</label>
@@ -2040,14 +2060,11 @@ function LoginScreen({ onAuthed }) {
             onKeyDown={(e) => e.key === "Enter" && submeter()} />
         </div>
 
-        {erro && <p className="auth-erro">{erro}</p>}
-        {msg && <p className="auth-msg">{msg}</p>}
+        {erro && <p className="auth-alerta auth-alerta-erro"><AlertTriangle size={13} /> {erro}</p>}
+        {msg && <p className="auth-alerta auth-alerta-msg"><Check size={13} /> {msg}</p>}
 
-        <button className="btn-primary" style={{ marginTop: 6 }} onClick={submeter} disabled={loading}>
+        <button className="btn-primary" style={{ marginTop: 14 }} onClick={submeter} disabled={loading}>
           {loading ? "Aguarde…" : modo === "criar" ? "Criar conta" : "Entrar"}
-        </button>
-        <button className="btn-ghost" onClick={() => { setModo(modo === "criar" ? "entrar" : "criar"); setErro(""); setMsg(""); }}>
-          {modo === "criar" ? "Já tenho conta — entrar" : "Ainda não tenho conta — criar"}
         </button>
       </div>
     </div>
@@ -2566,30 +2583,56 @@ export default function App() {
     }
 
     /* ---- AUTH / INTRO ---- */
-    .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; }
+    .auth-backdrop {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(circle at 12% -10%, rgba(20,63,53,0.10), transparent 45%),
+        radial-gradient(circle at 100% 110%, rgba(78,156,124,0.12), transparent 40%);
+    }
     .auth-card {
-      width: 100%; max-width: 380px; background: var(--card); border: 1px solid var(--line);
+      position: relative; z-index: 1; width: 100%; max-width: 380px; background: var(--card); border: 1px solid var(--line);
       border-radius: 18px; padding: 32px 28px; box-shadow: 0 20px 50px rgba(28,32,29,0.08);
+    }
+    .auth-mark {
+      width: 42px; height: 42px; border-radius: 12px; background: var(--wine); color: #fff;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
     }
     .auth-eyebrow {
       font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em;
       text-transform: uppercase; color: var(--mustard);
     }
-    .auth-title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; margin: 6px 0 4px; }
+    .auth-toggle {
+      display: flex; background: var(--paper); border: 1px solid var(--line); border-radius: 999px;
+      padding: 3px; margin: 16px 0 4px; gap: 3px;
+    }
+    .auth-toggle-btn {
+      flex: 1; border: none; background: none; padding: 8px 10px; border-radius: 999px; font-size: 12.5px;
+      font-weight: 500; color: var(--ink-soft); cursor: pointer; font-family: 'Work Sans', sans-serif; transition: all 0.15s ease;
+    }
+    .auth-toggle-btn.active { background: var(--wine); color: #fff; box-shadow: 0 2px 6px rgba(20,63,53,0.25); }
+    .auth-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; margin: 14px 0 4px; }
     .auth-sub { font-size: 13px; color: var(--ink-soft); margin: 0 0 20px; line-height: 1.5; }
     .auth-label { font-size: 11.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.04em; display:block; margin: 12px 0 6px; }
     .auth-input {
       display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px;
-      padding: 11px 12px; background: var(--paper);
+      padding: 11px 12px; background: var(--paper); transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
+    .auth-input:focus-within { border-color: var(--wine); box-shadow: 0 0 0 3px rgba(20,63,53,0.1); }
     .auth-input input { border: none; outline: none; background: transparent; font-size: 14px; width: 100%; color: var(--ink); font-family: 'Work Sans', sans-serif; }
-    .auth-erro { color: #A13A3A; font-size: 12px; margin-top: 10px; }
-    .auth-msg { color: var(--wine); font-size: 12px; margin-top: 10px; line-height: 1.5; }
+    .auth-alerta-erro, .auth-erro { color: #A13A3A; }
+    .auth-alerta-erro { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 12px; padding: 9px 12px; border-radius: 8px; line-height: 1.4; background: rgba(161,58,58,0.08); }
+    .auth-erro { font-size: 12px; margin-top: 10px; }
+    .auth-alerta-msg, .auth-msg { color: var(--wine); }
+    .auth-alerta-msg { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 12px; padding: 9px 12px; border-radius: 8px; line-height: 1.4; background: rgba(20,63,53,0.07); }
+    .auth-msg { font-size: 12px; margin-top: 10px; line-height: 1.5; }
+    .auth-alerta { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 12px; padding: 9px 12px; border-radius: 8px; line-height: 1.4; }
     .auth-nota { font-size: 11.5px; color: var(--ink-soft); text-align: center; margin-top: 12px; line-height: 1.5; }
     .btn-ghost {
       width: 100%; background: none; border: none; color: var(--ink-soft); font-size: 12.5px;
-      padding: 10px; cursor: pointer; text-decoration: underline; font-family: 'Work Sans', sans-serif;
+      padding: 10px; cursor: pointer; font-family: 'Work Sans', sans-serif; font-weight: 500; transition: color 0.15s ease;
     }
+    .btn-ghost:hover { color: var(--wine); }
     .intro-card { max-width: 420px; }
     .quiz-progress-track { height: 4px; background: var(--line); border-radius: 999px; margin-bottom: 18px; overflow: hidden; }
     .quiz-progress-fill { height: 100%; background: var(--wine); border-radius: 999px; transition: width 0.25s; }
