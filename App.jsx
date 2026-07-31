@@ -2860,34 +2860,6 @@ export default function App() {
       color: var(--ink); font-family: 'Work Sans', sans-serif; cursor: pointer; box-shadow: 0 1px 2px rgba(20,63,53,0.04);
     }
 
-    .dash-cards-row {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 1040px; margin: 20px auto 0; padding: 0 24px;
-    }
-    .dash-card {
-      position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px;
-      box-shadow: 0 2px 10px rgba(20,63,53,0.06); display: flex; flex-direction: column; gap: 6px;
-      transition: box-shadow 0.15s ease, transform 0.15s ease;
-    }
-    .dash-card:hover { box-shadow: 0 6px 16px rgba(20,63,53,0.1); transform: translateY(-1px); }
-    .dash-card-icon {
-      width: 30px; height: 30px; border-radius: 10px; background: #EAF0EC; color: var(--wine);
-      display: flex; align-items: center; justify-content: center; margin-bottom: 2px;
-    }
-    .dash-card-icon-verde { background: var(--wine); color: #fff; }
-    .dash-card-label { font-size: 11px; color: var(--ink-soft); letter-spacing: 0.01em; }
-    .dash-card-valor { font-family: 'Fraunces', serif; font-size: 23px; font-weight: 600; color: var(--ink); }
-    .dash-card-valor-verde { color: var(--wine); }
-
-    .dash-progress-wrap {
-      max-width: 1040px; margin: 22px auto 0; padding: 18px 24px; background: var(--card); border: 1px solid var(--line);
-      border-radius: 16px; box-shadow: 0 2px 10px rgba(20,63,53,0.06); margin-left: 24px; margin-right: 24px;
-    }
-    .dash-progress-top { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 8px; font-weight: 500; }
-    .dash-progress-pct { color: var(--wine); font-weight: 700; }
-    .dash-progress-track { height: 12px; background: var(--paper); border-radius: 999px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(20,63,53,0.08); }
-    .dash-progress-fill { height: 100%; background: linear-gradient(90deg, var(--wine-dark), var(--wine)); border-radius: 999px; transition: width 0.5s ease; }
-    .dash-progress-falta { font-size: 11.5px; color: var(--ink-soft); margin: 8px 0 0; }
-
     .dash-video-wrap { max-width: 1040px; margin: 14px auto 0; padding: 0 24px; }
     .dash-video-btn {
       display: inline-flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--line);
@@ -2896,31 +2868,69 @@ export default function App() {
     }
     .dash-video-btn:hover { border-color: var(--wine); background: var(--paper); }
 
+    /* Seu progresso — bloco hero */
+    .dash-progresso-hero {
+      max-width: 1040px; margin: 18px auto 0; padding: 22px 24px; border-radius: 20px;
+      background: linear-gradient(135deg, var(--wine-dark), var(--wine) 65%, #1c5744);
+      box-shadow: 0 10px 28px rgba(20,63,53,0.22); color: #fff;
+    }
+    .dash-progresso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .dash-progresso-titulo { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 15px; color: #fff; }
+    .dash-progresso-pct-badge {
+      background: rgba(255,255,255,0.16); border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: 700; color: #fff;
+    }
+    .dash-progresso-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 16px; }
+    .dash-progresso-stat { display: flex; flex-direction: column; gap: 4px; }
+    .dash-progresso-stat-icon {
+      width: 26px; height: 26px; border-radius: 8px; background: rgba(255,255,255,0.16); color: #fff;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 2px;
+    }
+    .dash-progresso-stat-label { font-size: 10.5px; color: rgba(255,255,255,0.7); }
+    .dash-progresso-stat-valor { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; color: #fff; }
+    .dash-progresso-stat-valor.dash-progresso-destaque { color: #D9C48A; }
+    .dash-progresso-barra-track { height: 10px; background: rgba(255,255,255,0.18); border-radius: 999px; overflow: hidden; }
+    .dash-progresso-barra-fill { height: 100%; background: #fff; border-radius: 999px; transition: width 0.5s ease; }
+    .dash-progresso-falta { font-size: 11.5px; color: rgba(255,255,255,0.75); margin: 8px 0 0; }
+
     .dash-meta-registro {
-      max-width: 1040px; margin: 22px auto 0; padding: 18px 22px; background: var(--card); border: 1px solid var(--line);
+      max-width: 1040px; margin: 18px auto 0; padding: 18px 22px; background: var(--card); border: 1px solid var(--line);
       border-radius: 16px; box-shadow: 0 2px 10px rgba(20,63,53,0.06);
     }
-    .dash-meta-registro-title { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 4px; }
+    .dash-meta-registro-title { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 10px; }
     .dash-meta-registro-sub { display: block; font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; margin: 0 0 12px; max-width: 560px; }
     .dash-registrar-acao-btn {
       display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: var(--wine);
-      color: #fff; border: none; border-radius: 12px; padding: 14px 18px; font-size: 14px; font-weight: 600;
-      cursor: pointer; font-family: 'Manrope', sans-serif; margin-top: 4px;
+      color: #fff; border: none; border-radius: 14px; padding: 16px 18px; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: 'Manrope', sans-serif; box-shadow: 0 6px 18px rgba(20,63,53,0.22);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .dash-registrar-acao-btn:hover { background: var(--wine-dark); }
+    .dash-registrar-acao-btn:hover { background: var(--wine-dark); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(20,63,53,0.28); }
     .dash-meta-registro-expandido { margin-top: 10px; }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .dash-fique-de-olho {
-      max-width: 1040px; margin: 18px auto 0; padding: 18px 22px; background: var(--card); border: 1px solid var(--line);
-      border-left: 3px solid var(--mustard); border-radius: 16px; box-shadow: 0 2px 10px rgba(20,63,53,0.06);
+    /* Oportunidade da semana */
+    .dash-oportunidade-card {
+      max-width: 1040px; margin: 18px auto 0; padding: 18px 20px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; box-shadow: 0 4px 16px rgba(184,145,47,0.14), 0 2px 10px rgba(20,63,53,0.05);
+      display: flex; gap: 16px; align-items: flex-start;
     }
-    .dash-fique-titulo { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 8px; }
-    .dash-fique-texto { font-size: 13.5px; color: var(--ink); margin: 0 0 4px; }
-    .dash-fique-texto b { color: var(--wine); }
-    .dash-fique-dica { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 12px; }
-    .dash-fique-botoes { display: flex; gap: 8px; flex-wrap: wrap; }
-    .dash-fique-botoes button { flex: 1; min-width: 140px; }
+    .dash-oportunidade-badge {
+      flex-shrink: 0; width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, var(--mustard), #B8912F);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff;
+      box-shadow: 0 4px 12px rgba(184,145,47,0.35);
+    }
+    .dash-oportunidade-dias { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; line-height: 1; }
+    .dash-oportunidade-dias-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.85; }
+    .dash-oportunidade-corpo { flex: 1; min-width: 0; }
+    .dash-oportunidade-eyebrow {
+      display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase;
+      color: var(--mustard); margin-bottom: 4px;
+    }
+    .dash-oportunidade-texto { font-size: 14px; color: var(--ink); margin: 0 0 4px; }
+    .dash-oportunidade-texto b { color: var(--wine); }
+    .dash-oportunidade-dica { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 12px; }
+    .dash-oportunidade-botoes { display: flex; gap: 8px; flex-wrap: wrap; }
+    .dash-oportunidade-botoes button { flex: 1; min-width: 140px; }
 
     .dash-columns { display: grid; grid-template-columns: 1fr; gap: 26px; max-width: 1040px; margin: 26px auto 40px; padding: 0 24px; }
     .dash-col-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
@@ -2935,6 +2945,7 @@ export default function App() {
       text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
       box-shadow: 0 1px 3px rgba(20,63,53,0.04); cursor: pointer; font-family: 'Work Sans', sans-serif;
     }
+    .dash-acao-card.dash-acao-card-compacta { padding: 11px 14px; }
     .dash-acao-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
     .dash-acao-nome { font-size: 13.5px; font-weight: 600; color: var(--ink); }
     .dash-status { font-size: 10px; padding: 3px 9px; border-radius: 999px; font-weight: 500; flex-shrink: 0; }
@@ -2954,9 +2965,17 @@ export default function App() {
     .dash-card-white { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(20,63,53,0.04); }
     .dash-diag-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(20,63,53,0.04); }
 
+    .dash-registro-conectado { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; }
+    .dash-registro-seta { color: var(--ink-soft); font-size: 14px; padding-top: 16px; flex-shrink: 0; }
+    .dash-registro-conectado .dash-card-white { flex: 1; }
+
+    .dash-diag-card-discreta { padding: 14px 16px; }
+    .dash-diag-discreta-top { display: flex; align-items: center; gap: 12px; }
+    .diag-mini-indice-sm { gap: 1px; }
+
     @media (min-width: 860px) {
       .dash-columns { grid-template-columns: 1.6fr 1fr; }
-      .dash-cards-row { grid-template-columns: repeat(4, 1fr); }
+      .dash-progresso-stats { grid-template-columns: repeat(4, 1fr); }
 
       /* Ordem desktop: coluna 1 = ações em andamento / coluna 2 = registro + diagnóstico */
       .dash-block-acoes { grid-column: 1; order: 1; }
@@ -3317,10 +3336,16 @@ export default function App() {
     .hist-data { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-soft); }
     .hist-nota { font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
 
-    .tabbar { display: flex; border-top: 1px solid var(--line); background: var(--card); padding: 8px 4px 12px; position: fixed; bottom: 0; left: 0; right: 0; }
-    .tabbtn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; color: var(--ink-soft); padding: 4px; }
-    .tabbtn.active { color: var(--wine); }
-    .tabbtn span { font-size: 10px; font-weight: 500; }
+    .tabbar {
+      display: flex; gap: 2px; background: var(--wine-dark); padding: 8px 6px calc(10px + env(safe-area-inset-bottom, 0px));
+      position: fixed; bottom: 0; left: 0; right: 0; box-shadow: 0 -4px 16px rgba(20,63,53,0.2); z-index: 20;
+    }
+    .tabbtn {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none;
+      cursor: pointer; color: rgba(255,255,255,0.55); padding: 6px 2px; border-radius: 12px; transition: background 0.15s ease, color 0.15s ease;
+    }
+    .tabbtn.active { color: #fff; background: rgba(255,255,255,0.14); }
+    .tabbtn span { font-size: 9.5px; font-weight: 500; }
 
     @media (min-width: 860px) {
       .sidebar { display: flex; }
@@ -3425,11 +3450,50 @@ export default function App() {
                   )}
                 </div>
 
+                <div className="dash-progresso-hero">
+                  <div className="dash-progresso-header">
+                    <span className="dash-progresso-titulo">Seu progresso</span>
+                    <span className="dash-progresso-pct-badge">{pctMes}%</span>
+                  </div>
+                  <div className="dash-progresso-stats">
+                    <div className="dash-progresso-stat">
+                      <div className="dash-progresso-stat-icon"><Target size={14} /></div>
+                      <span className="dash-progresso-stat-label">Meta acumulada</span>
+                      <span className="dash-progresso-stat-valor">{formatBRL(metaTotalMes)}</span>
+                    </div>
+                    <div className="dash-progresso-stat">
+                      <div className="dash-progresso-stat-icon"><DollarSign size={14} /></div>
+                      <span className="dash-progresso-stat-label">Resultado gerado</span>
+                      <span className="dash-progresso-stat-valor dash-progresso-destaque">{formatBRL(totalMes)}</span>
+                    </div>
+                    <div className="dash-progresso-stat">
+                      <div className="dash-progresso-stat-icon"><TrendingUp size={14} /></div>
+                      <span className="dash-progresso-stat-label">Percentual atingido</span>
+                      <span className="dash-progresso-stat-valor">{pctMes}%</span>
+                    </div>
+                    <div className="dash-progresso-stat">
+                      <div className="dash-progresso-stat-icon"><Check size={14} /></div>
+                      <span className="dash-progresso-stat-label">Ações executadas</span>
+                      <span className="dash-progresso-stat-valor">{historicoMes.length}</span>
+                    </div>
+                  </div>
+                  <div className="dash-progresso-barra-track">
+                    <div className="dash-progresso-barra-fill" style={{ width: `${Math.min(pctMes, 100)}%` }} />
+                  </div>
+                  <p className="dash-progresso-falta">
+                    {metaTotalMes === 0
+                      ? "Defina uma ação abaixo pra começar a acompanhar."
+                      : totalMes >= metaTotalMes
+                      ? "Meta batida! 🎉"
+                      : `Faltam ${formatBRL(metaTotalMes - totalMes)} pra bater a meta do mês.`}
+                  </p>
+                </div>
+
                 <div className="dash-meta-registro">
                   <span className="dash-meta-registro-title">🚀 Qual ação você vai executar?</span>
                   {!showMetaForm ? (
                     <button type="button" className="dash-registrar-acao-btn" onClick={() => setShowMetaForm(true)}>
-                      <Plus size={16} /> Registrar nova ação
+                      <Plus size={18} /> Registrar nova ação
                     </button>
                   ) : (
                     <div className="dash-meta-registro-expandido">
@@ -3450,60 +3514,24 @@ export default function App() {
                   )}
                 </div>
 
-                <div className="dash-cards-row">
-                  <div className="dash-card">
-                    <div className="dash-card-icon"><Target size={16} /></div>
-                    <span className="dash-card-label">Meta do mês</span>
-                    <span className="dash-card-valor">{formatBRL(metaTotalMes)}</span>
-                  </div>
-                  <div className="dash-card">
-                    <div className="dash-card-icon dash-card-icon-verde"><DollarSign size={16} /></div>
-                    <span className="dash-card-label">Resultado gerado</span>
-                    <span className="dash-card-valor dash-card-valor-verde">{formatBRL(totalMes)}</span>
-                  </div>
-                  <div className="dash-card">
-                    <div className="dash-card-icon"><TrendingUp size={16} /></div>
-                    <span className="dash-card-label">Percentual atingido</span>
-                    <span className="dash-card-valor">{pctMes}%</span>
-                  </div>
-                  <div className="dash-card">
-                    <div className="dash-card-icon"><Check size={16} /></div>
-                    <span className="dash-card-label">Ações executadas</span>
-                    <span className="dash-card-valor">{historicoMes.length}</span>
-                  </div>
-                </div>
-
-                <div className="dash-progress-wrap">
-                  <div className="dash-progress-top">
-                    <span>Meta do mês</span>
-                    <span className="dash-progress-pct">{pctMes}%</span>
-                  </div>
-                  <div className="dash-progress-track">
-                    <div className="dash-progress-fill" style={{ width: `${Math.min(pctMes, 100)}%` }} />
-                  </div>
-                  <p className="dash-progress-falta">
-                    {metaTotalMes === 0
-                      ? "Defina uma ação acima pra começar a acompanhar."
-                      : totalMes >= metaTotalMes
-                      ? "Meta batida! 🎉"
-                      : `Faltam ${formatBRL(metaTotalMes - totalMes)} pra bater a meta do mês.`}
-                  </p>
-                </div>
-
                 {(() => {
                   const hoje = new Date();
                   const prox = proximasOportunidades(hoje, perfil?.estado, perfil?.cidade, 1)[0];
                   if (!prox || prox.dias > 30) return null;
                   return (
-                    <div className="dash-fique-de-olho">
-                      <span className="dash-fique-titulo">👀 Fique de olho</span>
-                      <p className="dash-fique-texto">
-                        {prox.dias === 0 ? "É hoje:" : prox.dias === 1 ? "Falta 1 dia para" : `Faltam ${prox.dias} dias para`} <b>{prox.op.titulo}</b>{prox.dias > 0 ? "." : "!"}
-                      </p>
-                      <p className="dash-fique-dica">Quem planeja campanhas com antecedência costuma vender mais.</p>
-                      <div className="dash-fique-botoes">
-                        <button type="button" className="btn-ghost-box" style={{ marginBottom: 0 }} onClick={() => goto("radar")}>Ver oportunidade</button>
-                        <button type="button" className="btn-primary" style={{ marginBottom: 0 }} onClick={() => verAcoesDoRadar(prox.op.palavrasChave)}>Ver ações comerciais</button>
+                    <div className="dash-oportunidade-card">
+                      <div className="dash-oportunidade-badge">
+                        <span className="dash-oportunidade-dias">{prox.dias}</span>
+                        <span className="dash-oportunidade-dias-label">{prox.dias === 1 ? "dia" : "dias"}</span>
+                      </div>
+                      <div className="dash-oportunidade-corpo">
+                        <span className="dash-oportunidade-eyebrow">🎯 Oportunidade da semana</span>
+                        <p className="dash-oportunidade-texto"><b>{prox.op.titulo}</b>{prox.dias === 0 ? " é hoje!" : prox.dias === 1 ? " é amanhã." : "."}</p>
+                        <p className="dash-oportunidade-dica">Quem planeja campanhas com antecedência costuma vender mais.</p>
+                        <div className="dash-oportunidade-botoes">
+                          <button type="button" className="btn-ghost-box" style={{ marginBottom: 0 }} onClick={() => goto("radar")}>Ver oportunidade</button>
+                          <button type="button" className="btn-primary" style={{ marginBottom: 0 }} onClick={() => verAcoesDoRadar(prox.op.palavrasChave)}>Ver ações comerciais</button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -3521,12 +3549,11 @@ export default function App() {
                       <>
                         <div className="dash-acoes-grid">
                           {metasDoMes.slice(0, 4).map((m) => (
-                            <button className="dash-acao-card" key={m.id} onClick={() => setOpenId(m.acaoId)}>
+                            <button className="dash-acao-card dash-acao-card-compacta" key={m.id} onClick={() => setOpenId(m.acaoId)}>
                               <div className="dash-acao-top">
                                 <span className="dash-acao-nome">{m.nome}</span>
                                 <span className={`dash-status ${m.status === "Concluída" ? "concluida" : "andamento"}`}>{m.status}</span>
                               </div>
-                              {m.objetivo && <p className="dash-acao-objetivo">{m.objetivo}</p>}
                               <div className="meta-bar-track"><div className="meta-bar-fill" style={{ width: `${m.pct}%` }} /></div>
                               <div className="dash-acao-valores">
                                 <span>{formatBRL(m.realizado)} de {formatBRL(m.valorMeta)}</span>
@@ -3540,40 +3567,43 @@ export default function App() {
                         )}
                       </>
                     )}
-                  </div>
 
-                  <div className="dash-block-registro">
-                    <div className="dash-card-white">
-                      <span className="resumo-label" style={{ display: "block", marginBottom: 10 }}>Registrar resultado</span>
-                      <select className="meta-select" value={registrarAcaoId} onChange={(e) => setRegistrarAcaoId(e.target.value)}>
-                        <option value="">Selecionar ação</option>
-                        {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-                      </select>
-                      <div className="valor-input" style={{ margin: "8px 0" }}>
-                        <span className="valor-prefix">R$</span>
-                        <input type="number" inputMode="decimal" placeholder="Valor gerado" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
+                    <div className="dash-registro-conectado">
+                      <span className="dash-registro-seta">↓</span>
+                      <div className="dash-card-white">
+                        <span className="resumo-label" style={{ display: "block", marginBottom: 10 }}>Registrar resultado</span>
+                        <select className="meta-select" value={registrarAcaoId} onChange={(e) => setRegistrarAcaoId(e.target.value)}>
+                          <option value="">Selecionar ação</option>
+                          {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+                        </select>
+                        <div className="valor-input" style={{ margin: "8px 0" }}>
+                          <span className="valor-prefix">R$</span>
+                          <input type="number" inputMode="decimal" placeholder="Valor gerado" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
+                        </div>
+                        <button type="button" className="btn-primary" onClick={registrarRapido} disabled={!registrarAcaoId || !doneValor}>Salvar</button>
                       </div>
-                      <button type="button" className="btn-primary" onClick={registrarRapido} disabled={!registrarAcaoId || !doneValor}>Salvar</button>
                     </div>
                   </div>
 
                   {meuDiagnostico && (
                     <div className="dash-block-diagnostico">
-                      <div className="dash-diag-card">
-                        <span className="resumo-label" style={{ display: "block", marginBottom: 10 }}>Diagnóstico da Loja</span>
-                        <div className="diag-mini-indice" style={{ marginBottom: 10 }}>
-                          <span className="indice-num" style={{ fontSize: 30 }}>{meuDiagnostico.indice}</span>
-                          <span className="indice-max" style={{ fontSize: 12 }}>/100</span>
+                      <div className="dash-diag-card dash-diag-card-discreta">
+                        <div className="dash-diag-discreta-top">
+                          <div className="diag-mini-indice diag-mini-indice-sm">
+                            <span className="indice-num" style={{ fontSize: 22 }}>{meuDiagnostico.indice}</span>
+                            <span className="indice-max" style={{ fontSize: 10 }}>/100</span>
+                          </div>
+                          <div>
+                            <span className="resumo-label" style={{ display: "block" }}>Diagnóstico da Loja</span>
+                            <span className="diag-mini-faixa">{meuDiagnostico.faixa_indice}</span>
+                          </div>
                         </div>
-                        <div className="diag-mini-info" style={{ marginBottom: 10 }}>
-                          <span className="diag-mini-faixa">{meuDiagnostico.faixa_indice}</span>
-                          {meuDiagnostico.qualificado && <span className="diag-mini-linha">⭐ Qualificada pra Sessão Estratégica</span>}
-                        </div>
-                        <button type="button" className="btn-ghost-box" style={{ marginBottom: showDiagCompleto ? 12 : 0 }} onClick={() => setShowDiagCompleto((s) => !s)}>
-                          {showDiagCompleto ? "Ocultar diagnóstico completo" : "Ver diagnóstico completo"}
+                        <button type="button" className="btn-ghost-box" style={{ marginTop: 10, marginBottom: showDiagCompleto ? 12 : 0 }} onClick={() => setShowDiagCompleto((s) => !s)}>
+                          {showDiagCompleto ? "Ocultar" : "Ver diagnóstico completo"}
                         </button>
                         {showDiagCompleto && (
                           <div className="pilares-wrap">
+                            {meuDiagnostico.qualificado && <p className="diag-mini-linha" style={{ marginBottom: 8 }}>⭐ Qualificada pra Sessão Estratégica</p>}
                             <p className="acc-plain-text">{faixaGeral(meuDiagnostico.indice).texto}</p>
                             {normalizarAlertas(meuDiagnostico.alertas).length > 0 && (
                               <div style={{ marginTop: 10 }}>
