@@ -6,7 +6,7 @@ import {
   Megaphone, UserMinus, UserPlus, Globe, Radio, LogOut, Mail, KeyRound,
   Lightbulb, AlertTriangle, TrendingUp, DollarSign, BarChart3,
   ChevronLeft, Plus, Shield, Calendar, Rocket, Send, MessageCircle, Shirt, Video, Film, LayoutGrid, Play, Calculator,
-  MapPin, Bell, List, Flag
+  MapPin, Bell, List, Flag, Hash
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
@@ -402,6 +402,7 @@ function proximasOportunidades(hoje, estado, cidade, limite) {
   const candidatos = [];
   [hoje.getFullYear(), hoje.getFullYear() + 1].forEach((ano) => {
     OPORTUNIDADES.forEach((op) => {
+      if (op.id.startsWith("data-")) return; // datas de números iguais têm seu próprio destaque separado
       if (!matchesLocalizacao(op, estado, cidade)) return;
       const data = getDataOportunidade(op, ano);
       if (data >= hojeSemHora) candidatos.push({ op, data });
@@ -1663,11 +1664,11 @@ function RadarCard({ op, favorito, onToggleFavorito, onDefinirLembrete, onVerAco
   );
 }
 
-function RadarOportunidades({ perfil, onSalvarLocalizacao, favoritos, onToggleFavorito, onDefinirLembrete, onVerAcoes }) {
+function RadarOportunidades({ perfil, onSalvarLocalizacao, favoritos, onToggleFavorito, onDefinirLembrete, onVerAcoes, viewInicial }) {
   const hoje = new Date();
   const [radarMes, setRadarMes] = useState(hoje.getMonth());
   const [radarAno, setRadarAno] = useState(hoje.getFullYear());
-  const [view, setView] = useState("lista");
+  const [view, setView] = useState(viewInicial || "lista");
   const [search, setSearch] = useState("");
   const [somenteFavoritos, setSomenteFavoritos] = useState(false);
   const [diaSelecionado, setDiaSelecionado] = useState(null);
@@ -2512,6 +2513,7 @@ const NAV = [
   { id: "inicio", label: "Início", icon: Home },
   { id: "biblioteca", label: "Ações Comerciais", icon: BookOpen },
   { id: "radar", label: "Radar", icon: Calendar },
+  { id: "datas-iguais", label: "Datas Iguais", icon: Hash },
   { id: "favoritos", label: "Favoritos", icon: Heart },
   { id: "historico", label: "Histórico", icon: Clock },
   { id: "simulador", label: "Simulador", icon: Calculator },
@@ -2548,6 +2550,7 @@ export default function App() {
   const [meuDiagnostico, setMeuDiagnostico] = useState(null);
   const [showDiagCompleto, setShowDiagCompleto] = useState(false);
   const [showSimulador, setShowSimulador] = useState(false);
+  const [radarViewPadrao, setRadarViewPadrao] = useState("lista");
   const [searchFocado, setSearchFocado] = useState(false);
   const [showVideoInicio, setShowVideoInicio] = useState(false);
 
@@ -3652,8 +3655,12 @@ export default function App() {
             {navItems.map((n) => (
               <button
                 key={n.id}
-                className={`sidebar-link ${(n.id === "simulador" ? showSimulador : tab === n.id && !openAction && !showSimulador) ? "active" : ""}`}
-                onClick={() => { if (n.id === "simulador") { setOpenId(null); setShowSimulador(true); } else { setShowSimulador(false); goto(n.id, true); } }}
+                className={`sidebar-link ${(n.id === "simulador" ? showSimulador : n.id === "datas-iguais" ? (tab === "radar" && radarViewPadrao === "datas-iguais" && !showSimulador) : tab === n.id && !openAction && !showSimulador) ? "active" : ""}`}
+                onClick={() => {
+                  if (n.id === "simulador") { setOpenId(null); setShowSimulador(true); }
+                  else if (n.id === "datas-iguais") { setShowSimulador(false); setRadarViewPadrao("datas-iguais"); goto("radar", true); }
+                  else { setShowSimulador(false); if (n.id === "radar") setRadarViewPadrao("lista"); goto(n.id, true); }
+                }}
               >
                 <n.icon size={17} /> {n.label}
               </button>
@@ -4068,6 +4075,7 @@ export default function App() {
                 onToggleFavorito={toggleFavoritoOportunidade}
                 onDefinirLembrete={definirLembreteOportunidade}
                 onVerAcoes={verAcoesDoRadar}
+                viewInicial={radarViewPadrao}
               />
             ) : tab === "favoritos" ? (
               <div className="screen">
@@ -4192,8 +4200,12 @@ export default function App() {
               {navItems.map((n) => (
                 <button
                   key={n.id}
-                  className={`tabbtn ${(n.id === "simulador" ? showSimulador : tab === n.id && !showSimulador) ? "active" : ""}`}
-                  onClick={() => { if (n.id === "simulador") { setOpenId(null); setShowSimulador(true); } else { setShowSimulador(false); goto(n.id, true); } }}
+                  className={`tabbtn ${(n.id === "simulador" ? showSimulador : n.id === "datas-iguais" ? (tab === "radar" && radarViewPadrao === "datas-iguais" && !showSimulador) : tab === n.id && !showSimulador) ? "active" : ""}`}
+                  onClick={() => {
+                    if (n.id === "simulador") { setOpenId(null); setShowSimulador(true); }
+                    else if (n.id === "datas-iguais") { setShowSimulador(false); setRadarViewPadrao("datas-iguais"); goto("radar", true); }
+                    else { setShowSimulador(false); if (n.id === "radar") setRadarViewPadrao("lista"); goto(n.id, true); }
+                  }}
                 >
                   <n.icon size={19} /><span>{n.label}</span>
                 </button>
