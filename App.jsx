@@ -1654,9 +1654,11 @@ function RadarCard({ op, favorito, onToggleFavorito, onDefinirLembrete, onVerAco
         </ul>
       )}
 
-      <button className="btn-primary" style={{ marginBottom: 0 }} onClick={() => onVerAcoes(op.palavrasChave)}>
-        Ver ações comerciais
-      </button>
+      {!op.id.startsWith("data-") && (
+        <button className="btn-primary" style={{ marginBottom: 0 }} onClick={() => onVerAcoes(op.palavrasChave)}>
+          Ver ações comerciais
+        </button>
+      )}
     </div>
   );
 }
@@ -3094,9 +3096,10 @@ export default function App() {
     .dash-cell-progresso { order: 1; }
     .dash-cell-cta { order: 2; }
     .dash-cell-oportunidade { order: 3; }
-    .dash-cell-acoes { order: 4; }
-    .dash-cell-registro { order: 5; }
-    .dash-cell-diagnostico { order: 6; }
+    .dash-cell-datasiguais { order: 4; }
+    .dash-cell-acoes { order: 5; }
+    .dash-cell-registro { order: 6; }
+    .dash-cell-diagnostico { order: 7; }
     .dash-col-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
 
     /* Seu progresso — bloco hero */
@@ -3167,6 +3170,18 @@ export default function App() {
 
     .dash-registro-nota { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 12px; line-height: 1.4; }
 
+    .dash-datasiguais-card {
+      height: 100%; box-sizing: border-box; padding: 16px 20px; background: var(--card); border: 1px dashed var(--mustard);
+      border-radius: 16px;
+    }
+    .dash-datasiguais-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+    .dash-datasiguais-eyebrow {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--mustard);
+    }
+    .dash-datasiguais-contagem { font-size: 11.5px; font-weight: 700; color: var(--wine); }
+    .dash-datasiguais-titulo { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; color: var(--ink); margin: 2px 0 8px; }
+    .dash-datasiguais-lista { margin: 0; padding-left: 18px; font-size: 12px; color: var(--ink); line-height: 1.6; }
+
     .dash-acoes-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
     .dash-acao-card {
       text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
@@ -3204,6 +3219,7 @@ export default function App() {
         grid-template-areas:
           "progresso cta"
           "oport diag"
+          "datasiguais datasiguais"
           "acoes acoes"
           "registro registro";
         gap: 22px;
@@ -3212,6 +3228,7 @@ export default function App() {
       .dash-cell-cta { grid-area: cta; order: initial; }
       .dash-cell-oportunidade { grid-area: oport; order: initial; }
       .dash-cell-diagnostico { grid-area: diag; order: initial; }
+      .dash-cell-datasiguais { grid-area: datasiguais; order: initial; }
       .dash-cell-acoes { grid-area: acoes; order: initial; }
       .dash-cell-registro { grid-area: registro; order: initial; }
     }
@@ -3788,6 +3805,33 @@ export default function App() {
                               <button type="button" className="btn-ghost-box" style={{ marginBottom: 0 }} onClick={() => verAcoesDoRadar(prox.op.palavrasChave)}>Ver ações comerciais</button>
                             </div>
                           </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="dash-cell-datasiguais">
+                    {(() => {
+                      const hoje = new Date();
+                      const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                      const prox = OPORTUNIDADES.filter((op) => op.id.startsWith("data-")).map((op) => {
+                        let data = getDataOportunidade(op, hoje.getFullYear());
+                        if (data < hojeSemHora) data = getDataOportunidade(op, hoje.getFullYear() + 1);
+                        return { ...op, data, dias: Math.round((data - hojeSemHora) / 86400000) };
+                      }).sort((a, b) => a.dias - b.dias)[0];
+                      if (!prox) return null;
+                      return (
+                        <div className="dash-datasiguais-card">
+                          <div className="dash-datasiguais-header">
+                            <span className="dash-datasiguais-eyebrow">🔢 Data de números iguais</span>
+                            <span className="dash-datasiguais-contagem">
+                              {prox.dias === 0 ? "É hoje!" : prox.dias === 1 ? "Falta 1 dia" : `Faltam ${prox.dias} dias`}
+                            </span>
+                          </div>
+                          <p className="dash-datasiguais-titulo">{prox.titulo}</p>
+                          <ul className="dash-datasiguais-lista">
+                            {prox.comoAproveitar.slice(0, 4).map((c, i) => <li key={i}>{c}</li>)}
+                          </ul>
                         </div>
                       );
                     })()}
