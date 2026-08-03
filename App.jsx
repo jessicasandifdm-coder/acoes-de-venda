@@ -440,6 +440,62 @@ const OPORTUNIDADES = [
   { id: "farroupilha", titulo: "Revolução Farroupilha", categoria: "estadual", mes: 8, dia: 20, estado: "RS", descricao: "Semana Farroupilha movimenta o Rio Grande do Sul inteiro, com forte apelo de tradição gaúcha.", comoAproveitar: ["Vitrine e Stories temáticos com identidade gaúcha", "Combo temático (ex: produtos pra churrasco, chimarrão)", "Ação de indicação na semana"], palavrasChave: "combo indicação" },
   { id: "expointer", titulo: "Expointer", categoria: "estadual", mes: 7, dia: 29, estado: "RS", descricao: "A Expointer, em Esteio/RS, é a maior feira do agronegócio da América Latina e atrai milhares de consumidores pra região — excelente oportunidade pra campanhas promocionais em toda a região metropolitana.", comoAproveitar: ["Frete grátis ou condição especial pra quem vem de fora", "Campanha Compre e Ganhe na semana da feira", "Divulgação nos Stories pra quem estiver na região"], palavrasChave: "promoção frete grátis" },
   { id: "aniversario-sao-leopoldo", titulo: "Aniversário de São Leopoldo", categoria: "municipal", mes: 6, dia: 25, estado: "RS", cidade: "São Leopoldo", descricao: "Feriado municipal — bom momento pra uma ação com identidade local.", comoAproveitar: ["Ação especial 'Aniversário da cidade'", "Desconto ou brinde temático com a data", "Divulgação na loja física e Stories"], palavrasChave: "promoção brindes" },
+  {
+    id: "data-09-09", titulo: "09/09", categoria: "comercial", mes: 8, dia: 9,
+    descricao: "Data de números iguais: em vez de só 'aproveitar a data', o número do dia vira a mecânica da campanha. Isso chama mais atenção e facilita a comunicação do que uma promoção genérica.",
+    comoAproveitar: [
+      "9% de desconto ou 9 produtos em destaque",
+      "9 primeiros clientes do dia ganham um mimo",
+      "Cupom válido por apenas 9 horas",
+      "Compras acima de R$299 ganham R$9 de cashback",
+      "9 sacolas ou envelopes premiados escondidos nos pedidos",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
+    id: "data-10-10", titulo: "10/10", categoria: "comercial", mes: 9, dia: 10,
+    descricao: "Data de números iguais: use o conceito de 'nota 10' pra transformar o número em mecânica de campanha.",
+    comoAproveitar: [
+      "Promoção 'Nota 10' com os 10 looks mais vendidos",
+      "10 kits prontos ou parcelamento em 10x",
+      "As 10 primeiras clientes ganham presente",
+      "Vale-compras de R$100 escondido em 10 pedidos",
+      "10 minutos de oferta relâmpago a cada hora",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
+    id: "data-11-11", titulo: "11/11", categoria: "comercial", mes: 10, dia: 11,
+    descricao: "Data de números iguais, conhecida no varejo como 'Dia dos Solteiros' — ótima pra uma campanha toda construída em cima do número 11.",
+    comoAproveitar: [
+      "11 ofertas ou 11% de cashback",
+      "11 primeiras clientes recebem um presente",
+      "Cupom 'ONZE11' ou roleta com 11 benefícios",
+      "Live às 11h11 com oferta exclusiva",
+      "Durante 11 minutos, uma oferta surpresa",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
+    id: "data-12-12", titulo: "12/12", categoria: "comercial", mes: 11, dia: 12,
+    descricao: "Data de números iguais junto da reta final do Natal — combine o clima natalino com o número 12 na mecânica da campanha.",
+    comoAproveitar: [
+      "12 presentes para as 12 primeiras clientes",
+      "12 kits de Natal ou parcelamento em 12x",
+      "Frete grátis nas primeiras 12 compras",
+      "Caixa Misteriosa com 12 brindes diferentes",
+      "Calendário da Sorte com 12 envelopes",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
 ];
 
 const ACTIONS = [
