@@ -441,6 +441,118 @@ const OPORTUNIDADES = [
   { id: "expointer", titulo: "Expointer", categoria: "estadual", mes: 7, dia: 29, estado: "RS", descricao: "A Expointer, em Esteio/RS, é a maior feira do agronegócio da América Latina e atrai milhares de consumidores pra região — excelente oportunidade pra campanhas promocionais em toda a região metropolitana.", comoAproveitar: ["Frete grátis ou condição especial pra quem vem de fora", "Campanha Compre e Ganhe na semana da feira", "Divulgação nos Stories pra quem estiver na região"], palavrasChave: "promoção frete grátis" },
   { id: "aniversario-sao-leopoldo", titulo: "Aniversário de São Leopoldo", categoria: "municipal", mes: 6, dia: 25, estado: "RS", cidade: "São Leopoldo", descricao: "Feriado municipal — bom momento pra uma ação com identidade local.", comoAproveitar: ["Ação especial 'Aniversário da cidade'", "Desconto ou brinde temático com a data", "Divulgação na loja física e Stories"], palavrasChave: "promoção brindes" },
   {
+    id: "data-01-01", titulo: "01/01", categoria: "comercial", mes: 0, dia: 1,
+    descricao: "Data de números iguais logo na virada do ano — aproveita o clima de 'começo novo' junto com a mecânica do número 1.",
+    comoAproveitar: [
+      "1ª compra do ano ganha um brinde",
+      "1% extra de cashback no dia",
+      "Cupom válido só no dia 1",
+      "Kit número 1 da coleção nova com condição especial",
+      "1 sorteio surpresa entre quem comprar no dia",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
+    id: "data-02-02", titulo: "02/02", categoria: "comercial", mes: 1, dia: 2,
+    descricao: "Data de números iguais — boa pra mecânica de 'leve mais, pague menos' em cima do número 2.",
+    comoAproveitar: [
+      "Leve 2 peças participantes e pague 1",
+      "2% de cashback nas compras do dia",
+      "Compras acima de R$200 ganham um brinde",
+      "2 clientes sorteadas ganham vale-compra",
+      "Cupom válido por apenas 2 horas",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
+    id: "data-03-03", titulo: "03/03", categoria: "comercial", mes: 2, dia: 3,
+    descricao: "Data de números iguais — mecânica em cima do número 3, boa pra girar peças em conjunto.",
+    comoAproveitar: [
+      "3% de desconto em peças selecionadas",
+      "Leve 3 peças e pague 2",
+      "3 primeiras compras do dia ganham mimo",
+      "Cupom válido por apenas 3 horas",
+      "3 kits exclusivos disponíveis só no dia",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
+    id: "data-04-04", titulo: "04/04", categoria: "comercial", mes: 3, dia: 4,
+    descricao: "Data de números iguais — parcelamento e ofertas relâmpago em cima do número 4.",
+    comoAproveitar: [
+      "4% de cashback nas compras do dia",
+      "4 primeiras clientes ganham presente",
+      "Parcelamento em 4x sem juros",
+      "4 produtos em oferta relâmpago",
+      "Cupom válido por apenas 4 horas",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
+    id: "data-05-05", titulo: "05/05", categoria: "comercial", mes: 4, dia: 5,
+    descricao: "Data de números iguais — boa pra vale-compras e ofertas relâmpago em cima do número 5.",
+    comoAproveitar: [
+      "5% de desconto em peças selecionadas",
+      "5 primeiras compras do dia ganham brinde",
+      "Compras acima de R$500 ganham vale-compra de R$50",
+      "5 minutos de oferta surpresa a cada hora",
+      "5 kits exclusivos disponíveis só no dia",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
+    id: "data-06-06", titulo: "06/06", categoria: "comercial", mes: 5, dia: 6,
+    descricao: "Data de números iguais — boa pra live de vendas com horário temático (18h) em cima do número 6.",
+    comoAproveitar: [
+      "6% de cashback nas compras do dia",
+      "Leve 6 peças com condição especial",
+      "6 primeiras clientes ganham mimo",
+      "Cupom válido por apenas 6 horas",
+      "Live às 18h (6 da tarde) com oferta exclusiva",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
+    id: "data-07-07", titulo: "07/07", categoria: "comercial", mes: 6, dia: 7,
+    descricao: "Data de números iguais — mecânica de sorte e brindes em cima do número 7.",
+    comoAproveitar: [
+      "7% de desconto em peças selecionadas",
+      "7 primeiras compras do dia ganham presente",
+      "7 minutos de oferta surpresa a cada hora",
+      "Compras acima de R$700 ganham um brinde",
+      "7 kits exclusivos disponíveis só no dia",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
+    id: "data-08-08", titulo: "08/08", categoria: "comercial", mes: 7, dia: 8,
+    descricao: "Data de números iguais — boa pra desafio de combinações em cima do número 8.",
+    comoAproveitar: [
+      "8% de cashback nas compras do dia",
+      "8 primeiras clientes ganham mimo",
+      "Desafio das 8 peças: monte 8 combinações diferentes",
+      "Cupom válido por apenas 8 horas",
+      "8 kits exclusivos disponíveis só no dia",
+      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
+    ],
+    palavrasChave: "brindes cashback",
+  },
+  {
     id: "data-09-09", titulo: "09/09", categoria: "comercial", mes: 8, dia: 9,
     descricao: "Data de números iguais: em vez de só 'aproveitar a data', o número do dia vira a mecânica da campanha. Isso chama mais atenção e facilita a comunicação do que uma promoção genérica.",
     comoAproveitar: [
@@ -1588,6 +1700,14 @@ function RadarOportunidades({ perfil, onSalvarLocalizacao, favoritos, onToggleFa
     .sort((a, b) => a.data - b.data);
 
   const insights = proximasOportunidades(hoje, perfil.estado, perfil.cidade, 4);
+
+  const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  const datasIguaisOrdenadas = OPORTUNIDADES.filter((op) => op.id.startsWith("data-")).map((op) => {
+    let data = getDataOportunidade(op, hoje.getFullYear());
+    if (data < hojeSemHora) data = getDataOportunidade(op, hoje.getFullYear() + 1);
+    const dias = Math.round((data - hojeSemHora) / 86400000);
+    return { ...op, data, dias };
+  }).sort((a, b) => a.dias - b.dias);
   const diasComOportunidade = new Set(
     OPORTUNIDADES.filter((op) => matchesLocalizacao(op, perfil.estado, perfil.cidade))
       .map((op) => getDataOportunidade(op, radarAno))
@@ -1620,17 +1740,26 @@ function RadarOportunidades({ perfil, onSalvarLocalizacao, favoritos, onToggleFa
       )}
 
       <div className="radar-filtros">
-        <select className="dash-select" value={radarMes} onChange={(e) => { setRadarMes(Number(e.target.value)); setDiaSelecionado(null); }}>
-          {MESES_COMPLETOS.map((m, i) => <option key={i} value={i}>{m}</option>)}
-        </select>
-        <select className="dash-select" value={radarAno} onChange={(e) => { setRadarAno(Number(e.target.value)); setDiaSelecionado(null); }}>
-          {anosDisponiveis.map((a) => <option key={a} value={a}>{a}</option>)}
-        </select>
+        {view !== "datas-iguais" && (
+          <>
+            <select className="dash-select" value={radarMes} onChange={(e) => { setRadarMes(Number(e.target.value)); setDiaSelecionado(null); }}>
+              {MESES_COMPLETOS.map((m, i) => <option key={i} value={i}>{m}</option>)}
+            </select>
+            <select className="dash-select" value={radarAno} onChange={(e) => { setRadarAno(Number(e.target.value)); setDiaSelecionado(null); }}>
+              {anosDisponiveis.map((a) => <option key={a} value={a}>{a}</option>)}
+            </select>
+          </>
+        )}
         <div className="radar-view-toggle">
           <button className={`radar-view-btn ${view === "lista" ? "active" : ""}`} onClick={() => setView("lista")}><List size={14} /> Lista</button>
           <button className={`radar-view-btn ${view === "calendario" ? "active" : ""}`} onClick={() => setView("calendario")}><Calendar size={14} /> Calendário</button>
+          <button className={`radar-view-btn ${view === "datas-iguais" ? "active" : ""}`} onClick={() => setView("datas-iguais")}>🔢 Datas Iguais</button>
         </div>
       </div>
+
+      {view === "datas-iguais" && (
+        <p className="radar-datas-iguais-intro">Todo mês tem uma data de números iguais (01/01, 02/02... 12/12) — o ano inteiro, de uma vez, sem precisar trocar de mês.</p>
+      )}
 
       <div className="search-bar" style={{ margin: "0 auto 8px" }}>
         <Search size={16} color="#6B7268" />
@@ -1663,25 +1792,53 @@ function RadarOportunidades({ perfil, onSalvarLocalizacao, favoritos, onToggleFa
         </div>
       )}
 
-      <div className="list-wrap" style={{ paddingTop: 4 }}>
-        {oportunidadesDoMes.length === 0 ? (
-          <div className="empty-state">
-            <Calendar size={28} />
-            <p>Nenhuma oportunidade encontrada com esse filtro pra {MESES_COMPLETOS[radarMes]}.</p>
-          </div>
-        ) : (
-          oportunidadesDoMes.map((op) => (
-            <RadarCard
-              key={op.id}
-              op={op}
-              favorito={favoritos.find((f) => f.oportunidade_id === op.id)}
-              onToggleFavorito={onToggleFavorito}
-              onDefinirLembrete={onDefinirLembrete}
-              onVerAcoes={onVerAcoes}
-            />
-          ))
-        )}
-      </div>
+      {view === "datas-iguais" ? (
+        <div className="list-wrap" style={{ paddingTop: 4 }}>
+          {datasIguaisOrdenadas
+            .filter((op) => !somenteFavoritos || favoritos.some((f) => f.oportunidade_id === op.id))
+            .filter((op) => {
+              const q = search.trim().toLowerCase();
+              if (!q) return true;
+              return op.titulo.toLowerCase().includes(q);
+            })
+            .map((op) => (
+              <div key={op.id} className={op.dias <= 10 ? "radar-destaque-10" : ""}>
+                {op.dias <= 10 && (
+                  <span className="radar-destaque-10-badge">
+                    {op.dias === 0 ? "É hoje!" : op.dias === 1 ? "Falta 1 dia" : `Faltam ${op.dias} dias`}
+                  </span>
+                )}
+                <RadarCard
+                  op={op}
+                  favorito={favoritos.find((f) => f.oportunidade_id === op.id)}
+                  onToggleFavorito={onToggleFavorito}
+                  onDefinirLembrete={onDefinirLembrete}
+                  onVerAcoes={onVerAcoes}
+                />
+              </div>
+            ))}
+        </div>
+      ) : (
+        <div className="list-wrap" style={{ paddingTop: 4 }}>
+          {oportunidadesDoMes.length === 0 ? (
+            <div className="empty-state">
+              <Calendar size={28} />
+              <p>Nenhuma oportunidade encontrada com esse filtro pra {MESES_COMPLETOS[radarMes]}.</p>
+            </div>
+          ) : (
+            oportunidadesDoMes.map((op) => (
+              <RadarCard
+                key={op.id}
+                op={op}
+                favorito={favoritos.find((f) => f.oportunidade_id === op.id)}
+                onToggleFavorito={onToggleFavorito}
+                onDefinirLembrete={onDefinirLembrete}
+                onVerAcoes={onVerAcoes}
+              />
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -3167,6 +3324,14 @@ export default function App() {
       padding: 7px 12px; font-size: 12px; color: var(--ink-soft); cursor: pointer; font-family: 'Work Sans', sans-serif;
     }
     .radar-view-btn.active { background: var(--wine); border-color: var(--wine); color: #fff; }
+
+    .radar-datas-iguais-intro { max-width: 1040px; margin: 0 auto 12px; padding: 0 20px; font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+    .radar-destaque-10 { position: relative; margin-bottom: 4px; }
+    .radar-destaque-10 .radar-card { border: 1.5px solid var(--mustard); box-shadow: 0 4px 16px rgba(184,145,47,0.18); }
+    .radar-destaque-10-badge {
+      display: inline-block; background: linear-gradient(135deg, var(--mustard), #B8912F); color: #fff; font-size: 10.5px;
+      font-weight: 700; padding: 4px 12px; border-radius: 999px 999px 0 0; margin-left: 16px;
+    }
 
     .radar-cal-wrap { max-width: 1040px; margin: 0 auto 14px; padding: 0 20px; }
     .radar-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(20,63,53,0.05); }
