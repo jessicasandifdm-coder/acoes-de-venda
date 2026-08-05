@@ -122,6 +122,7 @@ function labelRelativo(iso) {
 const SUPABASE_URL = "https://ihpfexmourrvixtsxhrt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_M7vZQ1VPi_7BP3HQAp-ngA_cMB22bEG";
 const ADMIN_EMAIL = "jessicasandifdm@gmail.com";
+const APP_URL = "https://app.geradordevendasjs.com.br";
 
 async function supaSignUp(email, password) {
   const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
@@ -142,6 +143,30 @@ async function supaSignIn(email, password) {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error_description || data.msg || "E-mail ou senha incorretos.");
+  return data;
+}
+
+async function supaRecuperarSenha(email) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/recover?redirect_to=${encodeURIComponent(APP_URL)}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error_description || data.msg || "Não foi possível enviar o e-mail de recuperação.");
+  }
+  return true;
+}
+
+async function supaDefinirNovaSenha(accessToken, novaSenha) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify({ password: novaSenha }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error_description || data.msg || "Não foi possível definir a nova senha.");
   return data;
 }
 
@@ -1943,12 +1968,14 @@ function SimuladorBrindes({ onBack }) {
   );
 }
 
-function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVerHistorico, onOpenRelacionada, onAbrirSimulador }) {
+function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVerHistorico, onOpenRelacionada, onAbrirSimulador, metaAtual, mesAtualLabel, onDefinirMeta, onRegistrarResultado }) {
   const info = catInfo(action.cat);
   const Icon = info.icon;
   const [checkedPrep, setCheckedPrep] = useState({});
   const [checkedExec, setCheckedExec] = useState({});
   const [checkedDiv, setCheckedDiv] = useState({});
+  const [metaInput, setMetaInput] = useState("");
+  const [registroValor, setRegistroValor] = useState("");
   const relacionadas = action.relacionadas
     .map((id) => ACTIONS.find((a) => a.id === id))
     .filter(Boolean);
@@ -2173,6 +2200,42 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
           <ul className="bullet-list dtl-resultado-lista">{action.resultado.map((r, i) => <li key={i}>{r}</li>)}</ul>
         </div>
 
+        <div className="dtl-meta-resultado-card">
+          <span className="dtl-resultados-titulo">Meta e resultado desta ação — {mesAtualLabel}</span>
+
+          {metaAtual ? (
+            <>
+              <div className="dtl-meta-progresso-top">
+                <span>{formatBRL(metaAtual.realizado)} de {formatBRL(metaAtual.valorMeta)}</span>
+                <span className="meta-pct">{metaAtual.pct}%</span>
+              </div>
+              <div className="meta-bar-track"><div className="meta-bar-fill" style={{ width: `${metaAtual.pct}%` }} /></div>
+            </>
+          ) : (
+            <div className="dtl-meta-form">
+              <p className="canal-caption" style={{ marginTop: 0 }}>Ainda não tem meta definida pra essa ação em {mesAtualLabel}.</p>
+              <div className="valor-input" style={{ margin: "0 0 8px" }}>
+                <span className="valor-prefix">R$</span>
+                <input type="number" inputMode="decimal" placeholder="Quanto quer gerar com essa ação" value={metaInput} onChange={(e) => setMetaInput(e.target.value)} />
+              </div>
+              <button className="btn-ghost-box" style={{ marginBottom: 0 }} onClick={() => { if (metaInput) { onDefinirMeta(Number(metaInput) || 0); setMetaInput(""); } }} disabled={!metaInput}>
+                Definir meta desta ação
+              </button>
+            </div>
+          )}
+
+          <div className="dtl-registrar-divisor">
+            <span className="resumo-label" style={{ display: "block", marginBottom: 8 }}>Registrar resultado</span>
+            <div className="valor-input" style={{ margin: "0 0 8px" }}>
+              <span className="valor-prefix">R$</span>
+              <input type="number" inputMode="decimal" placeholder="Valor gerado" value={registroValor} onChange={(e) => setRegistroValor(e.target.value)} />
+            </div>
+            <button className="btn-primary" style={{ marginBottom: 0 }} onClick={() => { if (registroValor) { onRegistrarResultado(Number(registroValor) || 0); setRegistroValor(""); } }} disabled={!registroValor}>
+              Salvar resultado
+            </button>
+          </div>
+        </div>
+
         <div className="dtl-resultados-card">
           <span className="dtl-resultados-titulo">Como essa campanha está performando</span>
           <div className="dtl-resultados-grid">
@@ -2212,6 +2275,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
 
 function LoginScreen({ onAuthed }) {
   const [modo, setModo] = useState("entrar");
+  const [recuperando, setRecuperando] = useState(false);
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
@@ -2235,6 +2299,48 @@ function LoginScreen({ onAuthed }) {
       setLoading(false);
     }
   };
+
+  const enviarRecuperacao = async () => {
+    if (!email.trim()) { setErro("Digite seu e-mail pra enviar o link de recuperação."); return; }
+    setErro(""); setMsg(""); setLoading(true);
+    try {
+      await supaRecuperarSenha(email.trim());
+      setMsg("Enviamos um link de recuperação pro seu e-mail. Abra a mensagem e clique no link pra definir uma nova senha.");
+    } catch (e) {
+      setErro(e.message || "Não foi possível enviar o e-mail de recuperação.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (recuperando) {
+    return (
+      <div className="auth-wrap">
+        <div className="auth-backdrop" aria-hidden="true" />
+        <div className="auth-card">
+          <div className="auth-mark"><Wallet size={20} /></div>
+          <span className="auth-eyebrow">Gerador de Caixa</span>
+          <h1 className="auth-title">Recuperar senha</h1>
+          <p className="auth-sub">Digite o e-mail da sua conta. Vamos te mandar um link pra você criar uma senha nova.</p>
+
+          <label className="auth-label">E-mail</label>
+          <div className="auth-input">
+            <Mail size={16} color="#6B7268" />
+            <input type="email" placeholder="seuemail@loja.com" value={email} onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && enviarRecuperacao()} />
+          </div>
+
+          {erro && <p className="auth-alerta auth-alerta-erro"><AlertTriangle size={13} /> {erro}</p>}
+          {msg && <p className="auth-alerta auth-alerta-msg"><Check size={13} /> {msg}</p>}
+
+          <button className="btn-primary" style={{ marginTop: 14 }} onClick={enviarRecuperacao} disabled={loading}>
+            {loading ? "Enviando…" : "Enviar link de recuperação"}
+          </button>
+          <button className="btn-ghost" onClick={() => { setRecuperando(false); setErro(""); setMsg(""); }}>Voltar pro login</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-wrap">
@@ -2275,12 +2381,71 @@ function LoginScreen({ onAuthed }) {
           <input type="password" placeholder="••••••••" value={senha} onChange={(e) => setSenha(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submeter()} />
         </div>
+        {modo === "entrar" && (
+          <button type="button" className="auth-link-esqueci" onClick={() => { setRecuperando(true); setErro(""); setMsg(""); }}>
+            Esqueci minha senha
+          </button>
+        )}
 
         {erro && <p className="auth-alerta auth-alerta-erro"><AlertTriangle size={13} /> {erro}</p>}
         {msg && <p className="auth-alerta auth-alerta-msg"><Check size={13} /> {msg}</p>}
 
         <button className="btn-primary" style={{ marginTop: 14 }} onClick={submeter} disabled={loading}>
           {loading ? "Aguarde…" : modo === "criar" ? "Criar conta" : "Entrar"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function DefinirNovaSenhaScreen({ accessToken, onDefinida }) {
+  const [senha, setSenha] = useState("");
+  const [confirmar, setConfirmar] = useState("");
+  const [erro, setErro] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const salvar = async () => {
+    if (!senha || senha.length < 6) { setErro("A senha precisa ter pelo menos 6 caracteres."); return; }
+    if (senha !== confirmar) { setErro("As senhas não são iguais."); return; }
+    setErro(""); setLoading(true);
+    try {
+      await supaDefinirNovaSenha(accessToken, senha);
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, { headers: supaHeaders(accessToken) });
+      const userData = await res.json();
+      onDefinida({ accessToken, userId: userData.id, email: userData.email });
+    } catch (e) {
+      setErro(e.message || "Não foi possível salvar a nova senha. Peça um novo link de recuperação.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="auth-wrap">
+      <div className="auth-backdrop" aria-hidden="true" />
+      <div className="auth-card">
+        <div className="auth-mark"><Wallet size={20} /></div>
+        <span className="auth-eyebrow">Gerador de Caixa</span>
+        <h1 className="auth-title">Defina sua nova senha</h1>
+        <p className="auth-sub">Escolha uma senha nova pra sua conta.</p>
+
+        <label className="auth-label">Nova senha</label>
+        <div className="auth-input">
+          <KeyRound size={16} color="#6B7268" />
+          <input type="password" placeholder="••••••••" value={senha} onChange={(e) => setSenha(e.target.value)} />
+        </div>
+
+        <label className="auth-label">Confirmar nova senha</label>
+        <div className="auth-input">
+          <KeyRound size={16} color="#6B7268" />
+          <input type="password" placeholder="••••••••" value={confirmar} onChange={(e) => setConfirmar(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && salvar()} />
+        </div>
+
+        {erro && <p className="auth-alerta auth-alerta-erro"><AlertTriangle size={13} /> {erro}</p>}
+
+        <button className="btn-primary" style={{ marginTop: 14 }} onClick={salvar} disabled={loading}>
+          {loading ? "Salvando…" : "Salvar nova senha e entrar"}
         </button>
       </div>
     </div>
@@ -2522,9 +2687,17 @@ const NAV = [
 export default function App() {
   const [stage, setStage] = useState("login"); // login | diagnostico | app
   const [session, setSession] = useState(null); // { accessToken, userId, email }
+  const [recoveryToken, setRecoveryToken] = useState(() => {
+    if (typeof window === "undefined") return null;
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    if (hash.get("type") === "recovery" && hash.get("access_token")) return hash.get("access_token");
+    return null;
+  });
   const [tab, setTab] = useState("inicio");
   const [openId, setOpenId] = useState(null);
   const [search, setSearch] = useState("");
+  const [buscaHome, setBuscaHome] = useState("");
+  const [buscaHomeFocado, setBuscaHomeFocado] = useState(false);
   const [catFilter, setCatFilter] = useState(null);
   const [canalFilter, setCanalFilter] = useState(null);
   const [nichoFilter, setNichoFilter] = useState(null);
@@ -2611,11 +2784,11 @@ export default function App() {
     });
   };
 
-  const markDone = (id) => {
+  const markDone = (id, valorParam, notaParam) => {
     const now = new Date();
     const mesIdx = now.getMonth(), ano = now.getFullYear();
-    const valor = Number(doneValor) || 0;
-    const nota = doneNote;
+    const valor = valorParam !== undefined ? valorParam : (Number(doneValor) || 0);
+    const nota = notaParam !== undefined ? notaParam : doneNote;
     setHistorico((prev) => [
       { id, nota, valor, data: now.toLocaleDateString("pt-BR"), criadoEm: now.toISOString(), mesAno: `${mesIdx + 1}/${ano}`, mesIdx, ano },
       ...prev,
@@ -2673,9 +2846,11 @@ export default function App() {
     setDashMes(m); setDashAno(a);
   };
 
-  const addMeta = async () => {
-    if (!novaMetaAcao || !novaMetaValor) return;
-    const acaoId = novaMetaAcao, mes = dashMes, ano = dashAno, valorMeta = Number(novaMetaValor) || 0;
+  const addMeta = async (acaoIdParam, valorParam) => {
+    const acaoId = acaoIdParam !== undefined ? acaoIdParam : novaMetaAcao;
+    const valorMeta = valorParam !== undefined ? valorParam : (Number(novaMetaValor) || 0);
+    const mes = dashMes, ano = dashAno;
+    if (!acaoId || !valorMeta) return;
     setNovaMetaAcao(""); setNovaMetaValor(""); setShowMetaForm(false);
     if (session) {
       try {
@@ -2705,6 +2880,14 @@ export default function App() {
     const matchesSearch = !q || matchesTexto || matchesKw;
     return matchesCat && matchesCanal && matchesNicho && matchesSearch;
   });
+
+  const buscaHomeQ = buscaHome.trim().toLowerCase();
+  const buscaHomeKw = buscaHomeQ ? buscaInteligente(buscaHomeQ) : { cats: new Set(), canais: new Set() };
+  const resultadosBuscaHome = !buscaHomeQ ? [] : ACTIONS.filter((a) => {
+    const matchesTexto = a.nome.toLowerCase().includes(buscaHomeQ) || a.tipo.toLowerCase().includes(buscaHomeQ) || a.como.toLowerCase().includes(buscaHomeQ);
+    const matchesKw = buscaHomeKw.cats.has(a.cat) || buscaHomeKw.canais.has(a.canalPrincipal) || a.canaisApoio.some((c) => buscaHomeKw.canais.has(c));
+    return matchesTexto || matchesKw;
+  }).slice(0, 6);
 
   const openAction = openId ? ACTIONS.find((a) => a.id === openId) : null;
   const isDoneAlready = openId ? historico.some((h) => h.id === openId) : false;
@@ -2851,6 +3034,11 @@ export default function App() {
       padding: 10px; cursor: pointer; font-family: 'Work Sans', sans-serif; font-weight: 500; transition: color 0.15s ease;
     }
     .btn-ghost:hover { color: var(--wine); }
+    .auth-link-esqueci {
+      display: block; background: none; border: none; color: var(--ink-soft); font-size: 11.5px; cursor: pointer;
+      font-family: 'Work Sans', sans-serif; margin: 8px 0 0; padding: 0; text-align: right; width: 100%;
+    }
+    .auth-link-esqueci:hover { color: var(--wine); text-decoration: underline; }
     .intro-card { max-width: 420px; }
     .quiz-progress-track { height: 4px; background: var(--line); border-radius: 999px; margin-bottom: 18px; overflow: hidden; }
     .quiz-progress-fill { height: 100%; background: var(--wine); border-radius: 999px; transition: width 0.25s; }
@@ -3092,17 +3280,33 @@ export default function App() {
     }
     .dash-video-btn:hover { border-color: var(--wine); background: var(--paper); }
 
+    .dash-busca-wrap {
+      max-width: 1160px; margin: 18px auto 0; padding: 22px 24px; background: var(--card); border: 1.5px solid var(--wine);
+      border-radius: 20px; box-shadow: 0 6px 20px rgba(20,63,53,0.1);
+    }
+    .dash-busca-titulo { display: block; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 16px; color: var(--ink); margin-bottom: 4px; }
+    .dash-busca-sub { font-size: 12px; color: var(--ink-soft); margin: 0 0 14px; line-height: 1.5; }
+    .dash-busca-bar { margin: 0 !important; padding: 14px 16px !important; }
+    .dash-busca-bar input { font-size: 14px !important; }
+    .dash-busca-resultados { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .dash-busca-item {
+      display: flex; flex-direction: column; gap: 2px; text-align: left; background: var(--paper); border: 1px solid var(--line);
+      border-radius: 10px; padding: 12px 14px; cursor: pointer; font-family: 'Work Sans', sans-serif;
+    }
+    .dash-busca-item:hover { border-color: var(--wine); }
+    .dash-busca-item-nome { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+    .dash-busca-item-tipo { font-size: 11.5px; color: var(--ink-soft); }
+    .dash-busca-link { background: none; border: none; color: var(--wine); text-decoration: underline; cursor: pointer; font-size: 12px; padding: 0; font-family: 'Work Sans', sans-serif; }
+
     /* Grid principal da Início — mobile empilha por ordem de prioridade, desktop usa áreas nomeadas */
     .dash-grid {
       display: grid; grid-template-columns: 1fr; gap: 18px; max-width: 1160px; margin: 20px auto 40px; padding: 0 24px;
     }
     .dash-cell-progresso { order: 1; }
-    .dash-cell-cta { order: 2; }
-    .dash-cell-oportunidade { order: 3; }
-    .dash-cell-datasiguais { order: 4; }
-    .dash-cell-acoes { order: 5; }
-    .dash-cell-registro { order: 6; }
-    .dash-cell-diagnostico { order: 7; }
+    .dash-cell-oportunidade { order: 2; }
+    .dash-cell-datasiguais { order: 3; }
+    .dash-cell-acoes { order: 4; }
+    .dash-cell-diagnostico { order: 5; }
     .dash-col-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
 
     /* Seu progresso — bloco hero */
@@ -3220,20 +3424,16 @@ export default function App() {
       .dash-grid {
         grid-template-columns: 1.5fr 1fr;
         grid-template-areas:
-          "progresso cta"
-          "oport diag"
-          "datasiguais datasiguais"
-          "acoes acoes"
-          "registro registro";
+          "progresso oport"
+          "datasiguais diag"
+          "acoes acoes";
         gap: 22px;
       }
       .dash-cell-progresso { grid-area: progresso; order: initial; }
-      .dash-cell-cta { grid-area: cta; order: initial; }
       .dash-cell-oportunidade { grid-area: oport; order: initial; }
       .dash-cell-diagnostico { grid-area: diag; order: initial; }
       .dash-cell-datasiguais { grid-area: datasiguais; order: initial; }
       .dash-cell-acoes { grid-area: acoes; order: initial; }
-      .dash-cell-registro { grid-area: registro; order: initial; }
     }
 
     .diag-mini-indice { display: flex; align-items: baseline; gap: 2px; color: var(--wine); flex-shrink: 0; }
@@ -3467,6 +3667,14 @@ export default function App() {
     .dtl-resultados-valor { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; color: var(--wine); }
     .dtl-resultados-valor-sm { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 600; color: var(--ink); }
 
+    .dtl-meta-resultado-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+      box-shadow: 0 2px 8px rgba(20,63,53,0.05); margin: 20px 0 0;
+    }
+    .dtl-meta-progresso-top { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; }
+    .dtl-meta-form { margin-bottom: 4px; }
+    .dtl-registrar-divisor { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line); }
+
     .dtl-relacionadas-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 20px; }
     .dtl-relacionada-card {
       text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
@@ -3615,25 +3823,38 @@ export default function App() {
     }
   `;
 
+  const handleAuthed = (s) => {
+    setSession(s);
+    (async () => {
+      try {
+        const [diags, perfis] = await Promise.all([
+          supaSelect("av_diagnosticos", s.accessToken, s.userId),
+          supaSelect("av_perfis", s.accessToken, s.userId),
+        ]);
+        setPrecisaDiagnostico(diags.length === 0);
+        if (perfis.length === 0) setStage("perfil");
+        else if (diags.length === 0) setStage("diagnostico");
+        else setStage("app");
+      } catch (e) {
+        console.error("Erro ao verificar cadastro existente:", e);
+        setStage("perfil");
+      }
+    })();
+  };
+
+  if (recoveryToken) return (
+    <div className="app-wrap"><style>{baseStyles}</style><DefinirNovaSenhaScreen
+      accessToken={recoveryToken}
+      onDefinida={(s) => {
+        window.history.replaceState(null, "", window.location.pathname);
+        setRecoveryToken(null);
+        handleAuthed(s);
+      }}
+    /></div>
+  );
+
   if (stage === "login") return (
-    <div className="app-wrap"><style>{baseStyles}</style><LoginScreen onAuthed={(s) => {
-      setSession(s);
-      (async () => {
-        try {
-          const [diags, perfis] = await Promise.all([
-            supaSelect("av_diagnosticos", s.accessToken, s.userId),
-            supaSelect("av_perfis", s.accessToken, s.userId),
-          ]);
-          setPrecisaDiagnostico(diags.length === 0);
-          if (perfis.length === 0) setStage("perfil");
-          else if (diags.length === 0) setStage("diagnostico");
-          else setStage("app");
-        } catch (e) {
-          console.error("Erro ao verificar cadastro existente:", e);
-          setStage("perfil");
-        }
-      })();
-    }} /></div>
+    <div className="app-wrap"><style>{baseStyles}</style><LoginScreen onAuthed={handleAuthed} /></div>
   );
   if (stage === "perfil") return (
     <div className="app-wrap"><style>{baseStyles}</style><PerfilScreen session={session} onContinue={(p) => { setPerfil(p); setStage(precisaDiagnostico ? "diagnostico" : "app"); }} /></div>
@@ -3683,6 +3904,10 @@ export default function App() {
                 onVerHistorico={() => goto("historico")}
                 onOpenRelacionada={(id) => setOpenId(id)}
                 onAbrirSimulador={() => setShowSimulador(true)}
+                metaAtual={metasDoMes.find((m) => m.acaoId === openAction.id)}
+                mesAtualLabel={nomeMesAno}
+                onDefinirMeta={(valor) => addMeta(openAction.id, valor)}
+                onRegistrarResultado={(valor) => markDone(openAction.id, valor, "")}
               />
             ) : tab === "inicio" ? (
               <div className="screen">
@@ -3714,6 +3939,47 @@ export default function App() {
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                       />
+                    </div>
+                  )}
+                </div>
+
+                <div className="dash-busca-wrap">
+                  <span className="dash-busca-titulo">🔎 O que você quer fazer hoje?</span>
+                  <p className="dash-busca-sub">Digite o que você precisa — "quero fazer uma promoção", "preciso de dinheiro rápido", "tem Dia dos Pais chegando"...</p>
+                  <div className="search-bar dash-busca-bar">
+                    <Search size={16} color="#143F35" />
+                    <input
+                      placeholder="Ex: quero girar estoque, vender no WhatsApp..."
+                      value={buscaHome}
+                      onChange={(e) => setBuscaHome(e.target.value)}
+                      onFocus={() => setBuscaHomeFocado(true)}
+                      onBlur={() => setTimeout(() => setBuscaHomeFocado(false), 150)}
+                    />
+                    {buscaHome && <X size={14} color="#6B7268" style={{ cursor: "pointer" }} onClick={() => setBuscaHome("")} />}
+                  </div>
+
+                  {buscaHomeFocado && !buscaHomeQ && (
+                    <div className="bib-sugestoes" style={{ marginTop: 10 }}>
+                      {BUSCA_SUGESTOES.map((s) => (
+                        <button key={s} className="bib-sugestao-chip" onMouseDown={() => setBuscaHome(s)}>{s}</button>
+                      ))}
+                    </div>
+                  )}
+
+                  {buscaHomeQ && (
+                    <div className="dash-busca-resultados">
+                      {resultadosBuscaHome.length === 0 ? (
+                        <p className="canal-caption" style={{ margin: "10px 0 0" }}>
+                          Nada encontrado com essas palavras. Que tal <button type="button" className="dash-busca-link" onClick={() => goto("biblioteca", true)}>explorar todas as Ações Comerciais</button>?
+                        </p>
+                      ) : (
+                        resultadosBuscaHome.map((a) => (
+                          <button key={a.id} className="dash-busca-item" onClick={() => setOpenId(a.id)}>
+                            <span className="dash-busca-item-nome">{a.nome}</span>
+                            <span className="dash-busca-item-tipo">{a.tipo}</span>
+                          </button>
+                        ))
+                      )}
                     </div>
                   )}
                 </div>
@@ -3752,38 +4018,11 @@ export default function App() {
                       </div>
                       <p className="dash-progresso-falta">
                         {metaTotalMes === 0
-                          ? "Defina uma ação pra começar a acompanhar sua meta acumulada."
+                          ? "Encontre uma ação na busca acima pra começar a acompanhar sua meta acumulada."
                           : totalMes >= metaTotalMes
                           ? "Meta acumulada batida! 🎉"
                           : `Faltam apenas ${formatBRL(metaTotalMes - totalMes)} para atingir sua meta acumulada.`}
                       </p>
-                    </div>
-                  </div>
-
-                  <div className="dash-cell-cta">
-                    <div className="dash-meta-registro">
-                      <span className="dash-meta-registro-title">🚀 Qual ação você vai executar?</span>
-                      {!showMetaForm ? (
-                        <button type="button" className="dash-registrar-acao-btn" onClick={() => setShowMetaForm(true)}>
-                          <Plus size={18} /> Registrar nova ação
-                        </button>
-                      ) : (
-                        <div className="dash-meta-registro-expandido">
-                          <p className="dash-meta-registro-sub">Escolha a estratégia comercial que deseja aplicar e defina quanto pretende gerar com ela.</p>
-                          <select className="meta-select" value={novaMetaAcao} onChange={(e) => setNovaMetaAcao(e.target.value)}>
-                            <option value="">Escolha a ação</option>
-                            {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-                          </select>
-                          <div className="valor-input" style={{ margin: "8px 0" }}>
-                            <span className="valor-prefix">R$</span>
-                            <input type="number" inputMode="decimal" placeholder="Quanto quer gerar" value={novaMetaValor} onChange={(e) => setNovaMetaValor(e.target.value)} />
-                          </div>
-                          <div style={{ display: "flex", gap: 8 }}>
-                            <button type="button" className="btn-primary" style={{ marginBottom: 0 }} onClick={addMeta} disabled={!novaMetaAcao || !novaMetaValor}>Registrar ação</button>
-                            <button type="button" className="btn-ghost-box" style={{ marginBottom: 0 }} onClick={() => { setShowMetaForm(false); setNovaMetaAcao(""); setNovaMetaValor(""); }}>Cancelar</button>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
 
@@ -3906,22 +4145,6 @@ export default function App() {
                         )}
                       </>
                     )}
-                  </div>
-
-                  <div className="dash-cell-registro">
-                    <div className="dash-card-white">
-                      <span className="resumo-label" style={{ display: "block", marginBottom: 2 }}>Registrar resultado</span>
-                      <p className="dash-registro-nota">Executou uma dessas ações? Registre o resultado pra atualizar o progresso.</p>
-                      <select className="meta-select" value={registrarAcaoId} onChange={(e) => setRegistrarAcaoId(e.target.value)}>
-                        <option value="">Selecionar ação</option>
-                        {ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
-                      </select>
-                      <div className="valor-input" style={{ margin: "8px 0" }}>
-                        <span className="valor-prefix">R$</span>
-                        <input type="number" inputMode="decimal" placeholder="Valor gerado" value={doneValor} onChange={(e) => setDoneValor(e.target.value)} />
-                      </div>
-                      <button type="button" className="btn-primary" onClick={registrarRapido} disabled={!registrarAcaoId || !doneValor}>Salvar</button>
-                    </div>
                   </div>
                 </div>
               </div>
