@@ -636,6 +636,147 @@ const OPORTUNIDADES = [
   },
 ];
 
+const MESES_CALENDARIO = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+const CALENDARIO_ANUAL = [
+  {
+    mes: 0, nome: "Janeiro", pronto: true,
+    campanhaTitulo: "Novo Ano, Novos Estilos",
+    intro: "Janeiro é um mês marcado por férias, viagens e descanso. Muitas clientes estão viajando ou aproveitando finais de semana fora, o que pode impactar no fluxo da loja. Por isso, a campanha será dividida em duas grandes etapas:",
+    etapas: [
+      { titulo: "1ª Quinzena – Ano Novo, Peças Novas", texto: "Trabalhar a narrativa de renovação: looks para mala de viagem, kits para férias, combos inteligentes e até ação social com doação de peças antigas." },
+      { titulo: "2ª Quinzena – Sacola Premiada do Verão", texto: "Criar engajamento e picos de vendas com uma ação divertida, de sacolas surpresas com valor fixo, em que uma delas é premiada com valor maior." },
+    ],
+    adaptavel: "A campanha é adaptável para moda feminina, cosméticos e infantil.",
+    estrategiaGeral: [
+      "Estimular compras de início de ano, reforçando o desejo de começar o ano renovada.",
+      "Criar momentos de pico de venda mesmo em período de férias.",
+      "Movimentar estoque parado de forma criativa (sacolas).",
+      "Aumentar engajamento e relacionamento com o público.",
+    ],
+    objetivos: [
+      { tema: "Ano Novo, Peças Novas", bullets: ["Vender kits e combos de início de ano.", "Posicionar a marca como parte da \"renovação\" do cliente.", "Incentivar compras através de ação social (trazer peças usadas para doação)."] },
+      { tema: "Sacola Premiada do Verão", bullets: ["Movimentar estoque parado do verão.", "Criar engajamento com uma ação divertida e exclusiva.", "Gerar pico de vendas em semana mais fraca."] },
+    ],
+    preparacao: [
+      { periodo: "Primeira Quinzena de Janeiro", itens: [
+        "Separar peças-chaves para kits (looks, combos de cosméticos, conjuntos infantis).",
+        "Criar comunicação visual com frases como \"Comece o ano renovada\" ou \"Sua mala de férias começa aqui\".",
+        "Se optar pela ação social → preparar caixa/coletor de doações e parceria com instituição local.",
+      ]},
+      { periodo: "Segunda Quinzena de Janeiro (💰 Ações de Venda)", itens: [
+        "Definir valor fixo das sacolas (ex.: R$50).",
+        "Montar sacolas com peças variadas.",
+        "Selecionar 1 ou 2 sacolas premiadas (ex.: R$100 em produtos pelo valor de R$50).",
+        "Definir nome criativo (ex.: \"Sacola do Sol\", \"Sacola Calor da Sorte\").",
+        "Criar limite de quantidade (ex.: apenas 20 unidades).",
+      ]},
+    ],
+    acaoDeVendas: [
+      {
+        periodo: "Primeira Quinzena de Janeiro",
+        bullets: [
+          "Kits inteligentes: ex.: \"Look viagem + acessório com preço fechado\".",
+          "Combos promocionais: descontos progressivos para quem leva mais peças.",
+          "Ação social: \"Traga uma peça usada e ganhe 5% de desconto na nova coleção\".",
+        ],
+        sugestoes: [
+          { titulo: "Kits/Combos Inteligentes", bullets: [
+            "Moda feminina: \"O que não pode faltar na mala de verão\" (look dia + look noite).",
+            "Cosméticos: \"Kit beleza verão\" (protetor, hidratante, batom/gloss).",
+            "Infantil: \"Kit férias kids\" (conjuntinho + acessório + brinquedo pequeno).",
+          ]},
+          { titulo: "Ação Social \"Renova e doa\"", bullets: [
+            "Incentivo: \"Traga uma peça usada e ganhe 5% de desconto na nova coleção.\"",
+            "Resultado: reforça o posicionamento da marca e cria motivo extra para a compra.",
+          ]},
+          { titulo: "Sugestão de Narrativa nos Conteúdos", bullets: [
+            "\"3 looks que não podem faltar na mala de viagem.\"",
+            "\"Peças que você precisa para começar o ano renovada.\"",
+            "\"Checklist de verão: o que não pode faltar para você.\"",
+          ]},
+        ],
+      },
+      {
+        periodo: "Segunda Quinzena de Janeiro",
+        bullets: [
+          "Sacola premiada em Stories ou grupos de WhatsApp.",
+          "Vendas rápidas → quem garantir primeiro, leva.",
+          "Revelar depois quais clientes foram premiadas → gera prova social.",
+        ],
+        sacolaDetalhe: {
+          titulo: "Sacola Premiada do Verão",
+          narrativa: "Divertir, engajar e movimentar estoque parado sem parecer liquidação pesada.",
+          comoFunciona: [
+            "Criar sacolas (por exemplo, R$50 cada) com peças variadas do verão.",
+            "Uma ou duas sacolas terão valor maior em mercadorias (ex.: R$100 por R$50).",
+          ],
+          adaptacao: [
+            "Moda feminina: peças de verão, básicos, acessórios.",
+            "Cosméticos: combos surpresa (batom + máscara + esmalte).",
+            "Infantil: looks casuais + acessórios surpresa.",
+          ],
+          diferenciais: [
+            "Nome criativo (ex.: \"Sacola do Sol\", \"Sacola Calor da Sorte\").",
+            "Limitado (ex.: 20 sacolas disponíveis).",
+            "Pode ser revelado apenas em Stories ou grupo de WhatsApp → aumenta exclusividade.",
+          ],
+          sugestaoConteudo: [
+            "Reels bastidores montando as sacolas.",
+            "Enquete: \"Você compraria uma sacola surpresa por R$50?\"",
+            "Stories revelando algumas sacolas (sem mostrar todas).",
+          ],
+        },
+      },
+    ],
+    conteudo: [
+      {
+        semana: "Semana 1 (01 a 07/01/2027)", titulo: "Ano Novo, Peças Novas",
+        feed: ["Post/Reels: \"Ano novo pede peças novas — looks para começar o ano renovada\"", "Carrossel: \"Checklist da mala de férias – o que não pode faltar\""],
+        stories: ["Enquete: \"Você já separou suas roupas para viagem?\"", "Bastidores: mostrando combos/kits prontos.", "CTA: \"Arraste para ver os combos da semana\"."],
+        extra: "Conteúdo adaptado para cosméticos → \"Kit beleza pronta para viajar\" / Infantil → \"Conjuntinhos kids para férias\".",
+      },
+      {
+        semana: "Semana 2 (08 a 14/01/2027)", titulo: "Kits e Ação Social",
+        feed: ["Post: \"Traga sua peça usada e ganhe desconto na nova coleção\" (ação social)", "Reels: cliente montando look/kit de viagem."],
+        stories: ["Quiz: \"O que você levaria para a mala? Look praia ou look cidade?\"", "Depoimento/print: clientes participando da ação social.", "CTA: \"Escolha seu kit agora, estoque limitado\"."],
+      },
+      {
+        semana: "Semana 3 (15 a 21/01/2027)", titulo: "Aquecimento Sacola Premiada",
+        feed: ["Teaser post: \"Em breve: Sacola Premiada do Verão – quem arrisca, ganha!\"", "Reels: bastidores (sem mostrar o que tem dentro das sacolas)."],
+        stories: ["Contagem regressiva: \"Falta 3 dias para a Sacola Premiada\"", "Enquete: \"Você compraria uma sacola surpresa por R$50?\"", "Bastidores rápidos: sacolas sendo preparadas."],
+      },
+      {
+        semana: "Semana 4 (22 a 31/01/2027)", titulo: "Sacola Premiada do Verão",
+        feed: ["Post/Reels: \"Sacola Premiada já começou – quem garante a sua?\"", "Reels: cliente abrindo sacola premiada."],
+        stories: ["CTA: \"Últimas unidades da Sacola Premiada, arrasta pra garantir a sua agora\".", "Prova social: repost de clientes mostrando suas sacolas.", "Revelação: quem foi a sortuda da sacola premiada."],
+      },
+    ],
+    observacoes: {
+      liveSugerida: [
+        "Pode ser feita no dia do lançamento da Sacola Premiada, mostrando algumas sacolas (sem revelar todas).",
+        "Alternativa: Live de \"looks para viagem\" na primeira semana, com combos e kits.",
+      ],
+      adaptacaoNichos: [
+        { nicho: "Cosméticos", texto: "kits de skincare para viagem, sacola premiada com produtos surpresa." },
+        { nicho: "Infantil", texto: "conjuntos kids, sacola premiada kids." },
+        { nicho: "Acessórios", texto: "kits de bijoux/verão, sacola premiada de acessórios." },
+      ],
+      dicaFinal: "Não copie a ação pronta. Adapte: escolha a narrativa, ajuste os produtos e crie uma campanha que faça sentido para o seu público.",
+    },
+    posCampanha: null,
+    ideiasVideos: null,
+    referenciasVisuais: [
+      { label: "Inspiração 1 — TikTok", url: "https://www.tiktok.com/@licrochetoficial/video/7444942036161056055" },
+      { label: "Inspiração 2 — TikTok", url: "https://www.tiktok.com/@eduardanicaretta/video/7322113060557278469" },
+      { label: "Inspiração 3 — TikTok", url: "https://www.tiktok.com/@isab.cesario/video/7446134404570828038" },
+      { label: "Inspiração 4 — TikTok", url: "https://www.tiktok.com/@victoriaweitzel/video/7114058406507351301" },
+      { label: "Inspiração 5 — TikTok", url: "https://www.tiktok.com/@rjhennys/video/7239098254548389126" },
+    ],
+  },
+  ...Array.from({ length: 11 }, (_, i) => ({ mes: i + 1, nome: MESES_CALENDARIO[i + 1], pronto: false })),
+];
+
 const ACTIONS = [
   {
     id: "cabide-livre", nome: "Operação Cabide Livre", cat: "giro",
@@ -1689,6 +1830,165 @@ function RadarCard({ op, favorito, onToggleFavorito, onDefinirLembrete, onVerAco
   );
 }
 
+function CalendarioAnualScreen({ onVerAcoes }) {
+  const [mesAberto, setMesAberto] = useState(new Date().getMonth());
+  const dados = CALENDARIO_ANUAL.find((m) => m.mes === mesAberto);
+
+  return (
+    <div className="screen">
+      <div className="dash-header">
+        <div>
+          <span className="dash-ola">📅 Uma campanha pronta pra cada mês do ano</span>
+          <h1 className="dash-titulo">Calendário Anual</h1>
+        </div>
+      </div>
+
+      <div className="cal-anual-meses">
+        {CALENDARIO_ANUAL.map((m) => (
+          <button
+            key={m.mes}
+            className={`cal-anual-mes-btn ${mesAberto === m.mes ? "active" : ""} ${!m.pronto ? "vazio" : ""}`}
+            onClick={() => setMesAberto(m.mes)}
+          >
+            {m.nome}
+          </button>
+        ))}
+      </div>
+
+      {!dados?.pronto ? (
+        <div className="empty-state" style={{ maxWidth: 1160, margin: "20px auto", padding: "0 24px" }}>
+          <Calendar size={28} />
+          <p>A campanha de {MESES_CALENDARIO[mesAberto]} ainda não foi cadastrada. Assim que a Jéssica mandar o conteúdo, ela aparece aqui.</p>
+        </div>
+      ) : (
+        <div className="cal-anual-conteudo">
+          <div className="dtl-header" style={{ padding: "18px 0 6px" }}>
+            <h1 className="dtl-nome">Campanha {dados.nome}: {dados.campanhaTitulo}</h1>
+            <p className="dtl-desc">{dados.intro}</p>
+          </div>
+
+          <div className="dtl-section-card">
+            {dados.etapas.map((e, i) => (
+              <div key={i} style={{ marginBottom: i < dados.etapas.length - 1 ? 14 : 0 }}>
+                <span className="dash-datasiguais-eyebrow" style={{ display: "block", marginBottom: 4 }}>{e.titulo}</span>
+                <p className="acc-plain-text">{e.texto}</p>
+              </div>
+            ))}
+            <p className="canal-caption" style={{ marginTop: 12 }}>{dados.adaptavel}</p>
+          </div>
+
+          <Accordion title="Estratégia geral" icon={Target} defaultOpen>
+            <ul className="bullet-list">{dados.estrategiaGeral.map((s, i) => <li key={i}>{s}</li>)}</ul>
+          </Accordion>
+
+          <Accordion title="Objetivo por tema" icon={Check}>
+            {dados.objetivos.map((o, i) => (
+              <div key={i} style={{ marginBottom: i < dados.objetivos.length - 1 ? 12 : 0 }}>
+                <span className="msg-canal" style={{ display: "block", marginBottom: 4 }}>{o.tema}</span>
+                <ul className="bullet-list">{o.bullets.map((b, j) => <li key={j}>{b}</li>)}</ul>
+              </div>
+            ))}
+          </Accordion>
+
+          <div className="dtl-guia-title">Vamos executar</div>
+
+          <Accordion title="Preparação" icon={Gift} defaultOpen>
+            {dados.preparacao.map((p, i) => (
+              <div key={i} className="dtl-marco">
+                <span className="dtl-marco-titulo">{p.periodo}</span>
+                <ul className="bullet-list">{p.itens.map((it, j) => <li key={j}>{it}</li>)}</ul>
+              </div>
+            ))}
+          </Accordion>
+
+          <Accordion title="Ação de vendas" icon={TrendingUp}>
+            {dados.acaoDeVendas.map((a, i) => (
+              <div key={i} className="dtl-marco">
+                <span className="dtl-marco-titulo">{a.periodo}</span>
+                <ul className="bullet-list" style={{ marginBottom: a.sugestoes || a.sacolaDetalhe ? 10 : 0 }}>{a.bullets.map((b, j) => <li key={j}>{b}</li>)}</ul>
+
+                {a.sugestoes && a.sugestoes.map((s, j) => (
+                  <div key={j} className="exemplo-real-item" style={{ marginBottom: 8 }}>
+                    <span className="exemplo-real-titulo">{s.titulo}</span>
+                    <ul className="bullet-list">{s.bullets.map((b, k) => <li key={k}>{b}</li>)}</ul>
+                  </div>
+                ))}
+
+                {a.sacolaDetalhe && (
+                  <div className="exemplo-real-item">
+                    <span className="exemplo-real-titulo">{a.sacolaDetalhe.titulo}</span>
+                    <p className="acc-plain-text" style={{ marginBottom: 8 }}><i>{a.sacolaDetalhe.narrativa}</i></p>
+                    <span className="canal-row-label" style={{ display: "block", marginBottom: 4 }}>Como funciona</span>
+                    <ul className="bullet-list" style={{ marginBottom: 8 }}>{a.sacolaDetalhe.comoFunciona.map((b, k) => <li key={k}>{b}</li>)}</ul>
+                    <span className="canal-row-label" style={{ display: "block", marginBottom: 4 }}>Adaptação por nicho</span>
+                    <ul className="bullet-list" style={{ marginBottom: 8 }}>{a.sacolaDetalhe.adaptacao.map((b, k) => <li key={k}>{b}</li>)}</ul>
+                    <span className="canal-row-label" style={{ display: "block", marginBottom: 4 }}>Diferenciais</span>
+                    <ul className="bullet-list" style={{ marginBottom: 8 }}>{a.sacolaDetalhe.diferenciais.map((b, k) => <li key={k}>{b}</li>)}</ul>
+                    <span className="canal-row-label" style={{ display: "block", marginBottom: 4 }}>Sugestão de conteúdo</span>
+                    <ul className="bullet-list">{a.sacolaDetalhe.sugestaoConteudo.map((b, k) => <li key={k}>{b}</li>)}</ul>
+                  </div>
+                )}
+              </div>
+            ))}
+          </Accordion>
+
+          <div className="dtl-guia-title">Materiais de apoio</div>
+
+          <Accordion title="Calendário de conteúdo" icon={Radio} defaultOpen>
+            {dados.conteudo.map((c, i) => (
+              <div key={i} className="dtl-marco">
+                <span className="dtl-marco-titulo">{c.semana} — {c.titulo}</span>
+                <span className="canal-row-label" style={{ display: "block", marginBottom: 4 }}>Feed</span>
+                <ul className="bullet-list" style={{ marginBottom: 8 }}>{c.feed.map((f, j) => <li key={j}>{f}</li>)}</ul>
+                <span className="canal-row-label" style={{ display: "block", marginBottom: 4 }}>Stories</span>
+                <ul className="bullet-list">{c.stories.map((s, j) => <li key={j}>{s}</li>)}</ul>
+                {c.extra && <p className="canal-caption" style={{ marginTop: 8 }}>{c.extra}</p>}
+              </div>
+            ))}
+          </Accordion>
+
+          {dados.observacoes && (
+            <Accordion title="Observações e adaptação por nicho" icon={Lightbulb}>
+              <span className="canal-row-label" style={{ display: "block", marginBottom: 4 }}>Live sugerida</span>
+              <ul className="bullet-list" style={{ marginBottom: 10 }}>{dados.observacoes.liveSugerida.map((l, i) => <li key={i}>{l}</li>)}</ul>
+              <span className="canal-row-label" style={{ display: "block", marginBottom: 4 }}>Adaptação rápida para outros nichos</span>
+              <div className="nicho-examples" style={{ marginBottom: 10 }}>
+                {dados.observacoes.adaptacaoNichos.map((n, i) => (
+                  <div key={i} className="nicho-example-item">
+                    <span className="nicho-example-label">{n.nicho}</span>
+                    <span className="nicho-example-text">{n.texto}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="canal-caption">💡 {dados.observacoes.dicaFinal}</p>
+            </Accordion>
+          )}
+
+          {dados.referenciasVisuais && dados.referenciasVisuais.length > 0 && (
+            <Accordion title="Referências visuais e inspirações" icon={Sparkles}>
+              <p className="canal-caption" style={{ marginTop: 0, marginBottom: 10 }}>Vídeos de referência pra inspirar as alunas — não são conteúdo pronto, só ideia de formato e narrativa.</p>
+              <div className="dtl-relacionadas-grid" style={{ marginBottom: 0 }}>
+                {dados.referenciasVisuais.map((r, i) => (
+                  <a key={i} className="dtl-relacionada-card" href={r.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                    <span className="dtl-relacionada-nome">{r.label}</span>
+                    <span className="dtl-relacionada-tipo">Ver vídeo →</span>
+                  </a>
+                ))}
+              </div>
+            </Accordion>
+          )}
+
+          {(!dados.posCampanha || !dados.ideiasVideos) && (
+            <p className="canal-caption" style={{ maxWidth: 1160, margin: "12px auto 0", padding: "0 4px" }}>
+              Pós campanha e Ideias/vídeos ainda não foram cadastrados pra {dados.nome}.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function RadarOportunidades({ perfil, onSalvarLocalizacao, favoritos, onToggleFavorito, onDefinirLembrete, onVerAcoes, viewInicial }) {
   const hoje = new Date();
   const [radarMes, setRadarMes] = useState(hoje.getMonth());
@@ -2677,7 +2977,8 @@ function PerfilScreen({ onContinue, session }) {
 const NAV = [
   { id: "inicio", label: "Início", icon: Home },
   { id: "biblioteca", label: "Ações Comerciais", icon: BookOpen },
-  { id: "radar", label: "Radar", icon: Calendar },
+  { id: "calendario-anual", label: "Calendário Anual", icon: Calendar },
+  { id: "radar", label: "Radar", icon: MapPin },
   { id: "datas-iguais", label: "Datas Iguais", icon: Hash },
   { id: "favoritos", label: "Favoritos", icon: Heart },
   { id: "historico", label: "Histórico", icon: Clock },
@@ -3545,6 +3846,15 @@ export default function App() {
     }
     .radar-view-btn.active { background: var(--wine); border-color: var(--wine); color: #fff; }
 
+    .cal-anual-meses { display: flex; flex-wrap: wrap; gap: 6px; max-width: 1160px; margin: 16px auto 0; padding: 0 24px; }
+    .cal-anual-mes-btn {
+      background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-size: 12px;
+      color: var(--ink-soft); cursor: pointer; font-family: 'Work Sans', sans-serif; font-weight: 500;
+    }
+    .cal-anual-mes-btn.active { background: var(--wine); border-color: var(--wine); color: #fff; }
+    .cal-anual-mes-btn.vazio { opacity: 0.55; }
+    .cal-anual-conteudo { max-width: 1160px; margin: 0 auto 40px; padding: 0 24px; }
+
     .radar-datas-iguais-intro { max-width: 1040px; margin: 0 auto 12px; padding: 0 20px; font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
     .radar-destaque-10 { position: relative; margin-bottom: 4px; }
     .radar-destaque-10 .radar-card { border: 1.5px solid var(--mustard); box-shadow: 0 4px 16px rgba(184,145,47,0.18); }
@@ -4290,6 +4600,8 @@ export default function App() {
                   </>
                 )}
               </div>
+            ) : tab === "calendario-anual" ? (
+              <CalendarioAnualScreen onVerAcoes={verAcoesDoRadar} />
             ) : tab === "radar" ? (
               <RadarOportunidades
                 perfil={perfil}
