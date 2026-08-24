@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import {
   Search, Heart, Clock, Home, BookOpen, ArrowLeft, RefreshCw, Gift,
   Wallet, Truck, Package, Users,
@@ -1236,23 +1236,163 @@ const ACTIONS = [
     relacionadas: ["leve-mais-pague-menos", "pague-2-leve-3"],
   },
   {
-    id: "leve-mais-pague-menos", nome: "Leve Mais, Pague Menos", cat: "girar-estoque", nichos: ["Moda Feminina", "Moda Masculina"],
-    tipo: "Campanha de ticket médio",
-    sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Site ou Stories — a régua de quantidade funciona igual online.",
-    como: "Incentiva o cliente a adicionar mais produtos ao carrinho em troca de um benefício progressivo (ex: leve 2 e ganhe 10%, leve 3 e ganhe 15%).",
-    duracao: "3 a 7 dias",
+    id: "leve-mais-pague-menos", nome: "Desconto Progressivo", cat: "girar-estoque", nichos: ["Moda Feminina", "Moda Masculina"],
+    tipo: "Campanha de giro de estoque",
+    sugestoesNomes: ["Leve Mais, Pague Menos", "Renove o Guarda-Roupa", "Tchau, Inverno", "Mais Peças, Mais Benefícios", "Quanto Mais, Melhor", "Sua Seleção com Mais Vantagem"],
+    alternativaCanal: "Sem loja física? Troque o canal principal por Site ou Stories — a régua de peças funciona igual online.",
+    como: "Quanto mais peças a cliente leva, maior o desconto.",
+    duracao: "7 a 10 dias",
     canalPrincipal: "Loja física",
-    canaisApoio: ["Site", "Stories"],
-    objetivo: ["Aumentar o volume de peças vendidas por compra"],
-    quandoUsar: ["Produtos básicos e categorias onde o cliente costuma comprar mais de uma unidade"],
+    canaisApoio: ["Stories", "WhatsApp individual", "Grupo VIP", "Live de vendas", "Site"],
+    objetivo: ["Acelerar o giro sem colocar toda a coleção no mesmo desconto."],
+    quandoUsar: ["Troca de estação, fim de coleção ou excesso de estoque."],
     quandoEvitar: ["Com uma régua de desconto complexa demais pra equipe explicar no caixa"],
-    checklist: ["Definir as faixas de quantidade e desconto (ex: leve 2 → 10%, leve 3 → 15%, leve 4 → 20%)", "Treinar a equipe para explicar a régua no caixa"],
-    checklistExecucao: ["Equipe reforça a régua no momento do fechamento"],
-    planoDivulgacao: [{ marco: "Durante a campanha", itens: ["Reforçar a régua de quantidade em todos os canais de apoio"] }],
+    idealPara: ["troca de coleção", "mudança de estação", "excesso de estoque"],
+    mecanica: [
+      { pecas: "1 peça", desconto: "10% OFF" },
+      { pecas: "2 peças", desconto: "20% OFF" },
+      { pecas: "3 peças", desconto: "30% OFF" },
+    ],
+    checklist: [
+      "Escolher o nome da campanha",
+      "Definir os produtos que participarão",
+      "Definir as faixas de desconto",
+      "Definir a data de início",
+      "Definir a data de encerramento",
+      "Organizar os produtos participantes",
+      "Alinhar a equipe sobre a campanha",
+    ],
+    checklistExecucao: [],
+    planoDivulgacao: [],
+    jornadaDivulgacao: [
+      {
+        titulo: "Dia 1 — Antecipação",
+        objetivo: "Criar curiosidade e avisar as clientes que uma nova oportunidade está chegando.",
+        blocos: [
+          {
+            canal: "Stories",
+            itens: [
+              { rotulo: "Story 1 — Spoiler", texto: "Tem novidade chegando na loja nos próximos dias…", obs: "Mostrar um detalhe de uma peça ou uma cena da preparação da loja." },
+              { rotulo: "Story 2 — Criar curiosidade", texto: "E dessa vez tem uma condição especial para quem aproveitar para levar mais de uma peça." },
+              { rotulo: "Story 3 — Marcar a data", texto: "Anota aí: [DATA].\nVou liberar uma condição especial por aqui.", obs: "Usar o recurso de contagem regressiva do Instagram." },
+            ],
+          },
+          {
+            canal: "Reels",
+            itens: [
+              { rotulo: "Roteiro", texto: "Criar um Reels curto mostrando alguns produtos participantes, sem revelar toda a mecânica ainda.", obs: "Texto sugerido na tela: “Você vai querer saber o que acontece dia [DATA].” — Final: “Marca a data.”" },
+            ],
+          },
+          {
+            canal: "WhatsApp",
+            itens: [
+              { rotulo: "Mensagem pronta", texto: "Oi, [nome]! Passando para te avisar em primeira mão que dia [DATA] vou liberar uma condição especial aqui na loja para quem quiser aproveitar e levar mais peças.\n\nVou te contar tudo por aqui. Fica de olho porque vai valer a pena." },
+            ],
+          },
+        ],
+        checklist: ["Publicou o spoiler nos Stories", "Publicou o Reels de antecipação", "Colocou a contagem regressiva", "Enviou a mensagem para clientes"],
+      },
+      {
+        titulo: "Dia 2 — Antecipação",
+        objetivo: "Aumentar o desejo e mostrar os produtos que farão parte da ação. A comunicação começa a revelar mais, mas ainda sem transformar a campanha em uma simples comunicação de desconto.",
+        blocos: [
+          {
+            canal: "Stories",
+            itens: [
+              { rotulo: "Mostrar produtos e combinações", texto: "E se você pudesse levar esse look completo e ainda ter uma condição melhor?", obs: "Mostrar 2 ou 3 produtos participantes: Peça 1 + Peça 2 + Peça 3." },
+              { rotulo: "Fechamento do dia", texto: "Amanhã eu vou te mostrar como vai funcionar." },
+            ],
+          },
+          {
+            canal: "Reels",
+            itens: [
+              { rotulo: "Roteiro", texto: "Criar um Reels mostrando combinações de peças participantes.", obs: "Texto na tela: “3 peças que você provavelmente vai querer levar juntas.” — Final: “Amanhã começa.”" },
+            ],
+          },
+          {
+            canal: "WhatsApp",
+            itens: [
+              { rotulo: "Mensagem pronta (WhatsApp / Grupo VIP)", texto: "Amanhã começa uma condição especial aqui na loja.\n\nA ideia é você conseguir aproveitar melhor sua compra levando mais peças.\n\nJá separa suas favoritas porque amanhã eu vou liberar todos os detalhes." },
+            ],
+          },
+        ],
+        checklist: ["Mostrou produtos participantes", "Criou combinações", "Publicou o Reels", "Avisou o grupo/clientes", "Reforçou a data de início"],
+      },
+      {
+        titulo: "Dia 3 — Abertura da campanha",
+        objetivo: "Apresentar oficialmente o Desconto Progressivo. A comunicação não deve começar pelo desconto — primeiro mostrar produto, desejo e oportunidade, depois apresentar a condição.",
+        blocos: [
+          {
+            canal: "Stories",
+            itens: [
+              { rotulo: "Story 1 — Produto", texto: "Sabe aquela peça que você estava namorando?" },
+              { rotulo: "Story 2 — Combinação", texto: "Agora imagina levar as duas juntas…", obs: "Mostrar uma segunda peça." },
+              { rotulo: "Story 3 — Apresentação da campanha", texto: "Começou o nosso DESCONTO PROGRESSIVO." },
+              { rotulo: "Story 4 — Explicação visual (régua)", texto: "2 peças → 10% OFF\n3 peças → 20% OFF\n4+ peças → 30% OFF", obs: "Mostrar a régua de forma visual nos Stories." },
+              { rotulo: "Story 5 — Exemplo real", texto: "Quanto mais peças você escolhe, maior fica o seu benefício.", obs: "Montar um look completo com 3 ou 4 produtos." },
+              { rotulo: "Story 6 — CTA", texto: "Quer que eu monte algumas combinações para você? Me chama no direct." },
+            ],
+          },
+        ],
+        checklist: ["Publicou a sequência de Stories", "Mostrou os produtos", "Apresentou a campanha", "Mostrou a régua de desconto", "Publicou o CTA"],
+      },
+      {
+        titulo: "Durante a campanha",
+        objetivo: "A campanha não deve desaparecer depois do lançamento. O foco passa a ser gerar desejo pelos produtos e lembrar a cliente da oportunidade — sem repetir todo dia apenas “estamos com desconto”. Em vez disso, mostrar produtos e criar motivos para a cliente querer comprar mais.",
+        blocos: [
+          {
+            canal: "Reels",
+            itens: [
+              { rotulo: "Reels 1 — Look completo", texto: "Você levaria esse look completo?", obs: "Mostrar uma combinação com 3 peças. Final: “E ainda pode aproveitar o Desconto Progressivo.”" },
+              { rotulo: "Reels 2 — Uma peça, três combinações", texto: "Mostrar uma mesma peça combinada de três formas.", obs: "Final: “Agora imagina aproveitar mais de uma delas com o Desconto Progressivo.”" },
+              { rotulo: "Reels 3 — Produtos que combinam", texto: "3 peças que eu escolheria para montar um look completo.", obs: "Mostrar três peças que funcionam juntas. Final: “E sim, elas participam do nosso Desconto Progressivo.”" },
+              { rotulo: "Reels 4 — Objeção", texto: "Eu só queria comprar uma peça…", obs: "Depois mostrar mais duas combinações: “Mas aí você descobre que levando mais peças, seu desconto aumenta.”" },
+            ],
+          },
+          {
+            canal: "WhatsApp",
+            itens: [
+              { rotulo: "Mensagem pronta", texto: "Oi, [nome]! Lembrei de você porque selecionamos algumas peças que combinam muito com o seu estilo e estão participando do nosso Desconto Progressivo.\n\nSeparei algumas opções para te mostrar. Quer que eu te envie?", obs: "Não enviar a mesma mensagem para toda a base — relacione com os produtos de cada cliente e envie fotos ou vídeos das combinações depois." },
+            ],
+          },
+        ],
+        checklist: [
+          "Publicou conteúdo mostrando produtos",
+          "Criou combinações",
+          "Publicou Reels durante a campanha",
+          "Reforçou a oportunidade",
+          "Criou conteúdo para gerar desejo",
+          "Selecionou clientes para contato",
+          "Enviou mensagem",
+          "Enviou produtos/combinações",
+          "Continuou o atendimento com as interessadas",
+        ],
+      },
+      {
+        titulo: "Último dia — Urgência",
+        objetivo: "No último dia, mudar a comunicação.",
+        blocos: [
+          {
+            canal: "Stories",
+            itens: [
+              { rotulo: "Aviso", texto: "Último dia do Desconto Progressivo." },
+              { rotulo: "Reforço", texto: "Se você estava esperando para escolher algumas peças, hoje é o último dia para aproveitar essa condição.", obs: "Mostrar produtos novamente." },
+            ],
+          },
+          {
+            canal: "WhatsApp",
+            itens: [
+              { rotulo: "Mensagem pronta", texto: "Oi, [nome]! Passando para te avisar que hoje é o último dia do nosso Desconto Progressivo.\n\nSe você estava de olho em alguma peça, hoje é o último dia para aproveitar a condição. Quer que eu te mostre algumas opções?" },
+            ],
+          },
+        ],
+        checklist: ["Reforçou o último dia nos Stories", "Mostrou novamente os produtos", "Criou conteúdo de urgência", "Entrou em contato com clientes interessadas", "Enviou mensagem para oportunidades quentes"],
+      },
+    ],
     modelosMensagens: [],
-    ideiasStories: ["Mostrar a régua de forma visual (ex: 2 peças = 10%, 3 peças = 15%)"],
+    ideiasStories: [],
     dicas: "Funciona muito bem para produtos básicos e categorias onde o cliente costuma comprar mais de uma unidade.",
-    resultado: ["Mais itens por pedido", "Giro de estoque", "Ticket médio maior"],
+    resultado: ["+ Peças por venda", "Giro de estoque", "Ticket médio maior"],
     relacionadas: ["combo-inteligente", "pague-2-leve-3"],
   },
   {
@@ -1743,6 +1883,52 @@ function DtlChecklistGroup({ itens, checked, onToggle }) {
           <input type="checkbox" checked={!!checked[i]} onChange={() => onToggle(i)} />
           <span className={checked[i] ? "done" : ""}>{it}</span>
         </label>
+      ))}
+    </div>
+  );
+}
+
+const JORNADA_CANAL_ICON = { Stories: Radio, Reels: Film, WhatsApp: MessageCircle };
+
+function JornadaDivulgacao({ dias, checked, onToggle }) {
+  return (
+    <div className="dtl-jornada">
+      {dias.map((d, di) => (
+        <div className="dtl-jornada-dia" key={di}>
+          <span className="dtl-jornada-marker" />
+          <div className="dtl-jornada-titulo">{d.titulo}</div>
+          {d.objetivo && <p className="dtl-jornada-objetivo">{d.objetivo}</p>}
+
+          {d.blocos.map((b, bi) => {
+            const CanalIcon = JORNADA_CANAL_ICON[b.canal] || MessageCircle;
+            return (
+              <div className="dtl-jornada-canal" key={bi}>
+                <span className="dtl-jornada-canal-label"><CanalIcon size={12} /> {b.canal}</span>
+                {b.itens.map((it, ii) => (
+                  <div className="dtl-jornada-item" key={ii}>
+                    {it.rotulo && <span className="dtl-jornada-item-rotulo">{it.rotulo}</span>}
+                    <p className="dtl-jornada-item-texto">{it.texto}</p>
+                    {it.obs && <p className="dtl-jornada-item-obs">{it.obs}</p>}
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+
+          {d.checklist && d.checklist.length > 0 && (
+            <div className="checklist">
+              {d.checklist.map((c, ci) => {
+                const key = `${di}-${ci}`;
+                return (
+                  <label key={ci} className="checkitem">
+                    <input type="checkbox" checked={!!checked[key]} onChange={() => onToggle(key)} />
+                    <span className={checked[key] ? "done" : ""}>{c}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );
@@ -2284,7 +2470,9 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
     .map((id) => ACTIONS.find((a) => a.id === id))
     .filter(Boolean);
 
-  const totalDivulgacao = action.planoDivulgacao.reduce((s, m) => s + m.itens.length, 0);
+  const totalDivulgacao = action.jornadaDivulgacao && action.jornadaDivulgacao.length > 0
+    ? action.jornadaDivulgacao.reduce((s, d) => s + (d.checklist ? d.checklist.length : 0), 0)
+    : action.planoDivulgacao.reduce((s, m) => s + m.itens.length, 0);
   const totalTarefas = action.checklist.length + action.checklistExecucao.length + totalDivulgacao;
   const concluidas =
     Object.values(checkedPrep).filter(Boolean).length +
@@ -2304,13 +2492,55 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
 
       <div className="scroll">
         <div className="dtl-header">
-          <h1 className="dtl-nome">{action.nome}</h1>
-          <p className="dtl-desc">{action.como}</p>
-          <div className="dtl-chips">
-            <span className="dtl-chip"><Clock size={13} /> {action.duracao}</span>
-            <span className="dtl-chip"><Target size={13} /> {action.objetivoPrincipal || action.objetivo[0]}</span>
-            <span className="dtl-chip"><Icon size={13} /> {info.label}</span>
+          <div className="dtl-hero">
+            <div className="dtl-hero-main">
+              <span className="dtl-hero-badge"><Icon size={12} /> {info.label}</span>
+              <h1 className="dtl-nome">{action.nome}</h1>
+              <p className="dtl-desc">{action.como}</p>
+            </div>
+
+            {action.mecanica && action.mecanica.length > 0 && (
+              <div className="dtl-mecanica">
+                {action.mecanica.map((m, i) => (
+                  <Fragment key={i}>
+                    {i > 0 && <ChevronRight size={16} className="dtl-mecanica-arrow" />}
+                    <div className={`dtl-mecanica-card mec-${Math.min(i + 1, 3)}`}>
+                      <span className="mec-pecas">{m.pecas}</span>
+                      <span className="mec-pct">{m.desconto}</span>
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
+            )}
           </div>
+
+          <div className="dtl-quickinfo-grid">
+            <div className="dtl-quickinfo-card">
+              <span className="dtl-quickinfo-icon"><Clock size={16} /></span>
+              <div>
+                <div className="dtl-quickinfo-value">{action.duracao}</div>
+                <div className="dtl-quickinfo-label">Duração sugerida</div>
+              </div>
+            </div>
+            <div className="dtl-quickinfo-card">
+              <span className="dtl-quickinfo-icon"><Icon size={16} /></span>
+              <div>
+                <div className="dtl-quickinfo-value">{info.label}</div>
+                <div className="dtl-quickinfo-label">Objetivo</div>
+              </div>
+            </div>
+            <div className="dtl-quickinfo-card">
+              <span className="dtl-quickinfo-icon"><TrendingUp size={16} /></span>
+              <div>
+                <div className="dtl-quickinfo-value">{action.resultado[0]}</div>
+                <div className="dtl-quickinfo-label">Resultado principal</div>
+              </div>
+            </div>
+          </div>
+
+          {action.idealPara && action.idealPara.length > 0 && (
+            <p className="dtl-quickinfo-caption">Ideal para: {action.idealPara.join(" · ")}</p>
+          )}
         </div>
 
         <div className="dtl-section-card">
@@ -2393,7 +2623,15 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
             </Accordion>
           )}
 
-          {action.planoDivulgacao.length > 0 && (
+          {action.jornadaDivulgacao && action.jornadaDivulgacao.length > 0 ? (
+            <Accordion title="3 · Divulgação">
+              <JornadaDivulgacao
+                dias={action.jornadaDivulgacao}
+                checked={checkedDiv}
+                onToggle={(key) => setCheckedDiv((s) => ({ ...s, [key]: !s[key] }))}
+              />
+            </Accordion>
+          ) : action.planoDivulgacao.length > 0 ? (
             <Accordion title="3 · Divulgação">
               {action.planoDivulgacao.map((p, pi) => (
                 <div key={pi} className="dtl-marco">
@@ -2412,7 +2650,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
                 </div>
               ))}
             </Accordion>
-          )}
+          ) : null}
         </div>
 
         {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData || action.materiaisNecessarios || action.templateVisual || action.exemplosReais) && (
@@ -3915,6 +4153,70 @@ export default function App() {
       border-radius: 999px; padding: 6px 12px; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 500; color: var(--ink);
     }
     .dtl-chip svg { color: var(--wine); flex-shrink: 0; }
+
+    /* ---- HERO: mecânica em destaque + informações rápidas ---- */
+    .dtl-hero { display: flex; flex-direction: column; gap: 16px; }
+    @media (min-width: 760px) {
+      .dtl-hero { flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 28px; }
+      .dtl-hero-main { flex: 1; min-width: 0; }
+    }
+    .dtl-hero-badge {
+      display: inline-flex; align-items: center; gap: 6px; background: var(--paper); border: 1px solid var(--line);
+      border-radius: 999px; padding: 5px 12px; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 10.5px;
+      text-transform: uppercase; letter-spacing: 0.05em; color: var(--wine); margin-bottom: 10px;
+    }
+    .dtl-hero-badge svg { color: var(--wine); }
+
+    .dtl-mecanica { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; }
+    .dtl-mecanica-card {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+      background: var(--card); border: 1.5px solid var(--line); border-radius: 14px;
+      padding: 12px 14px; min-width: 74px; text-align: center;
+      box-shadow: 0 2px 8px rgba(20,63,53,0.05);
+    }
+    .dtl-mecanica-card .mec-pecas { font-family: 'Manrope', sans-serif; font-size: 10px; font-weight: 600; color: var(--ink-soft); }
+    .dtl-mecanica-card .mec-pct { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; line-height: 1.2; }
+    .dtl-mecanica-card.mec-1 { border-color: #D3E8DD; }
+    .dtl-mecanica-card.mec-1 .mec-pct { color: var(--wine); }
+    .dtl-mecanica-card.mec-2 { border-color: #BFDBCB; background: linear-gradient(180deg, #FBFDFC, #FFFFFF); }
+    .dtl-mecanica-card.mec-2 .mec-pct { color: #3E7A5C; }
+    .dtl-mecanica-card.mec-3 { border-color: #E9D9A8; background: linear-gradient(180deg, #FFFDF7, #FFFFFF); }
+    .dtl-mecanica-card.mec-3 .mec-pct { color: #B8912F; }
+    .dtl-mecanica-arrow { color: var(--ink-soft); opacity: 0.45; flex-shrink: 0; }
+
+    .dtl-quickinfo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 18px; }
+    .dtl-quickinfo-card {
+      display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 12px 14px; box-shadow: 0 2px 8px rgba(20,63,53,0.04);
+    }
+    .dtl-quickinfo-icon {
+      flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; background: var(--paper);
+      display: flex; align-items: center; justify-content: center; color: var(--wine);
+    }
+    .dtl-quickinfo-value { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--ink); line-height: 1.3; }
+    .dtl-quickinfo-label { font-size: 10.5px; color: var(--ink-soft); margin-top: 1px; }
+    .dtl-quickinfo-caption { font-size: 12px; color: var(--ink-soft); margin: 12px 2px 0; }
+
+    /* ---- Jornada cronológica de divulgação ---- */
+    .dtl-jornada { display: flex; flex-direction: column; }
+    .dtl-jornada-dia { position: relative; padding: 0 0 22px 20px; border-left: 2px solid var(--line); }
+    .dtl-jornada-dia:last-child { border-left-color: transparent; padding-bottom: 2px; }
+    .dtl-jornada-marker {
+      position: absolute; left: -6px; top: 2px; width: 11px; height: 11px; border-radius: 50%;
+      background: var(--wine); border: 2px solid var(--card);
+    }
+    .dtl-jornada-titulo { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 13.5px; color: var(--ink); margin-bottom: 3px; }
+    .dtl-jornada-objetivo { font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 10px; }
+    .dtl-jornada-canal { margin-bottom: 10px; }
+    .dtl-jornada-canal-label {
+      display: inline-flex; align-items: center; gap: 5px; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--wine); margin-bottom: 6px;
+    }
+    .dtl-jornada-item { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; }
+    .dtl-jornada-item:last-child { margin-bottom: 0; }
+    .dtl-jornada-item-rotulo { display: block; font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+    .dtl-jornada-item-texto { margin: 0; font-size: 13px; line-height: 1.5; color: var(--ink); font-style: italic; white-space: pre-line; }
+    .dtl-jornada-item-obs { margin: 4px 0 0; font-size: 11.5px; line-height: 1.45; color: var(--ink-soft); }
 
     .dtl-section-card {
       background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
