@@ -11,21 +11,23 @@ import {
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
 const CATS = [
-  { id: "giro", label: "Promoções e Giro de Estoque", icon: RefreshCw },
-  { id: "brindes", label: "Brindes e Incentivos", icon: Gift },
-  { id: "cashback", label: "Cashback e Fidelização", icon: Wallet },
-  { id: "frete", label: "Fretes Estratégicos", icon: Truck },
-  { id: "combos", label: "Combos e Ticket Médio", icon: Package },
-  { id: "indicacao", label: "Indicação e Aquisição de Clientes", icon: Users },
-  { id: "vip", label: "Experiências VIP", icon: Crown },
-  { id: "diferenciais", label: "Diferenciais Permanentes", icon: Star },
-  { id: "emocional", label: "Campanhas Emocionais", icon: Sparkles },
-  { id: "datas", label: "Datas Comemorativas", icon: Calendar },
-  { id: "lancamentos", label: "Lançamentos de Coleção", icon: Rocket },
-  { id: "engajamento", label: "Engajamento (Stories)", icon: Target },
+  { id: "girar-estoque", label: "Girar Estoque", icon: RefreshCw },
+  { id: "ticket-medio", label: "Aumentar Ticket Médio", icon: Package },
+  { id: "vendas-rapidas", label: "Gerar Vendas Rápidas", icon: Rocket },
+  { id: "recorrencia", label: "Recorrência e Fidelização", icon: Wallet },
+  { id: "novas-clientes", label: "Atrair Novas Clientes", icon: UserPlus },
+  { id: "experiencia-compra", label: "Criar Experiência de Compra", icon: Crown },
 ];
 
-const CANAIS = [
+// Sem classificação: usado apenas como fallback visual para ações que ainda não
+// se encaixam com clareza em nenhum dos 6 objetivos (ver seção 5 do briefing de reorganização).
+// Não aparece como opção em "Explorar por objetivo".
+const SEM_CLASSIFICACAO = { id: null, label: "Sem classificação", icon: AlertTriangle };
+
+// Ícones de canal para qualquer label que apareça em canalPrincipal, canaisApoio ou
+// alternativaCanal — inclui canais legados que ainda podem existir no texto das ações.
+// Não confundir com CANAIS abaixo, que é a lista fixa usada em "Explorar por canal".
+const CANAL_ICONS = [
   { label: "Stories", icon: Radio },
   { label: "Reels", icon: Film },
   { label: "Feed", icon: LayoutGrid },
@@ -38,6 +40,16 @@ const CANAIS = [
   { label: "Site", icon: Globe },
   { label: "Clientes inativos", icon: UserMinus },
   { label: "Clientes que ainda não compraram", icon: UserPlus },
+];
+
+// Canais fixos — únicos usados em "Explorar por canal" (menu, contagem e filtro).
+const CANAIS = [
+  { label: "Stories", icon: Radio },
+  { label: "Loja física", icon: Store },
+  { label: "Grupo VIP", icon: Crown },
+  { label: "Live de vendas", icon: Video },
+  { label: "Site", icon: Globe },
+  { label: "WhatsApp individual", icon: MessageCircle },
 ];
 
 const NICHOS = [
@@ -66,26 +78,18 @@ const NICHO_GRUPOS = [
 ];
 
 const KEYWORD_MAP = [
-  { termos: ["girar estoque", "estoque parado", "produto parado", "produtos parados", "giro"], tipo: "cat", valor: "giro" },
-  { termos: ["promoção", "promocao", "promo"], tipo: "cat", valor: "giro" },
-  { termos: ["brinde", "brindes"], tipo: "cat", valor: "brindes" },
-  { termos: ["fideliz", "cliente antigo", "clientes antigos", "reativar"], tipo: "cat", valor: "cashback" },
-  { termos: ["cashback"], tipo: "cat", valor: "cashback" },
-  { termos: ["frete"], tipo: "cat", valor: "frete" },
-  { termos: ["ticket médio", "ticket medio", "aumentar ticket", "combo"], tipo: "cat", valor: "combos" },
-  { termos: ["captação", "captacao", "cliente novo", "clientes novos", "novos clientes", "indicação", "indicacao"], tipo: "cat", valor: "indicacao" },
-  { termos: ["vip", "experiência vip", "experiencia vip"], tipo: "cat", valor: "vip" },
-  { termos: ["emocional", "autoestima"], tipo: "cat", valor: "emocional" },
-  { termos: ["data comemorativa", "datas comemorativas"], tipo: "cat", valor: "datas" },
-  { termos: ["lançamento", "lancamento", "nova coleção", "nova colecao"], tipo: "cat", valor: "lancamentos" },
-  { termos: ["engajamento", "enquete", "jogo"], tipo: "cat", valor: "engajamento" },
+  { termos: ["girar estoque", "estoque parado", "produto parado", "produtos parados", "giro", "promoção", "promocao", "promo", "liquidação", "liquidacao"], tipo: "cat", valor: "girar-estoque" },
+  { termos: ["ticket médio", "ticket medio", "aumentar ticket", "combo", "brinde", "brindes"], tipo: "cat", valor: "ticket-medio" },
+  { termos: ["venda rápida", "vendas rápidas", "venda rapida", "vendas rapidas", "relâmpago", "relampago", "urgência", "urgencia", "pico de vendas"], tipo: "cat", valor: "vendas-rapidas" },
+  { termos: ["fideliz", "cliente antigo", "clientes antigos", "reativar", "cashback", "recorrência", "recorrencia", "segunda compra"], tipo: "cat", valor: "recorrencia" },
+  { termos: ["captação", "captacao", "cliente novo", "clientes novos", "novos clientes", "indicação", "indicacao", "atrair clientes"], tipo: "cat", valor: "novas-clientes" },
+  { termos: ["experiência", "experiencia", "vip", "exclusivo", "exclusividade"], tipo: "cat", valor: "experiencia-compra" },
   { termos: ["stories", "instagram", "reels"], tipo: "canal", valor: "Stories" },
   { termos: ["whatsapp individual", "whatsapp"], tipo: "canal", valor: "WhatsApp individual" },
-  { termos: ["status"], tipo: "canal", valor: "Status do WhatsApp" },
-  { termos: ["lista de transmissão", "lista de transmissao"], tipo: "canal", valor: "Lista de transmissão" },
   { termos: ["grupo vip"], tipo: "canal", valor: "Grupo VIP" },
   { termos: ["loja física", "loja fisica", "presencial"], tipo: "canal", valor: "Loja física" },
   { termos: ["site", "e-commerce", "ecommerce"], tipo: "canal", valor: "Site" },
+  { termos: ["live", "live de vendas", "transmissão ao vivo", "transmissao ao vivo"], tipo: "canal", valor: "Live de vendas" },
 ];
 
 function buscaInteligente(query) {
@@ -382,8 +386,8 @@ function computeDiagnostico(respostas) {
   return { indice, faixaCurta: faixa.curta, faixaTexto: faixa.texto, alertas, qualificado, faturamentoLabel };
 }
 
-const catInfo = (id) => CATS.find((c) => c.id === id) || CATS[0];
-const canalInfo = (label) => CANAIS.find((c) => c.label === label) || CANAIS[0];
+const catInfo = (id) => CATS.find((c) => c.id === id) || SEM_CLASSIFICACAO;
+const canalInfo = (label) => CANAL_ICONS.find((c) => c.label === label) || CANAL_ICONS[0];
 
 // --- Radar de Oportunidades ---
 const UFS_BR = [
@@ -779,7 +783,7 @@ const CALENDARIO_ANUAL = [
 
 const ACTIONS = [
   {
-    id: "cabide-livre", nome: "Operação Cabide Livre", cat: "giro",
+    id: "cabide-livre", nome: "Operação Cabide Livre", cat: "girar-estoque",
     nichos: ["Moda Feminina", "Moda Masculina", "Moda Fitness", "Moda Plus Size", "Infantil", "Moda Evangélica"],
     tipo: "Campanha de giro de estoque",
     sugestoesNomes: ["Limpa-Arara", "Semana da Renovação", "Giro Inteligente", "Última Chance", "Renovação de Estoque"],
@@ -822,7 +826,7 @@ const ACTIONS = [
     relacionadas: ["pague-2-leve-3", "comprou-ganhou-stories", "dia-do-frete-especial"],
   },
   {
-    id: "comprou-ganhou", nome: "Comprou, Ganhou", cat: "brindes", nichos: ["Geral"],
+    id: "comprou-ganhou", nome: "Comprou, Ganhou", cat: "vendas-rapidas", nichos: ["Geral"],
     tipo: "Campanha completa de brindes",
     sugestoesNomes: [],
     objetivoPrincipal: "Aumentar a conversão e gerar mais vendas através de um benefício exclusivo.",
@@ -922,7 +926,7 @@ const ACTIONS = [
     relacionadas: ["comprou-ganhou-stories", "comprou-ganhou-vip", "desbloqueie-brindes", "cashback-inteligente", "frete-gratis-relampago", "combo-inteligente"],
   },
   {
-    id: "comprou-ganhou-stories", nome: "Comprou, Ganhou Express (Stories)", cat: "brindes", nichos: ["Geral"],
+    id: "comprou-ganhou-stories", nome: "Comprou, Ganhou Express (Stories)", cat: "vendas-rapidas", nichos: ["Geral"],
     tipo: "Ação relâmpago de 1 dia",
     sugestoesNomes: [], alternativaCanal: null,
     objetivoPrincipal: "Gerar um pico imediato de vendas utilizando urgência e escassez.",
@@ -962,7 +966,7 @@ const ACTIONS = [
     relacionadas: ["comprou-ganhou", "comprou-ganhou-vip", "desbloqueie-brindes", "frete-gratis-relampago", "cashback-relampago-vip"],
   },
   {
-    id: "comprou-ganhou-vip", nome: "Comprou, Ganhou Express (Grupo VIP)", cat: "brindes", nichos: ["Geral"],
+    id: "comprou-ganhou-vip", nome: "Comprou, Ganhou Express (Grupo VIP)", cat: "vendas-rapidas", nichos: ["Geral"],
     tipo: "Ação relâmpago exclusiva para o grupo",
     sugestoesNomes: [], alternativaCanal: null,
     objetivoPrincipal: "Gerar um pico imediato de vendas e fortalecer o Grupo VIP da loja.",
@@ -1005,7 +1009,7 @@ const ACTIONS = [
     relacionadas: ["comprou-ganhou", "comprou-ganhou-stories", "desbloqueie-brindes", "cashback-relampago-vip", "frete-gratis-relampago", "preview-nova-colecao"],
   },
   {
-    id: "desbloqueie-brindes", nome: "Desbloqueando Brindes", cat: "brindes", nichos: ["Geral"],
+    id: "desbloqueie-brindes", nome: "Desbloqueando Brindes", cat: "ticket-medio", nichos: ["Geral"],
     tipo: "Compre mais, conquiste mais.",
     sugestoesNomes: [],
     objetivoPrincipal: "Aumentar o ticket médio através de brindes progressivos.",
@@ -1053,7 +1057,7 @@ const ACTIONS = [
     relacionadas: ["comprou-ganhou", "comprou-ganhou-stories", "comprou-ganhou-vip", "combo-inteligente", "leve-mais-pague-menos", "cashback-inteligente"],
   },
   {
-    id: "cashback-inteligente", nome: "Cashback Inteligente", cat: "cashback", nichos: ["Geral"],
+    id: "cashback-inteligente", nome: "Cashback Inteligente", cat: "recorrencia", nichos: ["Geral"],
     tipo: "Campanha de recorrência programada",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Em vez de dar desconto imediato, a loja entrega um crédito que pode ser usado numa próxima compra, aumentando a recorrência e reduzindo a dependência de promoções frequentes. Pode ser feita em loja física ou site.",
@@ -1081,7 +1085,7 @@ const ACTIONS = [
     relacionadas: ["cashback-relampago-vip", "cashback-permanente"],
   },
   {
-    id: "cashback-relampago-vip", nome: "Cashback Relâmpago (Grupo VIP)", cat: "cashback", nichos: ["Geral"],
+    id: "cashback-relampago-vip", nome: "Cashback Relâmpago (Grupo VIP)", cat: "vendas-rapidas", nichos: ["Geral"],
     tipo: "Ação relâmpago de exclusividade",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Gera vendas rápidas dentro do Grupo VIP oferecendo cashback por tempo limitado.",
@@ -1105,7 +1109,7 @@ const ACTIONS = [
     relacionadas: ["cashback-inteligente", "clube-secreto"],
   },
   {
-    id: "cashback-permanente", nome: "Cashback Permanente (Programa de Fidelidade)", cat: "cashback", nichos: ["Geral"],
+    id: "cashback-permanente", nome: "Cashback Permanente (Programa de Fidelidade)", cat: "recorrencia", nichos: ["Geral"],
     tipo: "Programa permanente, não é campanha",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Um benefício contínuo da loja: toda compra gera um crédito para ser usado nas próximas compras. Não é campanha, é diferencial permanente da marca.",
@@ -1125,7 +1129,7 @@ const ACTIONS = [
     relacionadas: ["cashback-inteligente", "cliente-indica-ganha"],
   },
   {
-    id: "frete-gratis-relampago", nome: "Frete Grátis Relâmpago", cat: "frete", nichos: ["Geral"],
+    id: "frete-gratis-relampago", nome: "Frete Grátis Relâmpago", cat: "vendas-rapidas", nichos: ["Geral"],
     tipo: "Ação relâmpago de 1 dia",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Gera um pico de vendas oferecendo frete gratuito durante um período curto. O canal principal pode ser Stories ou Grupo VIP — escolha só um, pra não diluir a comunicação.",
@@ -1148,7 +1152,7 @@ const ACTIONS = [
     relacionadas: ["frete-valor-minimo", "dia-do-frete-especial"],
   },
   {
-    id: "frete-valor-minimo", nome: "Frete Grátis por Valor Mínimo", cat: "frete", nichos: ["Geral"],
+    id: "frete-valor-minimo", nome: "Frete Grátis por Valor Mínimo", cat: "ticket-medio", nichos: ["Geral"],
     tipo: "Estratégia permanente ou campanha de ticket médio",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Oferece frete grátis apenas para compras acima de um valor definido, incentivando o cliente a completar a compra.",
@@ -1168,7 +1172,7 @@ const ACTIONS = [
     relacionadas: ["frete-fixo-inteligente", "leve-mais-pague-menos"],
   },
   {
-    id: "frete-fixo-inteligente", nome: "Frete Fixo Inteligente", cat: "frete", nichos: ["Geral"],
+    id: "frete-fixo-inteligente", nome: "Frete Fixo Inteligente", cat: "recorrencia", nichos: ["Geral"],
     tipo: "Diferencial permanente",
     sugestoesNomes: [], alternativaCanal: null,
     como: "O cliente sempre sabe quanto vai pagar de frete, eliminando a objeção do frete caro.",
@@ -1188,7 +1192,7 @@ const ACTIONS = [
     relacionadas: ["frete-valor-minimo", "dia-do-frete-especial"],
   },
   {
-    id: "dia-do-frete-especial", nome: "Dia do Frete Especial", cat: "frete", nichos: ["Geral"],
+    id: "dia-do-frete-especial", nome: "Dia do Frete Especial", cat: "recorrencia", nichos: ["Geral"],
     tipo: "Campanha recorrente semanal",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Uma campanha recorrente em um dia fixo da semana, criando hábito de compra e concentrando vendas nos dias de menor movimento.",
@@ -1212,7 +1216,7 @@ const ACTIONS = [
     relacionadas: ["frete-gratis-relampago", "frete-fixo-inteligente"],
   },
   {
-    id: "combo-inteligente", nome: "Combo Inteligente", cat: "combos", nichos: ["Geral"],
+    id: "combo-inteligente", nome: "Combo Inteligente", cat: "ticket-medio", nichos: ["Geral"],
     tipo: "Estratégia permanente de ticket médio",
     sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Site ou Stories — o restante da estrutura continua igual.",
     como: "Reúne produtos complementares em uma única oferta fixa da loja, facilitando a decisão de compra e aumentando o ticket médio.",
@@ -1232,7 +1236,7 @@ const ACTIONS = [
     relacionadas: ["leve-mais-pague-menos", "pague-2-leve-3"],
   },
   {
-    id: "leve-mais-pague-menos", nome: "Leve Mais, Pague Menos", cat: "combos", nichos: ["Moda Feminina", "Moda Masculina"],
+    id: "leve-mais-pague-menos", nome: "Leve Mais, Pague Menos", cat: "girar-estoque", nichos: ["Moda Feminina", "Moda Masculina"],
     tipo: "Campanha de ticket médio",
     sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Site ou Stories — a régua de quantidade funciona igual online.",
     como: "Incentiva o cliente a adicionar mais produtos ao carrinho em troca de um benefício progressivo (ex: leve 2 e ganhe 10%, leve 3 e ganhe 15%).",
@@ -1252,7 +1256,7 @@ const ACTIONS = [
     relacionadas: ["combo-inteligente", "pague-2-leve-3"],
   },
   {
-    id: "pague-2-leve-3", nome: "Pague 2, Leve 3", cat: "combos", nichos: ["Geral"],
+    id: "pague-2-leve-3", nome: "Pague 2, Leve 3", cat: "girar-estoque", nichos: ["Geral"],
     tipo: "Mecânica promocional clássica",
     sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Stories ou Grupo VIP — a mecânica continua a mesma.",
     como: "Na compra de 2 peças participantes, a terceira é por conta da loja — elimina estoque específico e aumenta o volume vendido.",
@@ -1272,7 +1276,7 @@ const ACTIONS = [
     relacionadas: ["combo-inteligente", "cabide-livre"],
   },
   {
-    id: "cliente-indica-ganha", nome: "Cliente Indica, Cliente Ganha", cat: "indicacao", nichos: ["Geral"],
+    id: "cliente-indica-ganha", nome: "Cliente Indica, Cliente Ganha", cat: "novas-clientes", nichos: ["Geral"],
     tipo: "Programa permanente de indicação",
     sugestoesNomes: [], alternativaCanal: "Sem loja física? O pós-venda pode acontecer inteiro por WhatsApp — o cartão ou QR code vai junto com a embalagem do envio.",
     como: "Após a compra, a cliente recebe um benefício para indicar uma amiga; quando a nova cliente compra pela primeira vez, ambas recebem uma recompensa.",
@@ -1292,7 +1296,7 @@ const ACTIONS = [
     relacionadas: ["convide-uma-amiga", "cashback-permanente"],
   },
   {
-    id: "convide-uma-amiga", nome: "Convide uma Amiga", cat: "indicacao", nichos: ["Geral"],
+    id: "convide-uma-amiga", nome: "Convide uma Amiga", cat: "novas-clientes", nichos: ["Geral"],
     tipo: "Campanha de data específica",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Diferente do programa permanente, essa acontece em datas específicas (Dia do Amigo, Dia das Mães, aniversário da loja, Black Friday VIP).",
@@ -1312,7 +1316,7 @@ const ACTIONS = [
     relacionadas: ["cliente-indica-ganha"],
   },
   {
-    id: "clube-presente", nome: "Clube Presente", cat: "indicacao", nichos: ["Infantil", "Geral"],
+    id: "clube-presente", nome: "Clube Presente", cat: "novas-clientes", nichos: ["Infantil", "Geral"],
     tipo: "Programa de lista de presentes",
     sugestoesNomes: [], alternativaCanal: null,
     como: "A loja cria uma lista de presentes para o aniversariante; os convidados compram diretamente dessa lista. Excelente para lojas infantis, mas pode ser adaptado.",
@@ -1332,7 +1336,7 @@ const ACTIONS = [
     relacionadas: ["cliente-indica-ganha"],
   },
   {
-    id: "closet-exclusivo", nome: "Closet Exclusivo", cat: "vip", nichos: ["Geral"],
+    id: "closet-exclusivo", nome: "Closet Exclusivo", cat: "experiencia-compra", nichos: ["Geral"],
     tipo: "Experiência VIP presencial",
     sugestoesNomes: [], alternativaCanal: null,
     como: "A loja fecha um horário exclusivo para poucas clientes conhecerem uma coleção antes do público, com experiência completa (espumante, café, doces, consultoria de looks, fotos, atendimento exclusivo).",
@@ -1352,7 +1356,7 @@ const ACTIONS = [
     relacionadas: ["preview-nova-colecao", "clube-secreto"],
   },
   {
-    id: "preview-nova-colecao", nome: "Preview da Nova Coleção", cat: "lancamentos", nichos: ["Geral"],
+    id: "preview-nova-colecao", nome: "Preview da Nova Coleção", cat: "experiencia-compra", nichos: ["Geral"],
     tipo: "Acesso antecipado VIP",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Clientes selecionadas compram antes da coleção chegar oficialmente ao público.",
@@ -1372,7 +1376,7 @@ const ACTIONS = [
     relacionadas: ["closet-exclusivo", "clube-secreto"],
   },
   {
-    id: "merecimento", nome: "Semana do Merecimento", cat: "emocional", nichos: ["Geral"],
+    id: "merecimento", nome: "Semana do Merecimento", cat: "experiencia-compra", nichos: ["Geral"],
     tipo: "Campanha emocional",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Ativa a compra por motivação pessoal (autocuidado, merecimento), sem depender de desconto agressivo. A mesma lógica funciona com outros temas: 'Dia de se Escolher', 'Projeto Autoestima', 'Semana da Mulher Real', 'Você Primeiro'.",
@@ -1395,7 +1399,7 @@ const ACTIONS = [
     relacionadas: ["closet-exclusivo"],
   },
   {
-    id: "estacionamento-conveniado", nome: "Estacionamento Conveniado", cat: "diferenciais", nichos: ["Geral"],
+    id: "estacionamento-conveniado", nome: "Estacionamento Conveniado", cat: "recorrencia", nichos: ["Geral"],
     tipo: "Diferencial permanente",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Elimina objeções relacionadas a deslocamento e conforto, oferecendo estacionamento gratuito, com desconto ou validação do ticket.",
@@ -1415,7 +1419,7 @@ const ACTIONS = [
     relacionadas: ["ajuste-perfeito", "parcelamento-vip-diferencial"],
   },
   {
-    id: "ajuste-perfeito", nome: "Ajuste Perfeito", cat: "diferenciais", nichos: ["Geral"],
+    id: "ajuste-perfeito", nome: "Ajuste Perfeito", cat: "recorrencia", nichos: ["Geral"],
     tipo: "Diferencial permanente (parceria com costureira)",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Aumenta a segurança na compra oferecendo pequenos ajustes gratuitos (barra, cintura) em compras acima de determinado valor.",
@@ -1435,7 +1439,7 @@ const ACTIONS = [
     relacionadas: ["estacionamento-conveniado"],
   },
   {
-    id: "parcelamento-vip-diferencial", nome: "Parcelamento VIP", cat: "diferenciais", nichos: ["Geral"],
+    id: "parcelamento-vip-diferencial", nome: "Parcelamento VIP", cat: "recorrencia", nichos: ["Geral"],
     tipo: "Diferencial comercial permanente",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Facilita compras de maior valor com mais parcelas, entrada facilitada ou parcelamento exclusivo pra clientes VIP.",
@@ -1455,7 +1459,7 @@ const ACTIONS = [
     relacionadas: ["estacionamento-conveniado", "ajuste-perfeito"],
   },
   {
-    id: "clube-secreto", nome: "Clube Secreto — Portas Abertas", cat: "vip", nichos: ["Geral"],
+    id: "clube-secreto", nome: "Clube Secreto — Portas Abertas", cat: "experiencia-compra", nichos: ["Geral"],
     tipo: "Campanha para grupo fechado de WhatsApp",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Acesso a ofertas exclusivas dentro de um grupo fechado, construindo relacionamento direto e recorrente fora do Instagram.",
@@ -1475,7 +1479,7 @@ const ACTIONS = [
     relacionadas: ["closet-exclusivo", "preview-nova-colecao"],
   },
   {
-    id: "story-batalha", nome: "Story Interativo — Batalha de Estilos", cat: "engajamento", nichos: ["Geral"],
+    id: "story-batalha", nome: "Story Interativo — Batalha de Estilos", cat: "vendas-rapidas", nichos: ["Geral"],
     tipo: "Enquete de 4 opções",
     templateVisual: { label: "Modelo pronto no Canva", url: "https://canva.link/pk7hu5wbrrx8lhl" },
     sugestoesNomes: [], alternativaCanal: null,
@@ -1512,7 +1516,7 @@ const ACTIONS = [
     },
   },
   {
-    id: "story-presente", nome: "Story Interativo — Escolha seu Presente", cat: "engajamento", nichos: ["Geral"],
+    id: "story-presente", nome: "Story Interativo — Escolha seu Presente", cat: "vendas-rapidas", nichos: ["Geral"],
     tipo: "Jogo de emojis ou números",
     templateVisual: { label: "Modelo pronto no Canva", url: "https://canva.link/pk7hu5wbrrx8lhl" },
     sugestoesNomes: [], alternativaCanal: null,
@@ -1538,7 +1542,7 @@ const ACTIONS = [
     relacionadas: ["story-batalha", "story-caca-palavras"],
   },
   {
-    id: "story-caca-palavras", nome: "Story Interativo — Caça-Palavras", cat: "engajamento", nichos: ["Geral"],
+    id: "story-caca-palavras", nome: "Story Interativo — Caça-Palavras", cat: "vendas-rapidas", nichos: ["Geral"],
     tipo: "Desafio de atenção",
     templateVisual: { label: "Modelo pronto no Canva", url: "https://canva.link/pk7hu5wbrrx8lhl" },
     sugestoesNomes: [], alternativaCanal: null,
@@ -1564,7 +1568,7 @@ const ACTIONS = [
     relacionadas: ["story-batalha", "story-presente"],
   },
   {
-    id: "sacola-premiada", nome: "Sacola Premiada", cat: "brindes",
+    id: "sacola-premiada", nome: "Sacola Premiada", cat: "vendas-rapidas",
     nichos: ["Chimarrão", "Acessórios", "Cosméticos / Skincare"],
     tipo: "Campanha de compra por impulso e surpresa",
     sugestoesNomes: [],
@@ -3173,7 +3177,7 @@ export default function App() {
   const buscaKw = search.trim() ? buscaInteligente(search) : { cats: new Set(), canais: new Set() };
   const filtered = ACTIONS.filter((a) => {
     const matchesCat = !catFilter || a.cat === catFilter;
-    const matchesCanal = !canalFilter || a.canalPrincipal === canalFilter || a.canaisApoio.includes(canalFilter);
+    const matchesCanal = !canalFilter || a.canalPrincipal === canalFilter;
     const matchesNicho = !nichoFilter || (a.nichos && a.nichos.includes(nichoFilter));
     const q = search.trim().toLowerCase();
     const matchesTexto = !q || a.nome.toLowerCase().includes(q) || a.tipo.toLowerCase().includes(q) || a.como.toLowerCase().includes(q);
@@ -4525,7 +4529,7 @@ export default function App() {
                     <div className="bib-section-title">Explorar por canal</div>
                     <div className="menu-list">
                       {CANAIS.map((c) => {
-                        const count = ACTIONS.filter((a) => a.canalPrincipal === c.label || a.canaisApoio.includes(c.label)).length;
+                        const count = ACTIONS.filter((a) => a.canalPrincipal === c.label).length;
                         return (
                           <button key={c.label} className="menu-row" onClick={() => setCanalFilter(c.label)}>
                             <span className="menu-row-icon"><c.icon size={16} /></span>
