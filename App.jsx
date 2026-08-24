@@ -1239,14 +1239,15 @@ const ACTIONS = [
     id: "leve-mais-pague-menos", nome: "Desconto Progressivo", cat: "girar-estoque", nichos: ["Moda Feminina", "Moda Masculina"],
     tipo: "Campanha de giro de estoque",
     sugestoesNomes: ["Leve Mais, Pague Menos", "Renove o Guarda-Roupa", "Tchau, Inverno", "Mais Peças, Mais Benefícios", "Quanto Mais, Melhor", "Sua Seleção com Mais Vantagem"],
-    alternativaCanal: "Sem loja física? Troque o canal principal por Site ou Stories — a régua de peças funciona igual online.",
+    alternativaCanal: "O roteiro de divulgação abaixo foi pensado pra loja física, mas a mecânica funciona igual com canal principal em Live de vendas ou Grupo VIP — só a forma de antecipar muda um pouco em cada formato (a gente adapta o roteiro por canal numa próxima etapa).",
     como: "Quanto mais peças a cliente leva, maior o desconto.",
     duracao: "7 a 10 dias",
     canalPrincipal: "Loja física",
-    canaisApoio: ["Stories", "WhatsApp individual", "Grupo VIP", "Live de vendas", "Site"],
+    canalPrincipalAlternativas: ["Live de vendas", "Grupo VIP"],
+    canaisApoio: ["Stories", "WhatsApp individual", "Site"],
     objetivo: ["Acelerar o giro sem colocar toda a coleção no mesmo desconto."],
     quandoUsar: ["Troca de estação, fim de coleção ou excesso de estoque."],
-    quandoEvitar: ["Com uma régua de desconto complexa demais pra equipe explicar no caixa"],
+    quandoEvitar: [],
     idealPara: ["troca de coleção", "mudança de estação", "excesso de estoque"],
     mecanica: [
       { pecas: "1 peça", desconto: "10% OFF" },
@@ -1891,45 +1892,63 @@ function DtlChecklistGroup({ itens, checked, onToggle }) {
 const JORNADA_CANAL_ICON = { Stories: Radio, Reels: Film, WhatsApp: MessageCircle };
 
 function JornadaDivulgacao({ dias, checked, onToggle }) {
+  const [openDia, setOpenDia] = useState(0);
+
   return (
     <div className="dtl-jornada">
-      {dias.map((d, di) => (
-        <div className="dtl-jornada-dia" key={di}>
-          <span className="dtl-jornada-marker" />
-          <div className="dtl-jornada-titulo">{d.titulo}</div>
-          {d.objetivo && <p className="dtl-jornada-objetivo">{d.objetivo}</p>}
+      {dias.map((d, di) => {
+        const totalDia = d.checklist ? d.checklist.length : 0;
+        const feitosDia = d.checklist ? d.checklist.filter((_, ci) => checked[`${di}-${ci}`]).length : 0;
+        const isOpen = openDia === di;
+        return (
+          <div className={`dtl-jornada-dia ${isOpen ? "aberto" : ""}`} key={di}>
+            <button type="button" className="dtl-jornada-dia-header" onClick={() => setOpenDia(isOpen ? -1 : di)}>
+              <span className="dtl-jornada-marker" />
+              <span className="dtl-jornada-dia-info">
+                <span className="dtl-jornada-titulo">{d.titulo}</span>
+                {totalDia > 0 && <span className="dtl-jornada-progresso">{feitosDia}/{totalDia} concluído</span>}
+              </span>
+              <ChevronRight size={16} className={`dtl-jornada-chevron ${isOpen ? "open" : ""}`} />
+            </button>
 
-          {d.blocos.map((b, bi) => {
-            const CanalIcon = JORNADA_CANAL_ICON[b.canal] || MessageCircle;
-            return (
-              <div className="dtl-jornada-canal" key={bi}>
-                <span className="dtl-jornada-canal-label"><CanalIcon size={12} /> {b.canal}</span>
-                {b.itens.map((it, ii) => (
-                  <div className="dtl-jornada-item" key={ii}>
-                    {it.rotulo && <span className="dtl-jornada-item-rotulo">{it.rotulo}</span>}
-                    <p className="dtl-jornada-item-texto">{it.texto}</p>
-                    {it.obs && <p className="dtl-jornada-item-obs">{it.obs}</p>}
+            {isOpen && (
+              <div className="dtl-jornada-dia-body">
+                {d.objetivo && <p className="dtl-jornada-objetivo">{d.objetivo}</p>}
+
+                {d.blocos.map((b, bi) => {
+                  const CanalIcon = JORNADA_CANAL_ICON[b.canal] || MessageCircle;
+                  return (
+                    <div className="dtl-jornada-canal" key={bi}>
+                      <span className="dtl-jornada-canal-label"><CanalIcon size={12} /> {b.canal}</span>
+                      {b.itens.map((it, ii) => (
+                        <div className="dtl-jornada-item" key={ii}>
+                          {it.rotulo && <span className="dtl-jornada-item-rotulo">{it.rotulo}</span>}
+                          <p className="dtl-jornada-item-texto">{it.texto}</p>
+                          {it.obs && <p className="dtl-jornada-item-obs">{it.obs}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+
+                {d.checklist && d.checklist.length > 0 && (
+                  <div className="checklist">
+                    {d.checklist.map((c, ci) => {
+                      const key = `${di}-${ci}`;
+                      return (
+                        <label key={ci} className="checkitem">
+                          <input type="checkbox" checked={!!checked[key]} onChange={() => onToggle(key)} />
+                          <span className={checked[key] ? "done" : ""}>{c}</span>
+                        </label>
+                      );
+                    })}
                   </div>
-                ))}
+                )}
               </div>
-            );
-          })}
-
-          {d.checklist && d.checklist.length > 0 && (
-            <div className="checklist">
-              {d.checklist.map((c, ci) => {
-                const key = `${di}-${ci}`;
-                return (
-                  <label key={ci} className="checkitem">
-                    <input type="checkbox" checked={!!checked[key]} onChange={() => onToggle(key)} />
-                    <span className={checked[key] ? "done" : ""}>{c}</span>
-                  </label>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      ))}
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -2574,9 +2593,15 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
 
           <Accordion title="Canais recomendados" icon={Radio}>
             <div className="canal-row">
-              <span className="canal-row-label">Principal</span>
+              <span className="canal-row-label">Principal sugerido</span>
               <CanalChip label={action.canalPrincipal} main />
             </div>
+            {action.canalPrincipalAlternativas && action.canalPrincipalAlternativas.length > 0 && (
+              <div className="canal-row">
+                <span className="canal-row-label">Também pode ser o principal</span>
+                <div className="chiprow">{action.canalPrincipalAlternativas.map((c) => <CanalChip key={c} label={c} />)}</div>
+              </div>
+            )}
             {action.canaisApoio.length > 0 && (
               <div className="canal-row">
                 <span className="canal-row-label">De apoio</span>
@@ -4197,16 +4222,22 @@ export default function App() {
     .dtl-quickinfo-label { font-size: 10.5px; color: var(--ink-soft); margin-top: 1px; }
     .dtl-quickinfo-caption { font-size: 12px; color: var(--ink-soft); margin: 12px 2px 0; }
 
-    /* ---- Jornada cronológica de divulgação ---- */
-    .dtl-jornada { display: flex; flex-direction: column; }
-    .dtl-jornada-dia { position: relative; padding: 0 0 22px 20px; border-left: 2px solid var(--line); }
-    .dtl-jornada-dia:last-child { border-left-color: transparent; padding-bottom: 2px; }
-    .dtl-jornada-marker {
-      position: absolute; left: -6px; top: 2px; width: 11px; height: 11px; border-radius: 50%;
-      background: var(--wine); border: 2px solid var(--card);
+    /* ---- Jornada cronológica de divulgação (mini-subpáginas por dia) ---- */
+    .dtl-jornada { display: flex; flex-direction: column; gap: 8px; }
+    .dtl-jornada-dia { border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
+    .dtl-jornada-dia.aberto { border-color: var(--wine); }
+    .dtl-jornada-dia-header {
+      width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+      background: none; border: none; cursor: pointer; text-align: left;
     }
-    .dtl-jornada-titulo { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 13.5px; color: var(--ink); margin-bottom: 3px; }
-    .dtl-jornada-objetivo { font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 10px; }
+    .dtl-jornada-marker { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--wine); }
+    .dtl-jornada-dia-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .dtl-jornada-titulo { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 13.5px; color: var(--ink); }
+    .dtl-jornada-progresso { font-size: 11px; color: var(--ink-soft); }
+    .dtl-jornada-chevron { color: var(--ink-soft); transition: transform 0.25s ease; flex-shrink: 0; }
+    .dtl-jornada-chevron.open { transform: rotate(90deg); }
+    .dtl-jornada-dia-body { padding: 0 14px 16px; animation: dtlFadeIn 0.2s ease; }
+    .dtl-jornada-objetivo { font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 12px; }
     .dtl-jornada-canal { margin-bottom: 10px; }
     .dtl-jornada-canal-label {
       display: inline-flex; align-items: center; gap: 5px; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 11px;
@@ -4217,6 +4248,23 @@ export default function App() {
     .dtl-jornada-item-rotulo { display: block; font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
     .dtl-jornada-item-texto { margin: 0; font-size: 13px; line-height: 1.5; color: var(--ink); font-style: italic; white-space: pre-line; }
     .dtl-jornada-item-obs { margin: 4px 0 0; font-size: 11.5px; line-height: 1.45; color: var(--ink-soft); }
+
+    /* Dentro do card escuro "Vamos executar": inverter para tons claros legíveis */
+    .dtl-checklist-card .dtl-jornada-dia { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); }
+    .dtl-checklist-card .dtl-jornada-dia.aberto { border-color: rgba(255,255,255,0.4); }
+    .dtl-checklist-card .dtl-jornada-marker { background: #D9C48A; }
+    .dtl-checklist-card .dtl-jornada-titulo { color: #fff; }
+    .dtl-checklist-card .dtl-jornada-progresso { color: rgba(255,255,255,0.6); }
+    .dtl-checklist-card .dtl-jornada-chevron { color: rgba(255,255,255,0.7); }
+    .dtl-checklist-card .dtl-jornada-objetivo { color: rgba(255,255,255,0.75); }
+    .dtl-checklist-card .dtl-jornada-canal-label { color: #D9C48A; }
+    .dtl-checklist-card .dtl-jornada-item { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.16); }
+    .dtl-checklist-card .dtl-jornada-item-rotulo { color: #fff; }
+    .dtl-checklist-card .dtl-jornada-item-texto { color: rgba(255,255,255,0.92); }
+    .dtl-checklist-card .dtl-jornada-item-obs { color: rgba(255,255,255,0.6); }
+    .dtl-checklist-card .dtl-jornada-dia .checkitem span { color: rgba(255,255,255,0.95); }
+    .dtl-checklist-card .dtl-jornada-dia .checkitem .done { color: rgba(255,255,255,0.5); }
+    .dtl-checklist-card .dtl-jornada-dia .checkitem input { accent-color: #fff; }
 
     .dtl-section-card {
       background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
