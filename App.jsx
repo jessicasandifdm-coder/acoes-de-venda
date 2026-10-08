@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 import {
   Search, Heart, Clock, Home, BookOpen, ArrowLeft, RefreshCw, Gift,
   Wallet, Truck, Package, Users,
@@ -11,23 +11,21 @@ import {
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
 const CATS = [
-  { id: "girar-estoque", label: "Girar Estoque", icon: RefreshCw },
-  { id: "ticket-medio", label: "Aumentar Ticket Médio", icon: Package },
-  { id: "vendas-rapidas", label: "Gerar Vendas Rápidas", icon: Rocket },
-  { id: "recorrencia", label: "Recorrência e Fidelização", icon: Wallet },
-  { id: "novas-clientes", label: "Atrair Novas Clientes", icon: UserPlus },
-  { id: "experiencia-compra", label: "Criar Experiência de Compra", icon: Crown },
+  { id: "giro", label: "Promoções e Giro de Estoque", icon: RefreshCw },
+  { id: "brindes", label: "Brindes e Incentivos", icon: Gift },
+  { id: "cashback", label: "Cashback e Fidelização", icon: Wallet },
+  { id: "frete", label: "Fretes Estratégicos", icon: Truck },
+  { id: "combos", label: "Combos e Ticket Médio", icon: Package },
+  { id: "indicacao", label: "Indicação e Aquisição de Clientes", icon: Users },
+  { id: "vip", label: "Experiências VIP", icon: Crown },
+  { id: "diferenciais", label: "Diferenciais Permanentes", icon: Star },
+  { id: "emocional", label: "Campanhas Emocionais", icon: Sparkles },
+  { id: "datas", label: "Datas Comemorativas", icon: Calendar },
+  { id: "lancamentos", label: "Lançamentos de Coleção", icon: Rocket },
+  { id: "engajamento", label: "Engajamento (Stories)", icon: Target },
 ];
 
-// Sem classificação: usado apenas como fallback visual para ações que ainda não
-// se encaixam com clareza em nenhum dos 6 objetivos (ver seção 5 do briefing de reorganização).
-// Não aparece como opção em "Explorar por objetivo".
-const SEM_CLASSIFICACAO = { id: null, label: "Sem classificação", icon: AlertTriangle };
-
-// Ícones de canal para qualquer label que apareça em canalPrincipal, canaisApoio ou
-// alternativaCanal — inclui canais legados que ainda podem existir no texto das ações.
-// Não confundir com CANAIS abaixo, que é a lista fixa usada em "Explorar por canal".
-const CANAL_ICONS = [
+const CANAIS = [
   { label: "Stories", icon: Radio },
   { label: "Reels", icon: Film },
   { label: "Feed", icon: LayoutGrid },
@@ -40,16 +38,6 @@ const CANAL_ICONS = [
   { label: "Site", icon: Globe },
   { label: "Clientes inativos", icon: UserMinus },
   { label: "Clientes que ainda não compraram", icon: UserPlus },
-];
-
-// Canais fixos — únicos usados em "Explorar por canal" (menu, contagem e filtro).
-const CANAIS = [
-  { label: "Stories", icon: Radio },
-  { label: "Loja física", icon: Store },
-  { label: "Grupo VIP", icon: Crown },
-  { label: "Live de vendas", icon: Video },
-  { label: "Site", icon: Globe },
-  { label: "WhatsApp individual", icon: MessageCircle },
 ];
 
 const NICHOS = [
@@ -78,18 +66,26 @@ const NICHO_GRUPOS = [
 ];
 
 const KEYWORD_MAP = [
-  { termos: ["girar estoque", "estoque parado", "produto parado", "produtos parados", "giro", "promoção", "promocao", "promo", "liquidação", "liquidacao"], tipo: "cat", valor: "girar-estoque" },
-  { termos: ["ticket médio", "ticket medio", "aumentar ticket", "combo", "brinde", "brindes"], tipo: "cat", valor: "ticket-medio" },
-  { termos: ["venda rápida", "vendas rápidas", "venda rapida", "vendas rapidas", "relâmpago", "relampago", "urgência", "urgencia", "pico de vendas"], tipo: "cat", valor: "vendas-rapidas" },
-  { termos: ["fideliz", "cliente antigo", "clientes antigos", "reativar", "cashback", "recorrência", "recorrencia", "segunda compra"], tipo: "cat", valor: "recorrencia" },
-  { termos: ["captação", "captacao", "cliente novo", "clientes novos", "novos clientes", "indicação", "indicacao", "atrair clientes"], tipo: "cat", valor: "novas-clientes" },
-  { termos: ["experiência", "experiencia", "vip", "exclusivo", "exclusividade"], tipo: "cat", valor: "experiencia-compra" },
+  { termos: ["girar estoque", "estoque parado", "produto parado", "produtos parados", "giro"], tipo: "cat", valor: "giro" },
+  { termos: ["promoção", "promocao", "promo"], tipo: "cat", valor: "giro" },
+  { termos: ["brinde", "brindes"], tipo: "cat", valor: "brindes" },
+  { termos: ["fideliz", "cliente antigo", "clientes antigos", "reativar"], tipo: "cat", valor: "cashback" },
+  { termos: ["cashback"], tipo: "cat", valor: "cashback" },
+  { termos: ["frete"], tipo: "cat", valor: "frete" },
+  { termos: ["ticket médio", "ticket medio", "aumentar ticket", "combo"], tipo: "cat", valor: "combos" },
+  { termos: ["captação", "captacao", "cliente novo", "clientes novos", "novos clientes", "indicação", "indicacao"], tipo: "cat", valor: "indicacao" },
+  { termos: ["vip", "experiência vip", "experiencia vip"], tipo: "cat", valor: "vip" },
+  { termos: ["emocional", "autoestima"], tipo: "cat", valor: "emocional" },
+  { termos: ["data comemorativa", "datas comemorativas"], tipo: "cat", valor: "datas" },
+  { termos: ["lançamento", "lancamento", "nova coleção", "nova colecao"], tipo: "cat", valor: "lancamentos" },
+  { termos: ["engajamento", "enquete", "jogo"], tipo: "cat", valor: "engajamento" },
   { termos: ["stories", "instagram", "reels"], tipo: "canal", valor: "Stories" },
   { termos: ["whatsapp individual", "whatsapp"], tipo: "canal", valor: "WhatsApp individual" },
+  { termos: ["status"], tipo: "canal", valor: "Status do WhatsApp" },
+  { termos: ["lista de transmissão", "lista de transmissao"], tipo: "canal", valor: "Lista de transmissão" },
   { termos: ["grupo vip"], tipo: "canal", valor: "Grupo VIP" },
   { termos: ["loja física", "loja fisica", "presencial"], tipo: "canal", valor: "Loja física" },
   { termos: ["site", "e-commerce", "ecommerce"], tipo: "canal", valor: "Site" },
-  { termos: ["live", "live de vendas", "transmissão ao vivo", "transmissao ao vivo"], tipo: "canal", valor: "Live de vendas" },
 ];
 
 function buscaInteligente(query) {
@@ -386,8 +382,8 @@ function computeDiagnostico(respostas) {
   return { indice, faixaCurta: faixa.curta, faixaTexto: faixa.texto, alertas, qualificado, faturamentoLabel };
 }
 
-const catInfo = (id) => CATS.find((c) => c.id === id) || SEM_CLASSIFICACAO;
-const canalInfo = (label) => CANAL_ICONS.find((c) => c.label === label) || CANAL_ICONS[0];
+const catInfo = (id) => CATS.find((c) => c.id === id) || CATS[0];
+const canalInfo = (label) => CANAIS.find((c) => c.label === label) || CANAIS[0];
 
 // --- Radar de Oportunidades ---
 const UFS_BR = [
@@ -479,7 +475,7 @@ const OPORTUNIDADES = [
       "Cupom válido só no dia 1",
       "Kit número 1 da coleção nova com condição especial",
       "1 sorteio surpresa entre quem comprar no dia",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -493,7 +489,7 @@ const OPORTUNIDADES = [
       "Compras acima de R$200 ganham um brinde",
       "2 clientes sorteadas ganham vale-compra",
       "Cupom válido por apenas 2 horas",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -507,7 +503,7 @@ const OPORTUNIDADES = [
       "3 primeiras compras do dia ganham mimo",
       "Cupom válido por apenas 3 horas",
       "3 kits exclusivos disponíveis só no dia",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -521,7 +517,7 @@ const OPORTUNIDADES = [
       "Parcelamento em 4x sem juros",
       "4 produtos em oferta relâmpago",
       "Cupom válido por apenas 4 horas",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -535,7 +531,7 @@ const OPORTUNIDADES = [
       "Compras acima de R$500 ganham vale-compra de R$50",
       "5 minutos de oferta surpresa a cada hora",
       "5 kits exclusivos disponíveis só no dia",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -549,7 +545,7 @@ const OPORTUNIDADES = [
       "6 primeiras clientes ganham mimo",
       "Cupom válido por apenas 6 horas",
       "Live às 18h (6 da tarde) com oferta exclusiva",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -563,7 +559,7 @@ const OPORTUNIDADES = [
       "7 minutos de oferta surpresa a cada hora",
       "Compras acima de R$700 ganham um brinde",
       "7 kits exclusivos disponíveis só no dia",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -577,7 +573,7 @@ const OPORTUNIDADES = [
       "Desafio das 8 peças: monte 8 combinações diferentes",
       "Cupom válido por apenas 8 horas",
       "8 kits exclusivos disponíveis só no dia",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -591,7 +587,7 @@ const OPORTUNIDADES = [
       "Cupom válido por apenas 9 horas",
       "Compras acima de R$299 ganham R$9 de cashback",
       "9 sacolas ou envelopes premiados escondidos nos pedidos",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -605,7 +601,7 @@ const OPORTUNIDADES = [
       "As 10 primeiras clientes ganham presente",
       "Vale-compras de R$100 escondido em 10 pedidos",
       "10 minutos de oferta relâmpago a cada hora",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -619,7 +615,7 @@ const OPORTUNIDADES = [
       "Cupom 'ONZE11' ou roleta com 11 benefícios",
       "Live às 11h11 com oferta exclusiva",
       "Durante 11 minutos, uma oferta surpresa",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -633,7 +629,7 @@ const OPORTUNIDADES = [
       "Frete grátis nas primeiras 12 compras",
       "Caixa Misteriosa com 12 brindes diferentes",
       "Calendário da Sorte com 12 envelopes",
-      "Mecânicas prontas pra usar: Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Estoure o Balão, Dados da Sorte, Passaporte da Data, Mural da Sorte",
+      "Mecânicas prontas pra usar: Sacola Premiada, Cofre de Benefícios, Chave Premiada, Caixa Misteriosa, Raspe e Ganhe, Desafio do Tempo, Cupom Escondido, Carrinho Premiado, Cliente Número X, Estoure o Balão, Dados da Sorte, Árvore dos Benefícios, Compra Premiada, Passaporte da Data, Mural da Sorte, Relógio da Oferta, Combo da Data, Desbloqueio por Valor",
       "Dica: faça o número aparecer em tudo — nos kits, no parcelamento, no horário da live, no cupom — não só no desconto",
     ],
     palavrasChave: "brindes cashback",
@@ -783,7 +779,7 @@ const CALENDARIO_ANUAL = [
 
 const ACTIONS = [
   {
-    id: "cabide-livre", nome: "Operação Cabide Livre", cat: "girar-estoque",
+    id: "cabide-livre", nome: "Operação Cabide Livre", cat: "giro",
     nichos: ["Moda Feminina", "Moda Masculina", "Moda Fitness", "Moda Plus Size", "Infantil", "Moda Evangélica"],
     tipo: "Campanha de giro de estoque",
     sugestoesNomes: ["Limpa-Arara", "Semana da Renovação", "Giro Inteligente", "Última Chance", "Renovação de Estoque"],
@@ -826,7 +822,7 @@ const ACTIONS = [
     relacionadas: ["pague-2-leve-3", "comprou-ganhou-stories", "dia-do-frete-especial"],
   },
   {
-    id: "comprou-ganhou", nome: "Comprou, Ganhou", cat: "vendas-rapidas", nichos: ["Geral"],
+    id: "comprou-ganhou", nome: "Comprou, Ganhou", cat: "brindes", nichos: ["Geral"],
     tipo: "Campanha completa de brindes",
     sugestoesNomes: [],
     objetivoPrincipal: "Aumentar a conversão e gerar mais vendas através de um benefício exclusivo.",
@@ -926,7 +922,7 @@ const ACTIONS = [
     relacionadas: ["comprou-ganhou-stories", "comprou-ganhou-vip", "desbloqueie-brindes", "cashback-inteligente", "frete-gratis-relampago", "combo-inteligente"],
   },
   {
-    id: "comprou-ganhou-stories", nome: "Comprou, Ganhou Express (Stories)", cat: "vendas-rapidas", nichos: ["Geral"],
+    id: "comprou-ganhou-stories", nome: "Comprou, Ganhou Express (Stories)", cat: "brindes", nichos: ["Geral"],
     tipo: "Ação relâmpago de 1 dia",
     sugestoesNomes: [], alternativaCanal: null,
     objetivoPrincipal: "Gerar um pico imediato de vendas utilizando urgência e escassez.",
@@ -966,7 +962,7 @@ const ACTIONS = [
     relacionadas: ["comprou-ganhou", "comprou-ganhou-vip", "desbloqueie-brindes", "frete-gratis-relampago", "cashback-relampago-vip"],
   },
   {
-    id: "comprou-ganhou-vip", nome: "Comprou, Ganhou Express (Grupo VIP)", cat: "vendas-rapidas", nichos: ["Geral"],
+    id: "comprou-ganhou-vip", nome: "Comprou, Ganhou Express (Grupo VIP)", cat: "brindes", nichos: ["Geral"],
     tipo: "Ação relâmpago exclusiva para o grupo",
     sugestoesNomes: [], alternativaCanal: null,
     objetivoPrincipal: "Gerar um pico imediato de vendas e fortalecer o Grupo VIP da loja.",
@@ -1009,7 +1005,7 @@ const ACTIONS = [
     relacionadas: ["comprou-ganhou", "comprou-ganhou-stories", "desbloqueie-brindes", "cashback-relampago-vip", "frete-gratis-relampago", "preview-nova-colecao"],
   },
   {
-    id: "desbloqueie-brindes", nome: "Desbloqueando Brindes", cat: "ticket-medio", nichos: ["Geral"],
+    id: "desbloqueie-brindes", nome: "Desbloqueando Brindes", cat: "brindes", nichos: ["Geral"],
     tipo: "Compre mais, conquiste mais.",
     sugestoesNomes: [],
     objetivoPrincipal: "Aumentar o ticket médio através de brindes progressivos.",
@@ -1057,7 +1053,7 @@ const ACTIONS = [
     relacionadas: ["comprou-ganhou", "comprou-ganhou-stories", "comprou-ganhou-vip", "combo-inteligente", "leve-mais-pague-menos", "cashback-inteligente"],
   },
   {
-    id: "cashback-inteligente", nome: "Cashback Inteligente", cat: "recorrencia", nichos: ["Geral"],
+    id: "cashback-inteligente", nome: "Cashback Inteligente", cat: "cashback", nichos: ["Geral"],
     tipo: "Campanha de recorrência programada",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Em vez de dar desconto imediato, a loja entrega um crédito que pode ser usado numa próxima compra, aumentando a recorrência e reduzindo a dependência de promoções frequentes. Pode ser feita em loja física ou site.",
@@ -1085,7 +1081,7 @@ const ACTIONS = [
     relacionadas: ["cashback-relampago-vip", "cashback-permanente"],
   },
   {
-    id: "cashback-relampago-vip", nome: "Cashback Relâmpago (Grupo VIP)", cat: "vendas-rapidas", nichos: ["Geral"],
+    id: "cashback-relampago-vip", nome: "Cashback Relâmpago (Grupo VIP)", cat: "cashback", nichos: ["Geral"],
     tipo: "Ação relâmpago de exclusividade",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Gera vendas rápidas dentro do Grupo VIP oferecendo cashback por tempo limitado.",
@@ -1109,7 +1105,7 @@ const ACTIONS = [
     relacionadas: ["cashback-inteligente", "clube-secreto"],
   },
   {
-    id: "cashback-permanente", nome: "Cashback Permanente (Programa de Fidelidade)", cat: "recorrencia", nichos: ["Geral"],
+    id: "cashback-permanente", nome: "Cashback Permanente (Programa de Fidelidade)", cat: "cashback", nichos: ["Geral"],
     tipo: "Programa permanente, não é campanha",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Um benefício contínuo da loja: toda compra gera um crédito para ser usado nas próximas compras. Não é campanha, é diferencial permanente da marca.",
@@ -1129,7 +1125,7 @@ const ACTIONS = [
     relacionadas: ["cashback-inteligente", "cliente-indica-ganha"],
   },
   {
-    id: "frete-gratis-relampago", nome: "Frete Grátis Relâmpago", cat: "vendas-rapidas", nichos: ["Geral"],
+    id: "frete-gratis-relampago", nome: "Frete Grátis Relâmpago", cat: "frete", nichos: ["Geral"],
     tipo: "Ação relâmpago de 1 dia",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Gera um pico de vendas oferecendo frete gratuito durante um período curto. O canal principal pode ser Stories ou Grupo VIP — escolha só um, pra não diluir a comunicação.",
@@ -1152,7 +1148,7 @@ const ACTIONS = [
     relacionadas: ["frete-valor-minimo", "dia-do-frete-especial"],
   },
   {
-    id: "frete-valor-minimo", nome: "Frete Grátis por Valor Mínimo", cat: "ticket-medio", nichos: ["Geral"],
+    id: "frete-valor-minimo", nome: "Frete Grátis por Valor Mínimo", cat: "frete", nichos: ["Geral"],
     tipo: "Estratégia permanente ou campanha de ticket médio",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Oferece frete grátis apenas para compras acima de um valor definido, incentivando o cliente a completar a compra.",
@@ -1172,7 +1168,7 @@ const ACTIONS = [
     relacionadas: ["frete-fixo-inteligente", "leve-mais-pague-menos"],
   },
   {
-    id: "frete-fixo-inteligente", nome: "Frete Fixo Inteligente", cat: "recorrencia", nichos: ["Geral"],
+    id: "frete-fixo-inteligente", nome: "Frete Fixo Inteligente", cat: "frete", nichos: ["Geral"],
     tipo: "Diferencial permanente",
     sugestoesNomes: [], alternativaCanal: null,
     como: "O cliente sempre sabe quanto vai pagar de frete, eliminando a objeção do frete caro.",
@@ -1192,7 +1188,7 @@ const ACTIONS = [
     relacionadas: ["frete-valor-minimo", "dia-do-frete-especial"],
   },
   {
-    id: "dia-do-frete-especial", nome: "Dia do Frete Especial", cat: "recorrencia", nichos: ["Geral"],
+    id: "dia-do-frete-especial", nome: "Dia do Frete Especial", cat: "frete", nichos: ["Geral"],
     tipo: "Campanha recorrente semanal",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Uma campanha recorrente em um dia fixo da semana, criando hábito de compra e concentrando vendas nos dias de menor movimento.",
@@ -1216,7 +1212,7 @@ const ACTIONS = [
     relacionadas: ["frete-gratis-relampago", "frete-fixo-inteligente"],
   },
   {
-    id: "combo-inteligente", nome: "Combo Inteligente", cat: "ticket-medio", nichos: ["Geral"],
+    id: "combo-inteligente", nome: "Combo Inteligente", cat: "combos", nichos: ["Geral"],
     tipo: "Estratégia permanente de ticket médio",
     sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Site ou Stories — o restante da estrutura continua igual.",
     como: "Reúne produtos complementares em uma única oferta fixa da loja, facilitando a decisão de compra e aumentando o ticket médio.",
@@ -1236,168 +1232,27 @@ const ACTIONS = [
     relacionadas: ["leve-mais-pague-menos", "pague-2-leve-3"],
   },
   {
-    id: "leve-mais-pague-menos", nome: "Desconto Progressivo", cat: "girar-estoque", nichos: ["Moda Feminina", "Moda Masculina"],
-    tipo: "Campanha de giro de estoque",
-    sugestoesNomes: ["Leve Mais, Pague Menos", "Renove o Guarda-Roupa", "Tchau, Inverno", "Mais Peças, Mais Benefícios", "Quanto Mais, Melhor", "Sua Seleção com Mais Vantagem"],
-    alternativaCanal: "O roteiro de divulgação abaixo foi pensado pra loja física, mas a mecânica funciona igual com canal principal em Live de vendas ou Grupo VIP — só a forma de antecipar muda um pouco em cada formato (a gente adapta o roteiro por canal numa próxima etapa).",
-    como: "Quanto mais peças a cliente leva, maior o desconto.",
-    duracao: "7 a 10 dias",
+    id: "leve-mais-pague-menos", nome: "Leve Mais, Pague Menos", cat: "combos", nichos: ["Moda Feminina", "Moda Masculina"],
+    tipo: "Campanha de ticket médio",
+    sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Site ou Stories — a régua de quantidade funciona igual online.",
+    como: "Incentiva o cliente a adicionar mais produtos ao carrinho em troca de um benefício progressivo (ex: leve 2 e ganhe 10%, leve 3 e ganhe 15%).",
+    duracao: "3 a 7 dias",
     canalPrincipal: "Loja física",
-    canalPrincipalAlternativas: ["Live de vendas", "Grupo VIP"],
-    canaisApoio: ["Stories", "WhatsApp individual", "Site"],
-    objetivo: ["Acelerar o giro sem colocar toda a coleção no mesmo desconto."],
-    quandoUsar: ["Troca de estação, fim de coleção ou excesso de estoque."],
-    quandoEvitar: [],
-    idealPara: ["troca de coleção", "mudança de estação", "excesso de estoque"],
-    mecanica: [
-      { pecas: "1 peça", desconto: "10% OFF" },
-      { pecas: "2 peças", desconto: "20% OFF" },
-      { pecas: "3 peças", desconto: "30% OFF" },
-    ],
-    checklist: [
-      "Escolher o nome da campanha",
-      "Definir os produtos que participarão",
-      "Definir as faixas de desconto",
-      "Definir a data de início",
-      "Definir a data de encerramento",
-      "Organizar os produtos participantes",
-      "Alinhar a equipe sobre a campanha",
-    ],
-    checklistExecucao: [],
-    planoDivulgacao: [],
-    jornadaDivulgacao: [
-      {
-        titulo: "Dia 1 — Antecipação",
-        objetivo: "Criar curiosidade e avisar as clientes que uma nova oportunidade está chegando.",
-        blocos: [
-          {
-            canal: "Stories",
-            itens: [
-              { rotulo: "Story 1 — Spoiler", texto: "Tem novidade chegando na loja nos próximos dias…", obs: "Mostrar um detalhe de uma peça ou uma cena da preparação da loja." },
-              { rotulo: "Story 2 — Criar curiosidade", texto: "E dessa vez tem uma condição especial para quem aproveitar para levar mais de uma peça." },
-              { rotulo: "Story 3 — Marcar a data", texto: "Anota aí: [DATA].\nVou liberar uma condição especial por aqui.", obs: "Usar o recurso de contagem regressiva do Instagram." },
-            ],
-          },
-          {
-            canal: "Reels",
-            itens: [
-              { rotulo: "Roteiro", texto: "Criar um Reels curto mostrando alguns produtos participantes, sem revelar toda a mecânica ainda.", obs: "Texto sugerido na tela: “Você vai querer saber o que acontece dia [DATA].” — Final: “Marca a data.”" },
-            ],
-          },
-          {
-            canal: "WhatsApp",
-            itens: [
-              { rotulo: "Mensagem pronta", texto: "Oi, [nome]! Passando para te avisar em primeira mão que dia [DATA] vou liberar uma condição especial aqui na loja para quem quiser aproveitar e levar mais peças.\n\nVou te contar tudo por aqui. Fica de olho porque vai valer a pena." },
-            ],
-          },
-        ],
-        checklist: ["Publicou o spoiler nos Stories", "Publicou o Reels de antecipação", "Colocou a contagem regressiva", "Enviou a mensagem para clientes"],
-      },
-      {
-        titulo: "Dia 2 — Antecipação",
-        objetivo: "Aumentar o desejo e mostrar os produtos que farão parte da ação. A comunicação começa a revelar mais, mas ainda sem transformar a campanha em uma simples comunicação de desconto.",
-        blocos: [
-          {
-            canal: "Stories",
-            itens: [
-              { rotulo: "Mostrar produtos e combinações", texto: "E se você pudesse levar esse look completo e ainda ter uma condição melhor?", obs: "Mostrar 2 ou 3 produtos participantes: Peça 1 + Peça 2 + Peça 3." },
-              { rotulo: "Fechamento do dia", texto: "Amanhã eu vou te mostrar como vai funcionar." },
-            ],
-          },
-          {
-            canal: "Reels",
-            itens: [
-              { rotulo: "Roteiro", texto: "Criar um Reels mostrando combinações de peças participantes.", obs: "Texto na tela: “3 peças que você provavelmente vai querer levar juntas.” — Final: “Amanhã começa.”" },
-            ],
-          },
-          {
-            canal: "WhatsApp",
-            itens: [
-              { rotulo: "Mensagem pronta (WhatsApp / Grupo VIP)", texto: "Amanhã começa uma condição especial aqui na loja.\n\nA ideia é você conseguir aproveitar melhor sua compra levando mais peças.\n\nJá separa suas favoritas porque amanhã eu vou liberar todos os detalhes." },
-            ],
-          },
-        ],
-        checklist: ["Mostrou produtos participantes", "Criou combinações", "Publicou o Reels", "Avisou o grupo/clientes", "Reforçou a data de início"],
-      },
-      {
-        titulo: "Dia 3 — Abertura da campanha",
-        objetivo: "Apresentar oficialmente o Desconto Progressivo. A comunicação não deve começar pelo desconto — primeiro mostrar produto, desejo e oportunidade, depois apresentar a condição.",
-        blocos: [
-          {
-            canal: "Stories",
-            itens: [
-              { rotulo: "Story 1 — Produto", texto: "Sabe aquela peça que você estava namorando?" },
-              { rotulo: "Story 2 — Combinação", texto: "Agora imagina levar as duas juntas…", obs: "Mostrar uma segunda peça." },
-              { rotulo: "Story 3 — Apresentação da campanha", texto: "Começou o nosso DESCONTO PROGRESSIVO." },
-              { rotulo: "Story 4 — Explicação visual (régua)", texto: "2 peças → 10% OFF\n3 peças → 20% OFF\n4+ peças → 30% OFF", obs: "Mostrar a régua de forma visual nos Stories." },
-              { rotulo: "Story 5 — Exemplo real", texto: "Quanto mais peças você escolhe, maior fica o seu benefício.", obs: "Montar um look completo com 3 ou 4 produtos." },
-              { rotulo: "Story 6 — CTA", texto: "Quer que eu monte algumas combinações para você? Me chama no direct." },
-            ],
-          },
-        ],
-        checklist: ["Publicou a sequência de Stories", "Mostrou os produtos", "Apresentou a campanha", "Mostrou a régua de desconto", "Publicou o CTA"],
-      },
-      {
-        titulo: "Durante a campanha",
-        objetivo: "A campanha não deve desaparecer depois do lançamento. O foco passa a ser gerar desejo pelos produtos e lembrar a cliente da oportunidade — sem repetir todo dia apenas “estamos com desconto”. Em vez disso, mostrar produtos e criar motivos para a cliente querer comprar mais.",
-        blocos: [
-          {
-            canal: "Reels",
-            itens: [
-              { rotulo: "Reels 1 — Look completo", texto: "Você levaria esse look completo?", obs: "Mostrar uma combinação com 3 peças. Final: “E ainda pode aproveitar o Desconto Progressivo.”" },
-              { rotulo: "Reels 2 — Uma peça, três combinações", texto: "Mostrar uma mesma peça combinada de três formas.", obs: "Final: “Agora imagina aproveitar mais de uma delas com o Desconto Progressivo.”" },
-              { rotulo: "Reels 3 — Produtos que combinam", texto: "3 peças que eu escolheria para montar um look completo.", obs: "Mostrar três peças que funcionam juntas. Final: “E sim, elas participam do nosso Desconto Progressivo.”" },
-              { rotulo: "Reels 4 — Objeção", texto: "Eu só queria comprar uma peça…", obs: "Depois mostrar mais duas combinações: “Mas aí você descobre que levando mais peças, seu desconto aumenta.”" },
-            ],
-          },
-          {
-            canal: "WhatsApp",
-            itens: [
-              { rotulo: "Mensagem pronta", texto: "Oi, [nome]! Lembrei de você porque selecionamos algumas peças que combinam muito com o seu estilo e estão participando do nosso Desconto Progressivo.\n\nSeparei algumas opções para te mostrar. Quer que eu te envie?", obs: "Não enviar a mesma mensagem para toda a base — relacione com os produtos de cada cliente e envie fotos ou vídeos das combinações depois." },
-            ],
-          },
-        ],
-        checklist: [
-          "Publicou conteúdo mostrando produtos",
-          "Criou combinações",
-          "Publicou Reels durante a campanha",
-          "Reforçou a oportunidade",
-          "Criou conteúdo para gerar desejo",
-          "Selecionou clientes para contato",
-          "Enviou mensagem",
-          "Enviou produtos/combinações",
-          "Continuou o atendimento com as interessadas",
-        ],
-      },
-      {
-        titulo: "Último dia — Urgência",
-        objetivo: "No último dia, mudar a comunicação.",
-        blocos: [
-          {
-            canal: "Stories",
-            itens: [
-              { rotulo: "Aviso", texto: "Último dia do Desconto Progressivo." },
-              { rotulo: "Reforço", texto: "Se você estava esperando para escolher algumas peças, hoje é o último dia para aproveitar essa condição.", obs: "Mostrar produtos novamente." },
-            ],
-          },
-          {
-            canal: "WhatsApp",
-            itens: [
-              { rotulo: "Mensagem pronta", texto: "Oi, [nome]! Passando para te avisar que hoje é o último dia do nosso Desconto Progressivo.\n\nSe você estava de olho em alguma peça, hoje é o último dia para aproveitar a condição. Quer que eu te mostre algumas opções?" },
-            ],
-          },
-        ],
-        checklist: ["Reforçou o último dia nos Stories", "Mostrou novamente os produtos", "Criou conteúdo de urgência", "Entrou em contato com clientes interessadas", "Enviou mensagem para oportunidades quentes"],
-      },
-    ],
+    canaisApoio: ["Site", "Stories"],
+    objetivo: ["Aumentar o volume de peças vendidas por compra"],
+    quandoUsar: ["Produtos básicos e categorias onde o cliente costuma comprar mais de uma unidade"],
+    quandoEvitar: ["Com uma régua de desconto complexa demais pra equipe explicar no caixa"],
+    checklist: ["Definir as faixas de quantidade e desconto (ex: leve 2 → 10%, leve 3 → 15%, leve 4 → 20%)", "Treinar a equipe para explicar a régua no caixa"],
+    checklistExecucao: ["Equipe reforça a régua no momento do fechamento"],
+    planoDivulgacao: [{ marco: "Durante a campanha", itens: ["Reforçar a régua de quantidade em todos os canais de apoio"] }],
     modelosMensagens: [],
-    ideiasStories: [],
+    ideiasStories: ["Mostrar a régua de forma visual (ex: 2 peças = 10%, 3 peças = 15%)"],
     dicas: "Funciona muito bem para produtos básicos e categorias onde o cliente costuma comprar mais de uma unidade.",
-    resultado: ["+ Peças por venda", "Giro de estoque", "Ticket médio maior"],
+    resultado: ["Mais itens por pedido", "Giro de estoque", "Ticket médio maior"],
     relacionadas: ["combo-inteligente", "pague-2-leve-3"],
   },
   {
-    id: "pague-2-leve-3", nome: "Pague 2, Leve 3", cat: "girar-estoque", nichos: ["Geral"],
+    id: "pague-2-leve-3", nome: "Pague 2, Leve 3", cat: "combos", nichos: ["Geral"],
     tipo: "Mecânica promocional clássica",
     sugestoesNomes: [], alternativaCanal: "Sem loja física? Troque o canal principal por Stories ou Grupo VIP — a mecânica continua a mesma.",
     como: "Na compra de 2 peças participantes, a terceira é por conta da loja — elimina estoque específico e aumenta o volume vendido.",
@@ -1417,7 +1272,7 @@ const ACTIONS = [
     relacionadas: ["combo-inteligente", "cabide-livre"],
   },
   {
-    id: "cliente-indica-ganha", nome: "Cliente Indica, Cliente Ganha", cat: "novas-clientes", nichos: ["Geral"],
+    id: "cliente-indica-ganha", nome: "Cliente Indica, Cliente Ganha", cat: "indicacao", nichos: ["Geral"],
     tipo: "Programa permanente de indicação",
     sugestoesNomes: [], alternativaCanal: "Sem loja física? O pós-venda pode acontecer inteiro por WhatsApp — o cartão ou QR code vai junto com a embalagem do envio.",
     como: "Após a compra, a cliente recebe um benefício para indicar uma amiga; quando a nova cliente compra pela primeira vez, ambas recebem uma recompensa.",
@@ -1437,7 +1292,7 @@ const ACTIONS = [
     relacionadas: ["convide-uma-amiga", "cashback-permanente"],
   },
   {
-    id: "convide-uma-amiga", nome: "Convide uma Amiga", cat: "novas-clientes", nichos: ["Geral"],
+    id: "convide-uma-amiga", nome: "Convide uma Amiga", cat: "indicacao", nichos: ["Geral"],
     tipo: "Campanha de data específica",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Diferente do programa permanente, essa acontece em datas específicas (Dia do Amigo, Dia das Mães, aniversário da loja, Black Friday VIP).",
@@ -1457,7 +1312,7 @@ const ACTIONS = [
     relacionadas: ["cliente-indica-ganha"],
   },
   {
-    id: "clube-presente", nome: "Clube Presente", cat: "novas-clientes", nichos: ["Infantil", "Geral"],
+    id: "clube-presente", nome: "Clube Presente", cat: "indicacao", nichos: ["Infantil", "Geral"],
     tipo: "Programa de lista de presentes",
     sugestoesNomes: [], alternativaCanal: null,
     como: "A loja cria uma lista de presentes para o aniversariante; os convidados compram diretamente dessa lista. Excelente para lojas infantis, mas pode ser adaptado.",
@@ -1477,7 +1332,7 @@ const ACTIONS = [
     relacionadas: ["cliente-indica-ganha"],
   },
   {
-    id: "closet-exclusivo", nome: "Closet Exclusivo", cat: "experiencia-compra", nichos: ["Geral"],
+    id: "closet-exclusivo", nome: "Closet Exclusivo", cat: "vip", nichos: ["Geral"],
     tipo: "Experiência VIP presencial",
     sugestoesNomes: [], alternativaCanal: null,
     como: "A loja fecha um horário exclusivo para poucas clientes conhecerem uma coleção antes do público, com experiência completa (espumante, café, doces, consultoria de looks, fotos, atendimento exclusivo).",
@@ -1497,7 +1352,7 @@ const ACTIONS = [
     relacionadas: ["preview-nova-colecao", "clube-secreto"],
   },
   {
-    id: "preview-nova-colecao", nome: "Preview da Nova Coleção", cat: "experiencia-compra", nichos: ["Geral"],
+    id: "preview-nova-colecao", nome: "Preview da Nova Coleção", cat: "lancamentos", nichos: ["Geral"],
     tipo: "Acesso antecipado VIP",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Clientes selecionadas compram antes da coleção chegar oficialmente ao público.",
@@ -1517,7 +1372,7 @@ const ACTIONS = [
     relacionadas: ["closet-exclusivo", "clube-secreto"],
   },
   {
-    id: "merecimento", nome: "Semana do Merecimento", cat: "experiencia-compra", nichos: ["Geral"],
+    id: "merecimento", nome: "Semana do Merecimento", cat: "emocional", nichos: ["Geral"],
     tipo: "Campanha emocional",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Ativa a compra por motivação pessoal (autocuidado, merecimento), sem depender de desconto agressivo. A mesma lógica funciona com outros temas: 'Dia de se Escolher', 'Projeto Autoestima', 'Semana da Mulher Real', 'Você Primeiro'.",
@@ -1540,7 +1395,7 @@ const ACTIONS = [
     relacionadas: ["closet-exclusivo"],
   },
   {
-    id: "estacionamento-conveniado", nome: "Estacionamento Conveniado", cat: "recorrencia", nichos: ["Geral"],
+    id: "estacionamento-conveniado", nome: "Estacionamento Conveniado", cat: "diferenciais", nichos: ["Geral"],
     tipo: "Diferencial permanente",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Elimina objeções relacionadas a deslocamento e conforto, oferecendo estacionamento gratuito, com desconto ou validação do ticket.",
@@ -1560,7 +1415,7 @@ const ACTIONS = [
     relacionadas: ["ajuste-perfeito", "parcelamento-vip-diferencial"],
   },
   {
-    id: "ajuste-perfeito", nome: "Ajuste Perfeito", cat: "recorrencia", nichos: ["Geral"],
+    id: "ajuste-perfeito", nome: "Ajuste Perfeito", cat: "diferenciais", nichos: ["Geral"],
     tipo: "Diferencial permanente (parceria com costureira)",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Aumenta a segurança na compra oferecendo pequenos ajustes gratuitos (barra, cintura) em compras acima de determinado valor.",
@@ -1580,7 +1435,7 @@ const ACTIONS = [
     relacionadas: ["estacionamento-conveniado"],
   },
   {
-    id: "parcelamento-vip-diferencial", nome: "Parcelamento VIP", cat: "recorrencia", nichos: ["Geral"],
+    id: "parcelamento-vip-diferencial", nome: "Parcelamento VIP", cat: "diferenciais", nichos: ["Geral"],
     tipo: "Diferencial comercial permanente",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Facilita compras de maior valor com mais parcelas, entrada facilitada ou parcelamento exclusivo pra clientes VIP.",
@@ -1600,7 +1455,7 @@ const ACTIONS = [
     relacionadas: ["estacionamento-conveniado", "ajuste-perfeito"],
   },
   {
-    id: "clube-secreto", nome: "Clube Secreto — Portas Abertas", cat: "experiencia-compra", nichos: ["Geral"],
+    id: "clube-secreto", nome: "Clube Secreto — Portas Abertas", cat: "vip", nichos: ["Geral"],
     tipo: "Campanha para grupo fechado de WhatsApp",
     sugestoesNomes: [], alternativaCanal: null,
     como: "Acesso a ofertas exclusivas dentro de um grupo fechado, construindo relacionamento direto e recorrente fora do Instagram.",
@@ -1620,7 +1475,7 @@ const ACTIONS = [
     relacionadas: ["closet-exclusivo", "preview-nova-colecao"],
   },
   {
-    id: "story-batalha", nome: "Story Interativo — Batalha de Estilos", cat: "vendas-rapidas", nichos: ["Geral"],
+    id: "story-batalha", nome: "Story Interativo — Batalha de Estilos", cat: "engajamento", nichos: ["Geral"],
     tipo: "Enquete de 4 opções",
     templateVisual: { label: "Modelo pronto no Canva", url: "https://canva.link/pk7hu5wbrrx8lhl" },
     sugestoesNomes: [], alternativaCanal: null,
@@ -1657,7 +1512,7 @@ const ACTIONS = [
     },
   },
   {
-    id: "story-presente", nome: "Story Interativo — Escolha seu Presente", cat: "vendas-rapidas", nichos: ["Geral"],
+    id: "story-presente", nome: "Story Interativo — Escolha seu Presente", cat: "engajamento", nichos: ["Geral"],
     tipo: "Jogo de emojis ou números",
     templateVisual: { label: "Modelo pronto no Canva", url: "https://canva.link/pk7hu5wbrrx8lhl" },
     sugestoesNomes: [], alternativaCanal: null,
@@ -1683,7 +1538,7 @@ const ACTIONS = [
     relacionadas: ["story-batalha", "story-caca-palavras"],
   },
   {
-    id: "story-caca-palavras", nome: "Story Interativo — Caça-Palavras", cat: "vendas-rapidas", nichos: ["Geral"],
+    id: "story-caca-palavras", nome: "Story Interativo — Caça-Palavras", cat: "engajamento", nichos: ["Geral"],
     tipo: "Desafio de atenção",
     templateVisual: { label: "Modelo pronto no Canva", url: "https://canva.link/pk7hu5wbrrx8lhl" },
     sugestoesNomes: [], alternativaCanal: null,
@@ -1709,7 +1564,7 @@ const ACTIONS = [
     relacionadas: ["story-batalha", "story-presente"],
   },
   {
-    id: "sacola-premiada", nome: "Sacola Premiada", cat: "vendas-rapidas",
+    id: "sacola-premiada", nome: "Sacola Premiada", cat: "brindes",
     nichos: ["Chimarrão", "Acessórios", "Cosméticos / Skincare"],
     tipo: "Campanha de compra por impulso e surpresa",
     sugestoesNomes: [],
@@ -1809,6 +1664,467 @@ const ACTIONS = [
       "Dia das Mães": "Mãe clássica, Mãe vaidosa, Mãe prática, Mãe elegante, Mãe aventureira",
     },
   },
+  {
+    id: "chave-premiada", nome: "Chave Premiada", cat: "brindes", nichos: ["Geral"],
+    tipo: "Mecânica de surpresa e descoberta para ação rápida",
+    sugestoesNomes: [],
+    como: "Use a Chave Premiada para criar uma ação rápida, com sensação de exclusividade e descoberta, estimulando a cliente a comprar naquele dia. Funciona especialmente bem em datas repetidas, como 10/10, 11/11 ou 12/12, porque o próprio conceito da data pode virar o motivo da ação. Também pode ser usada em lançamentos, aniversário da loja, Dia do Cliente ou em um dia estratégico de vendas.",
+    duracao: "Ação relâmpago: 1 dia. Na loja física, pode ser estendida para 2 ou 3 dias se você quiser gerar mais fluxo.",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories"],
+    objetivo: [
+      "Criar uma ação rápida, com sensação de exclusividade e descoberta",
+      "Estimular a cliente a comprar naquele dia",
+      "Aproveitar datas repetidas (10/10, 11/11, 12/12) como motivo da ação",
+      "Também funciona em lançamentos, aniversário da loja, Dia do Cliente ou um dia estratégico de vendas",
+    ],
+    quandoUsar: ["Datas repetidas como 10/10, 11/11 ou 12/12", "Lançamentos", "Aniversário da loja", "Dia do Cliente", "Um dia estratégico de vendas"],
+    quandoEvitar: [],
+    checklist: [
+      "Defina o objetivo da ação.",
+      "Defina a condição para participar.",
+      "Escolha os benefícios: desconto, brinde, cashback, vale-compra, frete, condição especial de pagamento ou benefício para a próxima compra.",
+      "Defina quantas chaves estarão disponíveis.",
+      "Organize a forma de participação.",
+      "Defina horário de início e encerramento.",
+    ],
+    checklistExecucao: [
+      "Se for no Instagram: criar três ou mais chaves numeradas e publicar os Stories na sequência.",
+      "Se for na loja: deixar as chaves visíveis em um ponto estratégico, com uma pequena estação 'ESCOLHA SUA CHAVE'.",
+      "A cliente realiza a condição definida, escolhe uma chave e descobre o benefício.",
+      "Aproveite para gravar algumas participações.",
+    ],
+    planoDivulgacao: [
+      { marco: "Antecipação para uma data repetida (dia anterior)", itens: [
+        "Story 1: foto de um detalhe da loja — 'Amanhã é 10/10.'",
+        "Story 2: 'E a gente decidiu que uma data dessas não podia passar em branco.'",
+        "Story 3: foto de uma chave — 'Amanhã você vai precisar escolher uma.'",
+        "Story 4: '10/10 — Chave Premiada. Só amanhã.'",
+      ]},
+      { marco: "Se for fazer no Instagram", itens: [
+        "Story 1: 'Hoje é 10/10. E já que a data é especial, resolvemos transformar o dia em uma oportunidade especial também.'",
+        "Story 2: 'Escolha uma chave: 🔑 1 🔑 2 🔑 3'",
+        "Story 3 (depois que a cliente escolher): 'Você escolheu a chave [X]. Seu benefício é: [BENEFÍCIO].'",
+        "Story 4: 'Para aproveitar, é só [condição de compra].'",
+        "Story 5: 'A Chave Premiada é válida somente hoje, até [horário].'",
+      ]},
+      { marco: "Durante a ação", itens: [
+        "Não fique apenas repetindo a promoção.",
+        "Mostre: as chaves; clientes escolhendo; benefícios sendo revelados; quantidade de chaves restantes; horário final.",
+        "Story: 'A primeira chave já foi escolhida por aqui.'",
+        "Depois: 'E o benefício foi esse…'",
+        "No final: 'Últimas horas para participar. Hoje, às [horário], encerramos.'",
+      ]},
+    ],
+    modelosMensagens: [
+      { canal: "Lista de clientes", texto: "Oi, [nome]! Hoje estamos fazendo uma ação especial por causa do 10/10. Nas compras acima de R$[X], você escolhe uma chave e descobre um benefício. É só hoje e lembrei de te avisar porque achei que você poderia aproveitar." },
+    ],
+    ideiasStories: [],
+    dicas: "Não coloque todos os benefícios no mesmo nível. Você pode ter benefícios menores e alguns mais desejados para criar expectativa.",
+    resultado: [
+      "Sensação de exclusividade e descoberta para a cliente",
+      "Estímulo à compra no mesmo dia",
+      "Conteúdo natural pra Stories (escolha, revelação, reação)",
+      "Aproveitamento direto do conceito da data repetida",
+    ],
+    relacionadas: ["cofre-de-beneficios", "caixa-misteriosa", "dados-da-sorte"],
+    nichoExemplos: {
+      "Loja de acessórios": "Escolha sua chave e desbloqueie um benefício na compra do seu próximo acessório.",
+      "Loja infantil": "Na compra acima de R$X, escolha uma chave e descubra seu presente.",
+      "Loja de beleza": "Transforme o benefício em serviço, produto ou condição para uma próxima visita.",
+    },
+  },
+  {
+    id: "envelope-premiado", nome: "Envelope Premiado", cat: "brindes", nichos: ["Geral"],
+    tipo: "Mecânica de curiosidade, incentivo de compra e experiência",
+    sugestoesNomes: [],
+    como: "O Envelope Premiado é uma ação simples para criar curiosidade + incentivo de compra + experiência. É especialmente interessante quando você quer transformar uma promoção comum em algo que gere participação.",
+    duracao: "1 dia para uma ação relâmpago. Pode durar 2 a 4 dias em campanhas especiais.",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories", "WhatsApp individual"],
+    objetivo: ["Criar curiosidade, incentivo de compra e experiência", "Transformar uma promoção comum em algo que gere participação"],
+    quandoUsar: [
+      "Quando quer transformar uma promoção comum em experiência",
+      "Loja física — excelente para criar experiência",
+      "Instagram/WhatsApp — pode funcionar de forma virtual, com envelopes numerados que a cliente escolhe",
+    ],
+    quandoEvitar: [],
+    checklist: [
+      "Separe os envelopes e defina previamente o que haverá dentro de cada um.",
+      "Use descontos, brindes, cashback, vale-compra, benefícios para próxima compra ou condições especiais.",
+      "Não revele tudo antes da ação.",
+    ],
+    checklistExecucao: [
+      "Nas compras acima de R$[X] (valor definido), a cliente escolhe um envelope e descobre seu benefício.",
+      "Mostrar uma cliente escolhendo e a abertura do envelope.",
+    ],
+    planoDivulgacao: [
+      { marco: "Antecipação", itens: [
+        "Story 1: foto dos envelopes — 'Amanhã tem uma coisa diferente por aqui.'",
+        "Story 2: 'Você vai poder escolher um deles.'",
+        "Story 3: 'Mas o que tem dentro… só quem participar vai descobrir.'",
+        "Story 4: '[DATA] — Envelope Premiado.'",
+      ]},
+      { marco: "Dia da ação", itens: [
+        "Story 1: vídeo mostrando os envelopes — 'É HOJE.'",
+        "Story 2: 'Nas compras acima de R$[X], você escolhe um envelope.'",
+        "Story 3: 'E dentro dele existe um benefício para você.'",
+        "Story 4: mostre uma cliente escolhendo — 'Qual você escolheria?'",
+        "Story 5: mostre a abertura — 'Ela escolheu o [número].'",
+        "Story 6: 'E ganhou [benefício].'",
+        "Story 7: 'Quer escolher o seu? Hoje até [horário].'",
+      ]},
+    ],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Para uma data como 11/11, você pode criar: '11/11 — 11 envelopes, 11 oportunidades' ou '11/11 — Escolha seu envelope'. A data passa a ser parte do conceito da ação, e não apenas uma desculpa para fazer promoção.",
+    resultado: [
+      "Curiosidade e participação em torno da ação",
+      "Experiência de escolha e descoberta pra cliente",
+      "Boa adaptação pra loja física e também pra Instagram/WhatsApp",
+    ],
+    relacionadas: ["chave-premiada", "balao-premiado", "mural-da-sorte"],
+    narrativasPorData: {
+      "11/11": "11/11 — 11 envelopes, 11 oportunidades (ou: 11/11 — Escolha seu envelope)",
+    },
+  },
+  {
+    id: "balao-premiado", nome: "Balão Premiado", cat: "brindes", nichos: ["Geral"],
+    tipo: "Mecânica de movimento, experiência e conteúdo para loja física",
+    sugestoesNomes: ["Estoure o Balão"],
+    como: "Ideal para criar movimento, experiência e conteúdo, principalmente na loja física. É uma ótima opção para um sábado, evento, aniversário da loja ou data repetida.",
+    duracao: "Relâmpago: algumas horas ou 1 dia. Também pode funcionar durante um evento específico.",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories"],
+    objetivo: ["Criar movimento, experiência e conteúdo na loja física", "O objetivo não é apenas o benefício — é a experiência de participar"],
+    quandoUsar: ["Um sábado", "Um evento", "Aniversário da loja", "Data repetida"],
+    quandoEvitar: [],
+    checklist: [
+      "Defina quantidade de balões.",
+      "Defina os benefícios.",
+      "Defina a condição de participação.",
+      "Defina horário.",
+      "Defina validade dos benefícios.",
+      "Coloque os benefícios dentro dos balões antes da ação.",
+    ],
+    checklistExecucao: [
+      "Faça a ação acontecer em um lugar visível da loja.",
+      "Nas compras acima de R$[X], a cliente escolhe um balão e estoura.",
+      "Grave o momento de estourar o balão.",
+    ],
+    planoDivulgacao: [
+      { marco: "Antecipação", itens: [
+        "Story 1: mostre apenas alguns balões — 'Tem coisa diferente acontecendo por aqui amanhã…'",
+        "Story 2: 'E você vai precisar escolher um.'",
+        "Story 3: 'Mas só vai descobrir o que ganhou depois.'",
+        "Story 4: '[DATA] — Balão Premiado.'",
+      ]},
+      { marco: "No dia", itens: [
+        "Story 1: vídeo mostrando todos os balões — 'COMEÇOU.'",
+        "Story 2: 'Hoje, nas compras acima de R$[X], você escolhe um balão.'",
+        "Story 3: 'E agora vem a parte mais divertida.'",
+        "Story 4: vídeo de uma cliente estourando — 'Vamos descobrir o que veio?'",
+        "Story 5: revele o benefício.",
+        "Story 6: 'Ainda dá tempo de participar. Estamos aqui até [horário].'",
+      ]},
+    ],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "No 12/12, use: '12/12 — 12 balões, 12 benefícios.' Trabalhe inclusive uma quantidade limitada — 'Só 12 balões disponíveis hoje.' Isso cria urgência sem precisar aumentar o desconto.",
+    resultado: [
+      "Movimento e experiência visível na loja física",
+      "Conteúdo natural pra Stories (escolha, estouro, reação)",
+      "Urgência criada sem precisar aumentar desconto",
+    ],
+    relacionadas: ["chave-premiada", "caixa-misteriosa", "dados-da-sorte"],
+    narrativasPorData: {
+      "12/12": "12/12 — 12 balões, 12 benefícios (quantidade limitada: 'Só 12 balões disponíveis hoje.')",
+    },
+  },
+  {
+    id: "caixa-misteriosa", nome: "Caixa Misteriosa", cat: "brindes", nichos: ["Geral"],
+    tipo: "Mecânica pra aumentar ticket médio e criar experiência",
+    sugestoesNomes: ["Caixa do Amor"],
+    como: "Use quando o objetivo principal for aumentar o valor da compra e, ao mesmo tempo, criar uma experiência na loja. É uma das melhores mecânicas para trabalhar ticket.",
+    duracao: "2 a 7 dias. Também pode ser usada exclusivamente durante um evento ou em um sábado.",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories"],
+    objetivo: ["Aumentar o valor da compra (ticket médio)", "Criar uma experiência na loja"],
+    quandoUsar: ["Quando o objetivo é aumentar ticket médio", "Durante um evento ou em um sábado"],
+    quandoEvitar: [],
+    checklist: [
+      "Não escolha o valor mínimo aleatoriamente — olhe para o seu ticket médio (ex: ticket em R$180, uma condição de R$200 pode estimular uma pequena evolução na compra).",
+      "A ação precisa criar um próximo degrau, não ser liberada para praticamente todas as compras.",
+      "Defina o que vai dentro da caixa: produtos da loja, acessórios, pequenos mimos, brindes, vouchers, benefícios para próxima compra ou produtos comprados especialmente para a ação.",
+    ],
+    checklistExecucao: [
+      "Compras acima do valor mínimo definido dão direito a colocar a mão na Caixa Misteriosa e retirar um presente.",
+      "Não revele a regra logo de cara na antecipação.",
+    ],
+    planoDivulgacao: [
+      { marco: "Antecipação", itens: [
+        "Story 1: vídeo da caixa fechada — 'Tem uma caixa aqui na loja que eu não posso abrir.'",
+        "Story 2: 'Na verdade, quem vai abrir é você.'",
+        "Story 3: 'Amanhã eu explico como participar.'",
+      ]},
+      { marco: "Lançamento", itens: [
+        "Story 1: mostre a caixa — 'A Caixa Misteriosa está aberta.'",
+        "Story 2: 'Nas compras acima de R$[X], você ganha o direito de colocar a mão aqui dentro e retirar um presente.'",
+        "Story 3: 'E não, você não pode olhar antes.'",
+        "Story 4: mostre uma cliente participando — 'O que será que ela vai tirar?'",
+        "Story 5: reação + presente.",
+        "Story 6: 'Quer descobrir o seu? Vem para a loja.'",
+      ]},
+    ],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Pra Dia dos Namorados, transforme a mesma mecânica em 'Caixa do Amor', trocando os brindes por itens relacionados à data. A estrutura continua sendo: valor mínimo → experiência → surpresa → benefício.",
+    resultado: [
+      "Aumento do ticket médio (próximo degrau de compra)",
+      "Experiência de surpresa na loja",
+      "Boa adaptação pra datas temáticas (ex: Caixa do Amor)",
+    ],
+    relacionadas: ["balao-premiado", "cofre-de-beneficios", "chave-premiada"],
+  },
+  {
+    id: "dados-da-sorte", nome: "Dados da Sorte", cat: "brindes", nichos: ["Geral"],
+    tipo: "Mecânica rápida e divertida pra datas especiais",
+    sugestoesNomes: [],
+    como: "Use para transformar uma compra em uma experiência rápida e divertida. Funciona muito bem em datas especiais, eventos e ações de um único dia.",
+    duracao: "1 dia ou algumas horas.",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories"],
+    objetivo: ["Transformar uma compra em uma experiência rápida e divertida"],
+    quandoUsar: ["Datas especiais", "Eventos", "Ações de um único dia"],
+    quandoEvitar: [],
+    checklist: [
+      "Defina os benefícios de acordo com sua margem e objetivo. Exemplo: 1 — 5% de desconto; 2 — Brinde; 3 — R$20 de cashback; 4 — Frete grátis; 5 — Benefício para próxima compra; 6 — Prêmio especial.",
+    ],
+    checklistExecucao: [
+      "A cliente cumpre a condição da ação e joga um dado.",
+      "Cada número corresponde a um benefício.",
+    ],
+    planoDivulgacao: [
+      { marco: "Antecipação", itens: [
+        "Story 1: close no dado — 'Amanhã você vai precisar contar com a sorte.'",
+        "Story 2: 'Mas o melhor é que qualquer resultado pode virar benefício.'",
+        "Story 3: '[DATA] — Dados da Sorte.'",
+      ]},
+      { marco: "No dia", itens: [
+        "Story 1: 'Seu número pode valer um benefício.'",
+        "Story 2: 'Nas compras acima de R$[X], você joga o dado.'",
+        "Story 3: mostre uma cliente jogando — 'Qual número será?'",
+        "Story 4: 'Caiu [X].'",
+        "Story 5: 'E isso significa: [benefício].'",
+        "Story 6: 'Ainda dá tempo de jogar o seu. Até [horário].'",
+      ]},
+    ],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Pra uma data como 10/10, crie '10/10 — Dados da Sorte' e limite a ação ('Hoje, somente 10 clientes poderão participar') ou ofereça '10 benefícios diferentes para quem comprar hoje' — assim você usa o número da data para construir a campanha.",
+    resultado: [
+      "Experiência rápida e divertida de compra",
+      "Conteúdo fácil de gerar pros Stories",
+      "Número da data incorporado na mecânica",
+    ],
+    relacionadas: ["chave-premiada", "balao-premiado", "mural-da-sorte"],
+    narrativasPorData: {
+      "10/10": "10/10 — Dados da Sorte (ex: 'Hoje, somente 10 clientes poderão participar' ou '10 benefícios diferentes para quem comprar hoje')",
+    },
+  },
+  {
+    id: "mural-da-sorte", nome: "Mural da Sorte", cat: "brindes", nichos: ["Geral"],
+    tipo: "Ponto visual na loja que gera curiosidade e interação",
+    sugestoesNomes: [],
+    como: "O Mural da Sorte funciona muito bem quando você quer criar um ponto visual dentro da loja que gere curiosidade e faça a cliente interagir.",
+    duracao: "2 a 7 dias.",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories"],
+    objetivo: ["Criar um ponto visual dentro da loja que gere curiosidade", "Fazer a cliente interagir"],
+    quandoUsar: ["Quando quer um ponto visual de curiosidade na loja por alguns dias"],
+    quandoEvitar: [],
+    checklist: [
+      "Monte um mural com envelopes, cartões ou espaços numerados — pode ser mural com envelopes, mural com cartões, mural numerado, painel com bolsos ou cartões pendurados.",
+      "O importante é que a cliente veja a ação antes mesmo de alguém explicar.",
+    ],
+    checklistExecucao: [
+      "A cliente que cumprir a condição escolhe um espaço e descobre seu benefício.",
+      "Use uma enquete ou caixa de resposta pra gerar interação mesmo de quem não está na loja.",
+    ],
+    planoDivulgacao: [
+      { marco: "Antecipação", itens: [
+        "Story 1: mostre apenas um detalhe — 'Estamos montando uma coisa nova na loja.'",
+        "Story 2: mostre outro pedaço — 'Você vai poder escolher um.'",
+        "Story 3: 'Mas o que tem dentro só vamos descobrir amanhã.'",
+      ]},
+      { marco: "Lançamento", itens: [
+        "Story 1: revele o mural — 'MURAL DA SORTE liberado.'",
+        "Story 2: 'Nas compras acima de R$[X], você escolhe um envelope.'",
+        "Story 3: 'E descobre seu benefício.'",
+        "Story 4: mostre uma cliente escolhendo.",
+        "Story 5: mostre a abertura.",
+        "Story 6: 'Qual você escolheria?'",
+      ]},
+    ],
+    modelosMensagens: [],
+    ideiasStories: [],
+    dicas: "Pra datas repetidas, crie um mural numerado: '11/11 — 11 envelopes' ou '12/12 — 12 benefícios'. Isso dá uma identidade própria para cada campanha.",
+    resultado: [
+      "Curiosidade visível na loja antes mesmo de explicar a ação",
+      "Interação mesmo de quem não está presencialmente na loja (enquete)",
+      "Identidade própria por campanha quando numerado pela data",
+    ],
+    relacionadas: ["envelope-premiado", "dados-da-sorte", "chave-premiada"],
+    narrativasPorData: {
+      "11/11": "11/11 — 11 envelopes",
+      "12/12": "12/12 — 12 benefícios",
+    },
+  },
+  {
+    id: "passaporte-da-data", nome: "Passaporte da Data", cat: "brindes", nichos: ["Geral"],
+    tipo: "Mecânica de recorrência em etapas, não só na primeira compra",
+    sugestoesNomes: [],
+    como: "Essa ação é diferente das anteriores porque não precisa terminar na primeira compra. Use quando o objetivo for fazer a cliente voltar, participar de mais de uma etapa e criar recorrência durante uma campanha.",
+    duracao: "7 a 10 dias.",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories", "WhatsApp individual"],
+    objetivo: ["Fazer a cliente voltar à loja mais de uma vez", "Criar recorrência durante uma campanha"],
+    quandoUsar: ["Quando o objetivo é recorrência, não só a primeira compra"],
+    quandoEvitar: [],
+    checklist: [
+      "Monte o passaporte com algumas etapas que façam sentido para o objetivo da loja. Exemplo (Passaporte 10/10): 1) Faça uma compra durante a campanha. 2) Volte à loja em outro dia. 3) Conheça uma nova categoria. 4) Faça uma segunda compra. 5) Complete o passaporte.",
+      "Ao completar, a cliente desbloqueia um benefício especial.",
+    ],
+    checklistExecucao: [
+      "Cada etapa cumprida gera um carimbo, marcação ou avanço no passaporte da cliente.",
+      "Mostre progresso durante a campanha em vez de ficar repetindo a promoção.",
+    ],
+    planoDivulgacao: [
+      { marco: "Dia 1 — lançamento", itens: [
+        "Story 1: 'Começou uma campanha diferente por aqui.'",
+        "Story 2: 'Dessa vez, você não precisa resolver tudo em um único dia.'",
+        "Story 3: mostre o passaporte — 'Você vai completar algumas etapas e desbloquear um benefício no final.'",
+        "Story 4: 'Quer receber o seu? [CTA]'",
+      ]},
+      { marco: "Durante a campanha", itens: [
+        "'Hoje ela completou mais uma etapa.'",
+        "'Falta pouco para desbloquear o benefício.'",
+        "'Você já começou o seu?'",
+      ]},
+    ],
+    modelosMensagens: [
+      { canal: "WhatsApp", texto: "Oi, [nome]! Começamos uma ação diferente aqui na loja. É o Passaporte [nome da campanha]. Você recebe algumas etapas para completar durante os próximos dias e, quando finalizar, desbloqueia um benefício especial. Se quiser participar, posso te explicar como funciona." },
+    ],
+    ideiasStories: [],
+    dicas: "As etapas devem fazer sentido para o objetivo da loja — não force etapas aleatórias só pra ter mais passos.",
+    resultado: [
+      "Cliente volta à loja mais de uma vez durante a campanha",
+      "Recorrência criada dentro de um único período promocional",
+      "Conteúdo de progresso ao longo de vários dias, não só no lançamento",
+    ],
+    relacionadas: ["cofre-de-beneficios", "mural-da-sorte"],
+  },
+  {
+    id: "cofre-de-beneficios", nome: "Cofre de Benefícios", cat: "brindes", nichos: ["Geral"],
+    tipo: "Mecânica de fidelização e recompra, com liberação progressiva de benefícios",
+    sugestoesNomes: [],
+    como: "O Cofre de Benefícios é mais indicado para fidelização e recompra. Em vez de dar um benefício imediatamente, você cria uma condição que faz a cliente desbloquear benefícios ao longo de determinado período.",
+    duracao: "7 a 30 dias.",
+    canalPrincipal: "WhatsApp individual",
+    canaisApoio: ["Stories"],
+    objetivo: ["Fidelização e recompra", "Criar exclusividade, e não simplesmente oferecer desconto para todo mundo"],
+    quandoUsar: ["Fidelização de um grupo de clientes selecionadas", "Quando quer criar exclusividade em vez de desconto genérico"],
+    quandoEvitar: [],
+    checklist: [
+      "Defina as etapas de desbloqueio. Exemplo: primeira compra desbloqueia benefício 1; segunda compra desbloqueia benefício 2; atingiu determinado valor desbloqueia benefício 3.",
+      "Pode ser utilizado com um grupo de clientes selecionadas.",
+    ],
+    checklistExecucao: [
+      "A cliente entra no 'cofre' e vai desbloqueando benefícios conforme cumpre determinadas ações.",
+      "A comunicação pode ser mais exclusiva — funciona especialmente bem por mensagem individual.",
+    ],
+    planoDivulgacao: [
+      { marco: "Conteúdo", itens: [
+        "Story 1: 'Tem uma novidade que não vai ser para todo mundo.'",
+        "Story 2: 'Estamos abrindo um grupo especial de clientes.'",
+        "Story 3: 'Quem estiver dentro vai receber alguns benefícios ao longo deste mês.'",
+        "Story 4: 'Quer saber como entrar? [CTA]'",
+      ]},
+      { marco: "Para as clientes selecionadas", itens: [
+        "'Seu acesso ao Cofre de Benefícios está liberado.'",
+        "A cada benefício liberado: 'Cofre aberto. Benefício de hoje: [benefício].'",
+      ]},
+    ],
+    modelosMensagens: [
+      { canal: "WhatsApp individual", texto: "Oi, [nome]! Estou entrando em contato porque você está entre as clientes que receberam acesso ao nosso Cofre de Benefícios deste mês. Vou te enviar algumas condições especiais ao longo dos próximos dias. A primeira é [benefício]." },
+    ],
+    ideiasStories: [],
+    dicas: "Isso transforma a ação em relacionamento, e não apenas em promoção.",
+    resultado: [
+      "Fidelização e aumento de recompra",
+      "Sensação de exclusividade pra quem participa",
+      "Relacionamento construído ao longo do período, não só uma venda pontual",
+    ],
+    relacionadas: ["passaporte-da-data", "caixa-misteriosa"],
+  },
+  {
+    id: "mecanicas-datas-repetidas-guia", nome: "Como Usar Essas Ações em Datas Repetidas", cat: "brindes", nichos: ["Geral"],
+    tipo: "Guia de aplicação das mecânicas em datas de números iguais",
+    sugestoesNomes: [],
+    como: "As datas iguais são uma ótima oportunidade para criar microcampanhas de um dia, sem precisar inventar uma grande promoção todos os meses. Você pode transformar a própria data no conceito. O mais importante é não usar a data apenas como título — faça a data influenciar a mecânica: 10 clientes, 10 benefícios, 10 oportunidades, 10 horas, 10 produtos, R$10 de benefício, 10% em determinada condição. Assim a campanha ganha um conceito.",
+    duracao: "Normalmente 1 dia (microcampanha).",
+    canalPrincipal: "Loja física",
+    canaisApoio: ["Stories", "WhatsApp individual"],
+    objetivo: ["Criar microcampanhas de um dia em cima das datas de números iguais", "Fazer a data influenciar a mecânica, não ser só um título"],
+    quandoUsar: ["10/10", "11/11", "12/12", "e qualquer outra data de números iguais do calendário"],
+    quandoEvitar: [],
+    checklist: [
+      "10/10 — Chave Premiada: '10/10 — escolha sua chave.'",
+      "10/10 — Dados da Sorte: '10/10 — seu número pode virar benefício.' / '10 benefícios disponíveis durante o dia.'",
+      "11/11 — Envelope Premiado: '11/11 — 11 envelopes.'",
+      "11/11 — Mural da Sorte: '11/11 — escolha um dos 11 benefícios.'",
+      "12/12 — Balão Premiado: '12/12 — 12 balões.'",
+      "12/12 — Caixa Misteriosa: '12/12 — compras acima de R$X participam.'",
+    ],
+    checklistExecucao: [
+      "Um exemplo completo (10/10) — Objetivo: gerar vendas em um dia específico.",
+      "Mecânica: Chave Premiada.",
+      "Condição: compras acima de R$200.",
+      "Benefícios: 10 benefícios diferentes.",
+    ],
+    planoDivulgacao: [
+      { marco: "09/10 — antecipação", itens: [
+        "'Amanhã é 10/10. E a gente resolveu fazer uma coisa diferente. Amanhã você vai precisar escolher uma chave.'",
+      ]},
+      { marco: "10/10 — manhã", itens: [
+        "'É HOJE. 10/10 — Chave Premiada. Nas compras acima de R$200, você escolhe uma chave e descobre seu benefício.'",
+      ]},
+      { marco: "Durante o dia", itens: [
+        "Mostrar clientes escolhendo.",
+        "Mostrar benefícios.",
+        "Mostrar movimento.",
+      ]},
+      { marco: "Final do dia", itens: [
+        "'Últimas horas para participar do 10/10. Às [horário], nossas chaves encerram.'",
+      ]},
+    ],
+    modelosMensagens: [
+      { canal: "WhatsApp (clientes com potencial de compra)", texto: "Oi, [nome]! Hoje é 10/10 e estamos fazendo uma ação especial aqui na loja. Nas compras acima de R$200, você escolhe uma chave e desbloqueia um benefício. É só hoje. Se quiser aproveitar, me chama que te mostro as opções disponíveis." },
+    ],
+    ideiasStories: [],
+    dicas: "O mais importante é não usar a data apenas como título. Faça a data influenciar a mecânica — na quantidade de kits, no número de brindes, no parcelamento, nos primeiros clientes, no cashback, no horário da live, no cupom e até na comunicação.",
+    resultado: [
+      "Microcampanhas de um dia, fáceis de repetir todo mês",
+      "Conceito de campanha memorável, não só mais uma promoção",
+      "Mecânicas reaproveitáveis entre as datas de números iguais",
+    ],
+    relacionadas: ["chave-premiada", "dados-da-sorte", "envelope-premiado", "mural-da-sorte", "balao-premiado", "caixa-misteriosa"],
+    narrativasPorData: {
+      "10/10": "Chave Premiada ('10/10 — escolha sua chave') ou Dados da Sorte ('10/10 — seu número pode virar benefício', '10 benefícios disponíveis durante o dia')",
+      "11/11": "Envelope Premiado ('11/11 — 11 envelopes') ou Mural da Sorte ('11/11 — escolha um dos 11 benefícios')",
+      "12/12": "Balão Premiado ('12/12 — 12 balões') ou Caixa Misteriosa ('12/12 — compras acima de R$X participam')",
+    },
+  },
 ];
 
 function CanalChip({ label, small, main }) {
@@ -1885,70 +2201,6 @@ function DtlChecklistGroup({ itens, checked, onToggle }) {
           <span className={checked[i] ? "done" : ""}>{it}</span>
         </label>
       ))}
-    </div>
-  );
-}
-
-const JORNADA_CANAL_ICON = { Stories: Radio, Reels: Film, WhatsApp: MessageCircle };
-
-function JornadaDivulgacao({ dias, checked, onToggle }) {
-  const [openDia, setOpenDia] = useState(0);
-
-  return (
-    <div className="dtl-jornada">
-      {dias.map((d, di) => {
-        const totalDia = d.checklist ? d.checklist.length : 0;
-        const feitosDia = d.checklist ? d.checklist.filter((_, ci) => checked[`${di}-${ci}`]).length : 0;
-        const isOpen = openDia === di;
-        return (
-          <div className={`dtl-jornada-dia ${isOpen ? "aberto" : ""}`} key={di}>
-            <button type="button" className="dtl-jornada-dia-header" onClick={() => setOpenDia(isOpen ? -1 : di)}>
-              <span className="dtl-jornada-marker" />
-              <span className="dtl-jornada-dia-info">
-                <span className="dtl-jornada-titulo">{d.titulo}</span>
-                {totalDia > 0 && <span className="dtl-jornada-progresso">{feitosDia}/{totalDia} concluído</span>}
-              </span>
-              <ChevronRight size={16} className={`dtl-jornada-chevron ${isOpen ? "open" : ""}`} />
-            </button>
-
-            {isOpen && (
-              <div className="dtl-jornada-dia-body">
-                {d.objetivo && <p className="dtl-jornada-objetivo">{d.objetivo}</p>}
-
-                {d.blocos.map((b, bi) => {
-                  const CanalIcon = JORNADA_CANAL_ICON[b.canal] || MessageCircle;
-                  return (
-                    <div className="dtl-jornada-canal" key={bi}>
-                      <span className="dtl-jornada-canal-label"><CanalIcon size={12} /> {b.canal}</span>
-                      {b.itens.map((it, ii) => (
-                        <div className="dtl-jornada-item" key={ii}>
-                          {it.rotulo && <span className="dtl-jornada-item-rotulo">{it.rotulo}</span>}
-                          <p className="dtl-jornada-item-texto">{it.texto}</p>
-                          {it.obs && <p className="dtl-jornada-item-obs">{it.obs}</p>}
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })}
-
-                {d.checklist && d.checklist.length > 0 && (
-                  <div className="checklist">
-                    {d.checklist.map((c, ci) => {
-                      const key = `${di}-${ci}`;
-                      return (
-                        <label key={ci} className="checkitem">
-                          <input type="checkbox" checked={!!checked[key]} onChange={() => onToggle(key)} />
-                          <span className={checked[key] ? "done" : ""}>{c}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        );
-      })}
     </div>
   );
 }
@@ -2035,6 +2287,45 @@ function RadarCard({ op, favorito, onToggleFavorito, onDefinirLembrete, onVerAco
           Ver ações comerciais
         </button>
       )}
+    </div>
+  );
+}
+
+function AprendaEApliqueScreen() {
+  const grupos = [...new Set(AULAS.map((a) => a.grupo))];
+
+  return (
+    <div className="screen">
+      <div className="dash-header">
+        <div>
+          <span className="dash-ola">🎓 Vídeos curtos pra aplicar na loja</span>
+          <h1 className="dash-titulo">Aprenda e Aplique</h1>
+        </div>
+      </div>
+
+      <div className="cal-anual-conteudo">
+        {grupos.map((grupo) => (
+          <div key={grupo} className="dtl-section-card">
+            <div className="dtl-section-title">{grupo}</div>
+            <div className="aprenda-grid">
+              {AULAS.filter((a) => a.grupo === grupo).map((a) => (
+                <div key={a.id} className="aprenda-video-card">
+                  <div className="aprenda-video-frame">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${a.youtubeId}`}
+                      title={a.titulo}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      frameBorder="0"
+                    />
+                  </div>
+                  <span className="aprenda-video-titulo">{a.titulo}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -2489,9 +2780,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
     .map((id) => ACTIONS.find((a) => a.id === id))
     .filter(Boolean);
 
-  const totalDivulgacao = action.jornadaDivulgacao && action.jornadaDivulgacao.length > 0
-    ? action.jornadaDivulgacao.reduce((s, d) => s + (d.checklist ? d.checklist.length : 0), 0)
-    : action.planoDivulgacao.reduce((s, m) => s + m.itens.length, 0);
+  const totalDivulgacao = action.planoDivulgacao.reduce((s, m) => s + m.itens.length, 0);
   const totalTarefas = action.checklist.length + action.checklistExecucao.length + totalDivulgacao;
   const concluidas =
     Object.values(checkedPrep).filter(Boolean).length +
@@ -2511,55 +2800,13 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
 
       <div className="scroll">
         <div className="dtl-header">
-          <div className="dtl-hero">
-            <div className="dtl-hero-main">
-              <span className="dtl-hero-badge"><Icon size={12} /> {info.label}</span>
-              <h1 className="dtl-nome">{action.nome}</h1>
-              <p className="dtl-desc">{action.como}</p>
-            </div>
-
-            {action.mecanica && action.mecanica.length > 0 && (
-              <div className="dtl-mecanica">
-                {action.mecanica.map((m, i) => (
-                  <Fragment key={i}>
-                    {i > 0 && <ChevronRight size={16} className="dtl-mecanica-arrow" />}
-                    <div className={`dtl-mecanica-card mec-${Math.min(i + 1, 3)}`}>
-                      <span className="mec-pecas">{m.pecas}</span>
-                      <span className="mec-pct">{m.desconto}</span>
-                    </div>
-                  </Fragment>
-                ))}
-              </div>
-            )}
+          <h1 className="dtl-nome">{action.nome}</h1>
+          <p className="dtl-desc">{action.como}</p>
+          <div className="dtl-chips">
+            <span className="dtl-chip"><Clock size={13} /> {action.duracao}</span>
+            <span className="dtl-chip"><Target size={13} /> {action.objetivoPrincipal || action.objetivo[0]}</span>
+            <span className="dtl-chip"><Icon size={13} /> {info.label}</span>
           </div>
-
-          <div className="dtl-quickinfo-grid">
-            <div className="dtl-quickinfo-card">
-              <span className="dtl-quickinfo-icon"><Clock size={16} /></span>
-              <div>
-                <div className="dtl-quickinfo-value">{action.duracao}</div>
-                <div className="dtl-quickinfo-label">Duração sugerida</div>
-              </div>
-            </div>
-            <div className="dtl-quickinfo-card">
-              <span className="dtl-quickinfo-icon"><Icon size={16} /></span>
-              <div>
-                <div className="dtl-quickinfo-value">{info.label}</div>
-                <div className="dtl-quickinfo-label">Objetivo</div>
-              </div>
-            </div>
-            <div className="dtl-quickinfo-card">
-              <span className="dtl-quickinfo-icon"><TrendingUp size={16} /></span>
-              <div>
-                <div className="dtl-quickinfo-value">{action.resultado[0]}</div>
-                <div className="dtl-quickinfo-label">Resultado principal</div>
-              </div>
-            </div>
-          </div>
-
-          {action.idealPara && action.idealPara.length > 0 && (
-            <p className="dtl-quickinfo-caption">Ideal para: {action.idealPara.join(" · ")}</p>
-          )}
         </div>
 
         <div className="dtl-section-card">
@@ -2593,15 +2840,9 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
 
           <Accordion title="Canais recomendados" icon={Radio}>
             <div className="canal-row">
-              <span className="canal-row-label">Principal sugerido</span>
+              <span className="canal-row-label">Principal</span>
               <CanalChip label={action.canalPrincipal} main />
             </div>
-            {action.canalPrincipalAlternativas && action.canalPrincipalAlternativas.length > 0 && (
-              <div className="canal-row">
-                <span className="canal-row-label">Também pode ser o principal</span>
-                <div className="chiprow">{action.canalPrincipalAlternativas.map((c) => <CanalChip key={c} label={c} />)}</div>
-              </div>
-            )}
             {action.canaisApoio.length > 0 && (
               <div className="canal-row">
                 <span className="canal-row-label">De apoio</span>
@@ -2648,15 +2889,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
             </Accordion>
           )}
 
-          {action.jornadaDivulgacao && action.jornadaDivulgacao.length > 0 ? (
-            <Accordion title="3 · Divulgação">
-              <JornadaDivulgacao
-                dias={action.jornadaDivulgacao}
-                checked={checkedDiv}
-                onToggle={(key) => setCheckedDiv((s) => ({ ...s, [key]: !s[key] }))}
-              />
-            </Accordion>
-          ) : action.planoDivulgacao.length > 0 ? (
+          {action.planoDivulgacao.length > 0 && (
             <Accordion title="3 · Divulgação">
               {action.planoDivulgacao.map((p, pi) => (
                 <div key={pi} className="dtl-marco">
@@ -2675,7 +2908,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
                 </div>
               ))}
             </Accordion>
-          ) : null}
+          )}
         </div>
 
         {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData || action.materiaisNecessarios || action.templateVisual || action.exemplosReais) && (
@@ -3247,9 +3480,31 @@ const NAV = [
   { id: "calendario-anual", label: "Calendário Anual", icon: Calendar },
   { id: "radar", label: "Radar", icon: MapPin },
   { id: "datas-iguais", label: "Datas Iguais", icon: Hash },
+  { id: "aprenda-e-aplique", label: "Aprenda e Aplique", icon: Play },
   { id: "favoritos", label: "Favoritos", icon: Heart },
   { id: "historico", label: "Histórico", icon: Clock },
   { id: "simulador", label: "Simulador", icon: Calculator },
+];
+
+const AULAS = [
+  {
+    id: "aula-campanhas",
+    titulo: "Campanhas",
+    grupo: "Vendas e previsibilidade",
+    youtubeId: "PloUTj3rh3U",
+  },
+  {
+    id: "venda-com-previsibilidade",
+    titulo: "Venda com previsibilidade",
+    grupo: "Vendas e previsibilidade",
+    youtubeId: "CvOC4TNqK6I",
+  },
+  {
+    id: "estrategia-de-brindes",
+    titulo: "Estratégia de brindes",
+    grupo: "Brindes e mecânicas",
+    youtubeId: "GFca1lNGfZA",
+  },
 ];
 
 export default function App() {
@@ -3440,7 +3695,7 @@ export default function App() {
   const buscaKw = search.trim() ? buscaInteligente(search) : { cats: new Set(), canais: new Set() };
   const filtered = ACTIONS.filter((a) => {
     const matchesCat = !catFilter || a.cat === catFilter;
-    const matchesCanal = !canalFilter || a.canalPrincipal === canalFilter;
+    const matchesCanal = !canalFilter || a.canalPrincipal === canalFilter || a.canaisApoio.includes(canalFilter);
     const matchesNicho = !nichoFilter || (a.nichos && a.nichos.includes(nichoFilter));
     const q = search.trim().toLowerCase();
     const matchesTexto = !q || a.nome.toLowerCase().includes(q) || a.tipo.toLowerCase().includes(q) || a.como.toLowerCase().includes(q);
@@ -4122,6 +4377,13 @@ export default function App() {
     .cal-anual-mes-btn.vazio { opacity: 0.55; }
     .cal-anual-conteudo { max-width: 1160px; margin: 0 auto 40px; padding: 0 24px; }
 
+    .aprenda-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 8px; }
+    @media (min-width: 720px) { .aprenda-grid { grid-template-columns: repeat(2, 1fr); } }
+    .aprenda-video-card { display: flex; flex-direction: column; gap: 8px; }
+    .aprenda-video-frame { position: relative; width: 100%; padding-top: 56.25%; border-radius: 12px; overflow: hidden; background: #000; }
+    .aprenda-video-frame iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    .aprenda-video-titulo { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 13px; color: var(--ink); }
+
     .radar-datas-iguais-intro { max-width: 1040px; margin: 0 auto 12px; padding: 0 20px; font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
     .radar-destaque-10 { position: relative; margin-bottom: 4px; }
     .radar-destaque-10 .radar-card { border: 1.5px solid var(--mustard); box-shadow: 0 4px 16px rgba(184,145,47,0.18); }
@@ -4178,93 +4440,6 @@ export default function App() {
       border-radius: 999px; padding: 6px 12px; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 500; color: var(--ink);
     }
     .dtl-chip svg { color: var(--wine); flex-shrink: 0; }
-
-    /* ---- HERO: mecânica em destaque + informações rápidas ---- */
-    .dtl-hero { display: flex; flex-direction: column; gap: 16px; }
-    @media (min-width: 760px) {
-      .dtl-hero { flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 28px; }
-      .dtl-hero-main { flex: 1; min-width: 0; }
-    }
-    .dtl-hero-badge {
-      display: inline-flex; align-items: center; gap: 6px; background: var(--paper); border: 1px solid var(--line);
-      border-radius: 999px; padding: 5px 12px; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 10.5px;
-      text-transform: uppercase; letter-spacing: 0.05em; color: var(--wine); margin-bottom: 10px;
-    }
-    .dtl-hero-badge svg { color: var(--wine); }
-
-    .dtl-mecanica { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; }
-    .dtl-mecanica-card {
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-      background: var(--card); border: 1.5px solid var(--line); border-radius: 14px;
-      padding: 12px 14px; min-width: 74px; text-align: center;
-      box-shadow: 0 2px 8px rgba(20,63,53,0.05);
-    }
-    .dtl-mecanica-card .mec-pecas { font-family: 'Manrope', sans-serif; font-size: 10px; font-weight: 600; color: var(--ink-soft); }
-    .dtl-mecanica-card .mec-pct { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; line-height: 1.2; }
-    .dtl-mecanica-card.mec-1 { border-color: #D3E8DD; }
-    .dtl-mecanica-card.mec-1 .mec-pct { color: var(--wine); }
-    .dtl-mecanica-card.mec-2 { border-color: #BFDBCB; background: linear-gradient(180deg, #FBFDFC, #FFFFFF); }
-    .dtl-mecanica-card.mec-2 .mec-pct { color: #3E7A5C; }
-    .dtl-mecanica-card.mec-3 { border-color: #E9D9A8; background: linear-gradient(180deg, #FFFDF7, #FFFFFF); }
-    .dtl-mecanica-card.mec-3 .mec-pct { color: #B8912F; }
-    .dtl-mecanica-arrow { color: var(--ink-soft); opacity: 0.45; flex-shrink: 0; }
-
-    .dtl-quickinfo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 18px; }
-    .dtl-quickinfo-card {
-      display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line);
-      border-radius: 12px; padding: 12px 14px; box-shadow: 0 2px 8px rgba(20,63,53,0.04);
-    }
-    .dtl-quickinfo-icon {
-      flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; background: var(--paper);
-      display: flex; align-items: center; justify-content: center; color: var(--wine);
-    }
-    .dtl-quickinfo-value { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--ink); line-height: 1.3; }
-    .dtl-quickinfo-label { font-size: 10.5px; color: var(--ink-soft); margin-top: 1px; }
-    .dtl-quickinfo-caption { font-size: 12px; color: var(--ink-soft); margin: 12px 2px 0; }
-
-    /* ---- Jornada cronológica de divulgação (mini-subpáginas por dia) ---- */
-    .dtl-jornada { display: flex; flex-direction: column; gap: 8px; }
-    .dtl-jornada-dia { border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
-    .dtl-jornada-dia.aberto { border-color: var(--wine); }
-    .dtl-jornada-dia-header {
-      width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 14px;
-      background: none; border: none; cursor: pointer; text-align: left;
-    }
-    .dtl-jornada-marker { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--wine); }
-    .dtl-jornada-dia-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-    .dtl-jornada-titulo { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 13.5px; color: var(--ink); }
-    .dtl-jornada-progresso { font-size: 11px; color: var(--ink-soft); }
-    .dtl-jornada-chevron { color: var(--ink-soft); transition: transform 0.25s ease; flex-shrink: 0; }
-    .dtl-jornada-chevron.open { transform: rotate(90deg); }
-    .dtl-jornada-dia-body { padding: 0 14px 16px; animation: dtlFadeIn 0.2s ease; }
-    .dtl-jornada-objetivo { font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 12px; }
-    .dtl-jornada-canal { margin-bottom: 10px; }
-    .dtl-jornada-canal-label {
-      display: inline-flex; align-items: center; gap: 5px; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 11px;
-      text-transform: uppercase; letter-spacing: 0.04em; color: var(--wine); margin-bottom: 6px;
-    }
-    .dtl-jornada-item { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; }
-    .dtl-jornada-item:last-child { margin-bottom: 0; }
-    .dtl-jornada-item-rotulo { display: block; font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
-    .dtl-jornada-item-texto { margin: 0; font-size: 13px; line-height: 1.5; color: var(--ink); font-style: italic; white-space: pre-line; }
-    .dtl-jornada-item-obs { margin: 4px 0 0; font-size: 11.5px; line-height: 1.45; color: var(--ink-soft); }
-
-    /* Dentro do card escuro "Vamos executar": inverter para tons claros legíveis */
-    .dtl-checklist-card .dtl-jornada-dia { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); }
-    .dtl-checklist-card .dtl-jornada-dia.aberto { border-color: rgba(255,255,255,0.4); }
-    .dtl-checklist-card .dtl-jornada-marker { background: #D9C48A; }
-    .dtl-checklist-card .dtl-jornada-titulo { color: #fff; }
-    .dtl-checklist-card .dtl-jornada-progresso { color: rgba(255,255,255,0.6); }
-    .dtl-checklist-card .dtl-jornada-chevron { color: rgba(255,255,255,0.7); }
-    .dtl-checklist-card .dtl-jornada-objetivo { color: rgba(255,255,255,0.75); }
-    .dtl-checklist-card .dtl-jornada-canal-label { color: #D9C48A; }
-    .dtl-checklist-card .dtl-jornada-item { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.16); }
-    .dtl-checklist-card .dtl-jornada-item-rotulo { color: #fff; }
-    .dtl-checklist-card .dtl-jornada-item-texto { color: rgba(255,255,255,0.92); }
-    .dtl-checklist-card .dtl-jornada-item-obs { color: rgba(255,255,255,0.6); }
-    .dtl-checklist-card .dtl-jornada-dia .checkitem span { color: rgba(255,255,255,0.95); }
-    .dtl-checklist-card .dtl-jornada-dia .checkitem .done { color: rgba(255,255,255,0.5); }
-    .dtl-checklist-card .dtl-jornada-dia .checkitem input { accent-color: #fff; }
 
     .dtl-section-card {
       background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
@@ -4879,7 +5054,7 @@ export default function App() {
                     <div className="bib-section-title">Explorar por canal</div>
                     <div className="menu-list">
                       {CANAIS.map((c) => {
-                        const count = ACTIONS.filter((a) => a.canalPrincipal === c.label).length;
+                        const count = ACTIONS.filter((a) => a.canalPrincipal === c.label || a.canaisApoio.includes(c.label)).length;
                         return (
                           <button key={c.label} className="menu-row" onClick={() => setCanalFilter(c.label)}>
                             <span className="menu-row-icon"><c.icon size={16} /></span>
@@ -4956,6 +5131,8 @@ export default function App() {
               </div>
             ) : tab === "calendario-anual" ? (
               <CalendarioAnualScreen onVerAcoes={verAcoesDoRadar} />
+            ) : tab === "aprenda-e-aplique" ? (
+              <AprendaEApliqueScreen />
             ) : tab === "radar" ? (
               <RadarOportunidades
                 perfil={perfil}
