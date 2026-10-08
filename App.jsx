@@ -2312,11 +2312,11 @@ function AprendaEApliqueScreen() {
                 <div key={a.id} className="aprenda-video-card">
                   <div className="aprenda-video-frame">
                     <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${a.youtubeId}?rel=0`}
+                      src={`https://www.youtube.com/embed/${a.youtubeId}`}
                       title={a.titulo}
+                      frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
-                      frameBorder="0"
                     />
                   </div>
                   <span className="aprenda-video-titulo">{a.titulo}</span>
@@ -4377,12 +4377,15 @@ export default function App() {
     .cal-anual-mes-btn.vazio { opacity: 0.55; }
     .cal-anual-conteudo { max-width: 1160px; margin: 0 auto 40px; padding: 0 24px; }
 
-    .aprenda-conteudo { max-width: 900px; margin: 0 auto 40px; padding: 0 24px; }
-    .aprenda-grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 8px; }
+    .aprenda-conteudo { max-width: 1040px; margin: 0 auto 40px; padding: 0 24px; }
+    .aprenda-grid { display: grid; grid-template-columns: 1fr; gap: 28px; margin-top: 8px; }
     .aprenda-video-card { display: flex; flex-direction: column; gap: 10px; }
-    .aprenda-video-frame { position: relative; width: 100%; padding-top: 56.25%; border-radius: 12px; overflow: hidden; background: #000; }
-    .aprenda-video-frame iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-    .aprenda-video-titulo { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 14px; color: var(--ink); }
+    .aprenda-video-frame {
+      position: relative; width: 100%; padding-top: 56.25%; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 2px 8px rgba(20,63,53,0.08); background: #000;
+    }
+    .aprenda-video-frame iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .aprenda-video-titulo { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 15px; color: var(--ink); }
 
     .radar-datas-iguais-intro { max-width: 1040px; margin: 0 auto 12px; padding: 0 20px; font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
     .radar-destaque-10 { position: relative; margin-bottom: 4px; }
