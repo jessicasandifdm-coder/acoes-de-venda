@@ -2291,6 +2291,34 @@ function RadarCard({ op, favorito, onToggleFavorito, onDefinirLembrete, onVerAco
   );
 }
 
+function VideoAula({ aula }) {
+  const [tocando, setTocando] = useState(false);
+  return (
+    <div className="aprenda-video-card">
+      <div className="aprenda-video-frame">
+        {tocando ? (
+          <>
+            <iframe
+              src={`https://www.youtube.com/embed/${aula.youtubeId}?autoplay=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3`}
+              title={aula.titulo}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+            />
+            <div className="aprenda-video-bloqueio" aria-hidden="true" />
+          </>
+        ) : (
+          <button type="button" className="aprenda-video-capa" onClick={() => setTocando(true)} aria-label={`Assistir: ${aula.titulo}`}>
+            <img src={`https://i.ytimg.com/vi/${aula.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" />
+            <span className="aprenda-video-play"><Play size={28} fill="#fff" /></span>
+          </button>
+        )}
+      </div>
+      <span className="aprenda-video-titulo">{aula.titulo}</span>
+    </div>
+  );
+}
+
 function AprendaEApliqueScreen() {
   const grupos = [...new Set(AULAS.map((a) => a.grupo))];
 
@@ -2308,20 +2336,7 @@ function AprendaEApliqueScreen() {
           <div key={grupo} className="dtl-section-card">
             <div className="dtl-section-title">{grupo}</div>
             <div className="aprenda-grid">
-              {AULAS.filter((a) => a.grupo === grupo).map((a) => (
-                <div key={a.id} className="aprenda-video-card">
-                  <div className="aprenda-video-frame">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${a.youtubeId}`}
-                      title={a.titulo}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                  <span className="aprenda-video-titulo">{a.titulo}</span>
-                </div>
-              ))}
+              {AULAS.filter((a) => a.grupo === grupo).map((a) => <VideoAula key={a.id} aula={a} />)}
             </div>
           </div>
         ))}
@@ -3489,7 +3504,7 @@ const NAV = [
 const AULAS = [
   {
     id: "aula-campanhas",
-    titulo: "Campanhas",
+    titulo: "Campanhas e datas sazonais",
     grupo: "Vendas e previsibilidade",
     youtubeId: "PloUTj3rh3U",
   },
@@ -3501,7 +3516,7 @@ const AULAS = [
   },
   {
     id: "estrategia-de-brindes",
-    titulo: "Estratégia de brindes",
+    titulo: "Estratégia de brindes — garrafas",
     grupo: "Brindes e mecânicas",
     youtubeId: "GFca1lNGfZA",
   },
@@ -4385,6 +4400,13 @@ export default function App() {
       box-shadow: 0 2px 8px rgba(20,63,53,0.08); background: #000;
     }
     .aprenda-video-frame iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .aprenda-video-capa { position: absolute; inset: 0; width: 100%; height: 100%; border: none; padding: 0; cursor: pointer; background: #000; }
+    .aprenda-video-capa img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.92; }
+    .aprenda-video-play {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 68px; height: 68px; border-radius: 50%;
+      background: rgba(20,63,53,0.88); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    }
+    .aprenda-video-bloqueio { position: absolute; top: 0; left: 0; right: 0; height: 18%; z-index: 2; }
     .aprenda-video-titulo { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 15px; color: var(--ink); }
 
     .radar-datas-iguais-intro { max-width: 1040px; margin: 0 auto 12px; padding: 0 20px; font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
