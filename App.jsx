@@ -4392,7 +4392,9 @@ export default function App() {
     .cal-anual-mes-btn.vazio { opacity: 0.55; }
     .cal-anual-conteudo { max-width: 1160px; margin: 0 auto 40px; padding: 0 24px; }
 
-    .aprenda-conteudo { max-width: 1040px; margin: 0 auto 40px; padding: 0 24px; }
+    .aprenda-conteudo { width: 100%; max-width: 1040px; box-sizing: border-box; margin: 0 auto 40px; padding: 0 24px; }
+    .aprenda-conteudo .dtl-section-card { width: 100%; box-sizing: border-box; }
+    @media (max-width: 859px) { .aprenda-conteudo { padding: 0 14px 90px; } }
     .aprenda-grid { display: grid; grid-template-columns: 1fr; gap: 28px; margin-top: 8px; }
     .aprenda-video-card { display: flex; flex-direction: column; gap: 10px; }
     .aprenda-video-frame {
