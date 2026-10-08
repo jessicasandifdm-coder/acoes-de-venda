@@ -2303,7 +2303,7 @@ function AprendaEApliqueScreen() {
         </div>
       </div>
 
-      <div className="cal-anual-conteudo">
+      <div className="aprenda-conteudo">
         {grupos.map((grupo) => (
           <div key={grupo} className="dtl-section-card">
             <div className="dtl-section-title">{grupo}</div>
@@ -2312,7 +2312,7 @@ function AprendaEApliqueScreen() {
                 <div key={a.id} className="aprenda-video-card">
                   <div className="aprenda-video-frame">
                     <iframe
-                      src={`https://www.youtube.com/embed/${a.youtubeId}`}
+                      src={`https://www.youtube-nocookie.com/embed/${a.youtubeId}?rel=0`}
                       title={a.titulo}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
@@ -3497,7 +3497,7 @@ const AULAS = [
     id: "venda-com-previsibilidade",
     titulo: "Venda com previsibilidade",
     grupo: "Vendas e previsibilidade",
-    youtubeId: "CvOC4TNqK6I",
+    youtubeId: "CvOC4TNqK6Y",
   },
   {
     id: "estrategia-de-brindes",
@@ -4377,12 +4377,12 @@ export default function App() {
     .cal-anual-mes-btn.vazio { opacity: 0.55; }
     .cal-anual-conteudo { max-width: 1160px; margin: 0 auto 40px; padding: 0 24px; }
 
-    .aprenda-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 8px; }
-    @media (min-width: 720px) { .aprenda-grid { grid-template-columns: repeat(2, 1fr); } }
-    .aprenda-video-card { display: flex; flex-direction: column; gap: 8px; }
+    .aprenda-conteudo { max-width: 900px; margin: 0 auto 40px; padding: 0 24px; }
+    .aprenda-grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 8px; }
+    .aprenda-video-card { display: flex; flex-direction: column; gap: 10px; }
     .aprenda-video-frame { position: relative; width: 100%; padding-top: 56.25%; border-radius: 12px; overflow: hidden; background: #000; }
     .aprenda-video-frame iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-    .aprenda-video-titulo { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 13px; color: var(--ink); }
+    .aprenda-video-titulo { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 14px; color: var(--ink); }
 
     .radar-datas-iguais-intro { max-width: 1040px; margin: 0 auto 12px; padding: 0 20px; font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
     .radar-destaque-10 { position: relative; margin-bottom: 4px; }
@@ -4645,15 +4645,18 @@ export default function App() {
     .hist-nota { font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
 
     .tabbar {
-      display: flex; gap: 2px; background: var(--wine-dark); padding: 8px 6px calc(10px + env(safe-area-inset-bottom, 0px));
+      display: flex; gap: 4px; background: var(--wine-dark); padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px));
       position: fixed; bottom: 0; left: 0; right: 0; box-shadow: 0 -4px 16px rgba(20,63,53,0.2); z-index: 20;
+      overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; scroll-snap-type: x proximity;
     }
+    .tabbar::-webkit-scrollbar { display: none; }
     .tabbtn {
-      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none;
-      cursor: pointer; color: rgba(255,255,255,0.55); padding: 6px 2px; border-radius: 12px; transition: background 0.15s ease, color 0.15s ease;
+      flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none;
+      cursor: pointer; color: rgba(255,255,255,0.55); padding: 8px 14px; border-radius: 14px; transition: background 0.15s ease, color 0.15s ease;
+      min-width: 68px; scroll-snap-align: start;
     }
     .tabbtn.active { color: #fff; background: rgba(255,255,255,0.14); }
-    .tabbtn span { font-size: 9.5px; font-weight: 500; }
+    .tabbtn span { font-size: 10.5px; font-weight: 500; white-space: nowrap; }
 
     @media (min-width: 860px) {
       .sidebar { display: flex; }
@@ -5273,7 +5276,7 @@ export default function App() {
                     else { setShowSimulador(false); if (n.id === "radar") setRadarViewPadrao("lista"); goto(n.id, true); }
                   }}
                 >
-                  <n.icon size={19} /><span>{n.label}</span>
+                  <n.icon size={21} /><span>{n.label}</span>
                 </button>
               ))}
             </div>
