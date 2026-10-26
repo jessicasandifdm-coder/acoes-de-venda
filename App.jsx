@@ -2125,6 +2125,80 @@ const ACTIONS = [
       "12/12": "Balão Premiado ('12/12 — 12 balões') ou Caixa Misteriosa ('12/12 — compras acima de R$X participam')",
     },
   },
+  {
+    id: "pack-em-dobro", nome: "Pack em Dobro", cat: "combos", nichos: ["Geral"],
+    tipo: "Campanha de ticket médio e giro com 2 unidades do mesmo produto",
+    sugestoesNomes: [],
+    imagens: [],
+    como: "Venda duas unidades do mesmo produto com um incentivo especial. Crie uma campanha para incentivar a cliente a comprar duas unidades do mesmo produto, utilizando uma condição especial e uma divulgação concentrada nos Stories.",
+    duracao: "Antecipação de 2 dias + dia do lançamento",
+    canalPrincipal: "Stories",
+    canaisApoio: ["Grupo VIP", "Feed", "Reels", "Loja física"],
+    objetivo: ["Aumentar o ticket médio", "Vender mais unidades por cliente", "Acelerar o giro dos produtos escolhidos"],
+    quandoUsar: [
+      "Produtos básicos e de uso recorrente.",
+      "Itens com boa saída e estoque disponível.",
+      "Produtos que a cliente costuma comprar em mais de uma unidade.",
+    ],
+    quandoEvitar: [
+      "Produtos com estoque muito limitado.",
+      "Itens com margem insuficiente para conceder desconto.",
+      "Produtos que não fazem sentido comprar em duplicidade.",
+    ],
+    checklist: [
+      "Escolha o produto: selecione um produto que faça sentido comprar em dobro, como duas regatas, duas camisetas, dois glosses ou dois hidratantes.",
+      "Defina o preço do pack: some o valor de duas unidades e determine o desconto que será oferecido.",
+      "Exemplo: valor individual R$ 60,00 · duas unidades R$ 120,00 · desconto no pack R$ 10,00 · Preço do Pack em Dobro R$ 110,00. A cliente economiza R$ 10,00 e paga R$ 55,00 por unidade.",
+      "Importante: R$ 10,00 é o desconto utilizado neste exemplo, não um mínimo universal. O valor deve ser definido conforme o custo do produto, as despesas e a margem da loja. Antes de lançar, confira se o preço promocional continua rentável.",
+      "Prepare as imagens: produza fotos e vídeos do produto individualmente, mostrando detalhes, uso e cores disponíveis.",
+      "Faça uma foto das duas unidades juntas, com o preço normal, o preço do pack e a economia em destaque.",
+      "Se houver diferentes cores, informe se a cliente pode escolher duas cores diferentes do mesmo modelo.",
+    ],
+    checklistExecucao: [],
+    planoDivulgacao: [
+      { marco: "1. Dois dias antes — Gere desejo", itens: [
+        "Mostre o produto em uso, seus detalhes e as opções disponíveis.",
+        "A ideia é despertar o interesse antes de apresentar a oferta.",
+      ]},
+      { marco: "2. Um dia antes — Antecipe o lançamento", itens: [
+        "Avise nos Stories que, no dia seguinte, haverá uma condição especial para quem quiser levar duas unidades.",
+        "Use uma enquete para estimular a interação.",
+        "Se a loja tiver grupo VIP, envie uma mensagem antecipando a novidade.",
+      ]},
+      { marco: "3. No dia — Lance o Pack em Dobro", itens: [
+        "Publique a sequência de Stories apresentando o produto, as opções disponíveis, o preço especial e a economia.",
+        "Reforce como comprar e mostre as vendas realizadas ao longo do dia, quando houver.",
+      ]},
+      { marco: "4. Reforce a oferta", itens: [
+        "Retome a divulgação nos Stories, mostre outras combinações possíveis e responda às dúvidas que surgirem.",
+        "Se houver prazo ou quantidade limitada, comunique apenas limites reais.",
+      ]},
+    ],
+    modelosMensagens: [],
+    ideiasStories: [
+      "Enquete na antecipação: “Tu também gosta de ter tuas peças básicas em mais de uma cor?”",
+    ],
+    dicas: [
+      "Escolha produtos que a cliente realmente tenha motivo para comprar em dobro.",
+      "O desconto deve ser percebido como um benefício, mas precisa preservar a margem da loja.",
+      "Mostre o valor das duas unidades separadas e o preço especial do pack.",
+      "Faça uma apresentação visual que deixe a oferta fácil de entender.",
+      "Não publique apenas o preço: mostre o produto em uso e as possibilidades de combinação.",
+      "Registre quantos packs foram vendidos para avaliar se vale a pena repetir a campanha.",
+    ],
+    resultado: [
+      "Criar uma campanha simples e organizada para vender mais unidades do mesmo produto por compra, aumentando o valor vendido por cliente sem depender exclusivamente de atrair novos compradores.",
+    ],
+    materialApoio: [
+      { titulo: "Precificação", texto: "cálculo do valor normal, desconto e preço final do pack." },
+      { titulo: "Mensagem para o grupo VIP", texto: "texto de antecipação e texto de lançamento." },
+      { titulo: "Stories de antecipação", texto: "sequência de textos para o dia anterior." },
+      { titulo: "Stories de lançamento", texto: "sequência com apresentação do produto, preço e chamada para compra." },
+      { titulo: "Conteúdo para Feed/Reels", texto: "sugestão de título, roteiro e legenda." },
+      { titulo: "Checklist de preparação", texto: "produto escolhido, preço definido, fotos prontas e divulgação organizada." },
+    ],
+    relacionadas: ["pague-2-leve-3", "leve-mais-pague-menos", "combo-inteligente"],
+  },
 ];
 
 function CanalChip({ label, small, main }) {
@@ -2824,6 +2898,17 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
           </div>
         </div>
 
+        {action.imagens && action.imagens.length > 0 && (
+          <div className={`dtl-imagens ${action.imagens.length > 1 ? "multi" : ""}`}>
+            {action.imagens.map((img, i) => (
+              <figure key={i} className="dtl-imagem">
+                <img src={img.src} alt={img.legenda || action.nome} loading="lazy" onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }} />
+                {img.legenda && <figcaption>{img.legenda}</figcaption>}
+              </figure>
+            ))}
+          </div>
+        )}
+
         <div className="dtl-section-card">
           <div className="dtl-section-title">Antes de começar</div>
 
@@ -2926,7 +3011,7 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
           )}
         </div>
 
-        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData || action.materiaisNecessarios || action.templateVisual || action.exemplosReais) && (
+        {(action.modelosMensagens.length > 0 || action.ideiasStories.length > 0 || action.nichoExemplos || action.narrativasPorData || action.materiaisNecessarios || action.materialApoio || action.templateVisual || action.exemplosReais) && (
           <div className="dtl-section-card">
             <div className="dtl-section-title">Materiais de apoio</div>
 
@@ -2997,6 +3082,12 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
               </Accordion>
             )}
 
+            {action.materialApoio && (
+              <Accordion title="Material de apoio da campanha" icon={Package}>
+                <ol className="bullet-list" style={{ paddingLeft: 18 }}>{action.materialApoio.map((m, i) => <li key={i}><strong>{m.titulo}:</strong> {m.texto}</li>)}</ol>
+              </Accordion>
+            )}
+
             {action.materiaisNecessarios && (
               <Accordion title="Materiais necessários" icon={Package}>
                 <ul className="bullet-list">{action.materiaisNecessarios.map((m, i) => <li key={i}>{m}</li>)}</ul>
@@ -3007,7 +3098,9 @@ function DetailScreen({ action, isFav, onToggleFav, onBack, resultadosAcao, onVe
 
         <div className="dtl-dica-block">
           <div className="dtl-dica-titulo"><Lightbulb size={15} /> Dica estratégica</div>
-          <p className="dtl-dica-texto">{action.dicas}</p>
+          {Array.isArray(action.dicas)
+            ? <ul className="dtl-dica-lista">{action.dicas.map((d, i) => <li key={i}>{d}</li>)}</ul>
+            : <p className="dtl-dica-texto">{action.dicas}</p>}
         </div>
 
         <div className="dtl-resultado-block">
@@ -4511,6 +4604,14 @@ export default function App() {
       display: flex; align-items: center; gap: 7px; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 12.5px;
       text-transform: uppercase; letter-spacing: 0.04em; color: rgba(255,255,255,0.85); margin-bottom: 8px;
     }
+    .dtl-dica-lista { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.55; color: #fff; }
+    .dtl-dica-lista li { margin-bottom: 6px; }
+    .dtl-imagens { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 4px 0 14px; }
+    .dtl-imagens.multi { grid-template-columns: repeat(2, 1fr); }
+    .dtl-imagem { margin: 0; border-radius: 14px; overflow: hidden; background: var(--card); border: 1px solid var(--line); box-shadow: 0 2px 8px rgba(20,63,53,0.06); }
+    .dtl-imagem img { display: block; width: 100%; max-height: 420px; object-fit: cover; }
+    .dtl-imagem figcaption { padding: 8px 12px; font-size: 12px; color: var(--ink-soft); line-height: 1.4; }
+    @media (max-width: 560px) { .dtl-imagens.multi { grid-template-columns: 1fr; } }
     .dtl-dica-texto { margin: 0; font-size: 13.5px; line-height: 1.55; color: #fff; }
 
     .dtl-resultado-block {
